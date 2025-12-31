@@ -1,22 +1,36 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2 class="header-title"><i class="fas fa-award"></i> Reconocimientos</h2>
+    <h2 class="header-title"><i class="fas fa-award"></i> Logros y Reconocimientos</h2>
+    
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+    {% for reco in perfil.reconocimientos_set.all %}
+        {% if reco.activarparaqueseveaenfront %}
+        <div class="card" style="display: flex; flex-direction: row; align-items: center; gap: 20px; flex-wrap: wrap;">
+            
+            <div style="flex: 1; min-width: 250px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                    <h3 style="margin: 0; font-size: 1.2rem;">{{ reco.descripcionreconocimiento }}</h3> </div>
+                
+                <span style="font-size: 0.85rem; background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                     {{ reco.tiporeconocimiento }} | {{ reco.fechareconocimiento|date:"Y" }}
+                </span>
 
-{% for reco in reconocimientos %}
-    {% if reco.activarparaqueseveaenfront %}
-    <div class="card">
-        <h3>{{ reco.tiporeconocimiento }} ({{ reco.fechareconocimiento|date:"Y" }})</h3>
-        <p>{{ reco.descripcionreconocimiento }}</p>
-        <small>{{ reco.entidadpatrocinadora }}</small>
+                <p style="margin: 5px 0; color: #334155;">
+                    <i class="fas fa-building" style="color:#94a3b8"></i> Otorgado por: <strong>{{ reco.entidadpatrocinadora }}</strong>
+                </p>
+            </div>
 
-        {% if reco.rutacertificado %}
-        <br>
-        <a href="{{ reco.rutacertificado.url }}" target="_blank">Ver Certificado</a>
+            {% if reco.rutacertificado %}
+            <div>
+                <a href="{{ reco.rutacertificado.url }}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: background 0.3s;">
+                    <i class="fas fa-file-pdf"></i> Ver Documento
+                </a>
+            </div>
+            {% endif %}
+        </div>
         {% endif %}
+    {% empty %}
+        <div class="card"><p>No hay reconocimientos registrados.</p></div>
+    {% endfor %}
     </div>
-    {% endif %}
-{% empty %}
-<p>No hay reconocimientos.</p>
-{% endfor %}
 {% endblock %}

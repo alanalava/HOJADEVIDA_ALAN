@@ -1,21 +1,38 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2 class="header-title"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
+    <h2 class="header-title"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
+    
+    {% for exp in perfil.experiencialaboral_set.all %}
+        {% if exp.activarparaqueseveaenfront %}
+        <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
+                <h3 style="margin-top: 0; color: #1e293b;">{{ exp.cargodesempenado }}</h3>
+                <span style="background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: 600;">
+                    {{ exp.fechainiciogestion|date:"M Y" }} - 
+                    {% if exp.fechafingestion %}
+                        {{ exp.fechafingestion|date:"M Y" }}
+                    {% else %}
+                        Actualidad
+                    {% endif %}
+                </span>
+            </div>
+            
+            <h4 style="margin: 5px 0 15px 0; font-weight: 500; color: #64748b; font-size: 1rem;">
+                <i class="far fa-building"></i> {{ exp.nombrempresa }} | <i class="fas fa-map-marker-alt"></i> {{ exp.lugarempresa }}
+            </h4>
 
-{% for exp in experiencias %}
-    {% if exp.activarparaqueseveaenfront %}
-    <div class="card">
-        <h3>{{ exp.cargodesempenado }}</h3>
-        <span>{{ exp.nombrempresa }} | {{ exp.fechainiciogestion }}</span>
-        <p>{{ exp.descripcionfunciones }}</p>
+            <p style="color: #475569; line-height: 1.6;">{{ exp.descripcionfunciones }}</p>
 
-        {% if exp.rutacertificado %}
-        <a href="{{ exp.rutacertificado.url }}" target="_blank">Ver respaldo</a>
+            {% if exp.rutacertificado %}
+            <div style="margin-top: 15px;">
+                <a href="{{ exp.rutacertificado.url }}" target="_blank" class="btn-link" style="color: #2563eb; text-decoration: none; font-weight: 500;">
+                    <i class="fas fa-file-contract"></i> Ver Certificado Laboral
+                </a>
+            </div>
+            {% endif %}
+        </div>
         {% endif %}
-    </div>
-    {% endif %}
-{% empty %}
-<p>No hay experiencia registrada.</p>
-{% endfor %}
+    {% empty %}
+        <div class="card"><p>No hay experiencia registrada aún.</p></div>
+    {% endfor %}
 {% endblock %}

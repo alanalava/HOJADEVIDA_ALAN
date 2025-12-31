@@ -1,17 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2 class="header-title"><i class="fas fa-code"></i> Productos Laborales</h2>
+    <h2 class="header-title"><i class="fas fa-tools"></i> Productos Laborales</h2>
 
-{% for prod in productos_laborales %}
-    {% if prod.activarparaqueseveaenfront %}
-    <div class="card">
-        <h3>{{ prod.nombreproducto }}</h3>
-        <small>{{ prod.fechaproducto }}</small>
-        <p>{{ prod.descripcion }}</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        
+        {% for item in datos %}
+            {% if item.activarparaqueseveaenfront %}
+            <div class="card">
+                <h3 style="margin-top: 0; color: #1f2937;">{{ item.nombreproducto }}</h3>
+                
+                <div style="margin-bottom: 10px; color: #2563eb; font-weight: 500; font-size: 0.9rem;">
+                    <i class="far fa-calendar-alt"></i> {{ item.fechaproducto|date:"d M, Y" }}
+                </div>
+                
+                <p style="color: #4b5563;">{{ item.descripcion }}</p>
+            </div>
+            {% endif %}
+        {% empty %}
+            <div class="card">
+                <p>No hay productos laborales registrados todavía.</p>
+            </div>
+        {% endfor %}
+
     </div>
-    {% endif %}
-{% empty %}
-<p>No hay productos laborales.</p>
-{% endfor %}
 {% endblock %}

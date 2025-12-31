@@ -4,32 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV | {{ perfil.nombres }}</title>
-
+    <title>CV | {% if perfil %}{{ perfil.nombres }}{% else %}Mi CV{% endif %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <style>
+        /* --- VARIABLES Y ESTILOS GLOBALES --- */
         :root {
-            --sidebar-width: 280px;
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: rgba(37, 99, 235, 0.1);
-            --sidebar-bg: #0f172a;
-            --bg-main: #f8fafc;
-            --text-main: #334155;
-            --text-muted: #94a3b8;
+            --sidebar-width: 280px; 
+            --primary: #2563eb;     
+            --primary-dark: #1d4ed8; 
+            --sidebar-bg: #0f172a;   
+            --bg-main: #f8fafc;      
+            --text-main: #334155;    
+            --text-muted: #94a3b8;   
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', sans-serif; 
             background: var(--bg-main);
             display: flex;
             margin: 0;
             min-height: 100vh;
             color: var(--text-main);
         }
-
+        
         aside {
             width: var(--sidebar-width);
             background: var(--sidebar-bg);
@@ -39,144 +38,222 @@
             padding: 2.5rem 1.5rem;
             display: flex;
             flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
             z-index: 100;
             overflow-y: auto;
         }
 
-        .identity-box {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+        aside::-webkit-scrollbar { width: 5px; }
+        aside::-webkit-scrollbar-track { background: transparent; }
+        aside::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .identity-box { text-align: center; margin-bottom: 2rem; }
 
         .avatar-container {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 1rem;
+            position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;
         }
 
-        .avatar {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        .avatar, .avatar-img {
+            width: 100%; height: 100%;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .avatar-img {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
-            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.8rem; font-weight: 700; color: white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
         }
 
-        .user-name {
-            font-weight: 700;
-            font-size: 1.2rem;
+        .user-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
+        .user-role { color: var(--text-muted); font-size: 0.95rem; }
+        
+        /* --- BOTÓN CENTRADO Y PEQUEÑO --- */
+        .btn-pdf-container { 
+            display: flex; 
+            justify-content: center; 
+            margin-bottom: 1.5rem; 
         }
-
-        .user-role {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+        
+        .btn-pdf {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white; 
+            padding: 10px 24px; 
+            border-radius: 50px; 
+            border: none; 
+            width: auto; 
+            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            display: inline-flex; align-items: center; gap: 8px;
+            text-decoration: none;
         }
+        .btn-pdf:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
 
+        .nav-container { width: 100%; flex-grow: 1; }
+        
         nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 18px;
+            display: flex; align-items: center; gap: 15px;
+            padding: 14px 20px;
             color: var(--text-muted);
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
         }
 
-        nav a.active,
-        nav a:hover {
-            background: var(--primary);
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.1);
             color: white;
+            transform: translateX(5px);
+        }
+        
+        nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+
+        main { margin-left: var(--sidebar-width); flex: 1; padding: 3rem 4rem; }
+        
+        .card {
+            background: white; padding: 2.5rem; border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); 
+            margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.04);
+            break-inside: avoid;
         }
 
-        main {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 3rem 4rem;
+        .header-title {
+            color: var(--primary); font-weight: 700; font-size: 1.3rem;
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 1.5rem; padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-main);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) { :root { --sidebar-width: 240px; } main { padding: 2rem; } }
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { width: 100%; height: auto; position: relative; padding: 1.5rem; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+            .identity-box { margin: 0; display: flex; align-items: center; gap: 15px; text-align: left; }
+            .avatar-container { width: 60px; height: 60px; margin: 0; }
+            .nav-container { width: 100%; margin-top: 1.5rem; display: flex; overflow-x: auto; gap: 10px; }
+            main { margin: 0; padding: 1.5rem; }
+        }
+
+        /* --- ESTILOS DE IMPRESIÓN (PDF) --- */
+        @media print {
+            @page { size: A4; margin: 0cm; }
+            
+            body { display: block; background: white; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            
+            aside { 
+                position: relative !important; width: 100% !important; height: auto !important; 
+                background: var(--primary) !important; color: white !important; 
+                padding: 15px 30px !important; 
+                display: flex !important; flex-direction: row !important; align-items: center !important; 
+                margin-bottom: 20px; box-shadow: none !important; 
+            }
+            
+            .identity-box { display: flex !important; align-items: center !important; gap: 20px !important; text-align: left !important; margin: 0 !important; }
+            
+            /* CORRECCIÓN: Se eliminó el borde blanco que causaba el recuadro */
+            .avatar-container { width: 70px !important; height: 70px !important; margin: 0 !important; }
+            
+            .user-name { font-size: 22px !important; color: white !important; margin: 0 !important; }
+            
+            .nav-container, .btn-pdf-container, button, nav { display: none !important; }
+            
+            main { 
+                margin: 0 !important; 
+                padding: 0 20px !important; 
+                width: 100% !important; 
+            }
+            
+            .card { 
+                box-shadow: none !important; 
+                border: 1px solid #ddd !important; 
+                padding: 15px !important; 
+                margin-bottom: 15px !important; 
+                break-inside: avoid; page-break-inside: avoid; 
+            }
+            
+            h2, h3 { color: #000 !important; margin-top: 0 !important; }
+            a { text-decoration: none !important; color: #000 !important; }
         }
     </style>
 </head>
 <body>
 
-<aside>
-    <div class="identity-box">
-        <div class="avatar-container">
-            {% if perfil.fotoperfil %}
-                <img src="{{ perfil.fotoperfil.url }}" alt="Foto perfil" class="avatar-img">
-            {% else %}
-                <div class="avatar">
-                    {{ perfil.nombres|slice:":1"|upper }}
+    <aside>
+        {% if perfil %}
+        <div class="identity-box">
+            <a href="/" style="text-decoration: none;">
+                <div class="avatar-container">
+                    {% if perfil.fotoperfil %}
+                        <img src="{{ perfil.fotoperfil.url }}" alt="Foto perfil" class="avatar-img">
+                    {% else %}
+                        <div class="avatar">
+                            {{ perfil.nombres|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </a>
+            <div>
+                <div class="user-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
+                <div class="user-role">{{ perfil.descripcionperfil }}</div>
+            </div>
+        </div>
+        {% else %}
+        <div class="identity-box">
+             <div class="avatar-container"><div class="avatar">?</div></div>
+             <div class="user-name">Bienvenido</div>
+             <div class="user-role">Sin perfil activo</div>
+        </div>
+        {% endif %}
+        
+        <div class="btn-pdf-container">
+            <a href="{% url 'cv_completo' %}" target="_blank" class="btn-pdf">
+                <i class="fas fa-file-pdf"></i> Generar CV Completo
+            </a>
         </div>
 
-        <div class="user-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
-        <div class="user-role">{{ perfil.descripcionperfil|default:perfil.nacionalidad }}</div>
-    </div>
+        <div class="nav-container">
+            <nav>
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <i class="fas fa-user-circle"></i> Perfil Profesional
+                </a>
+                <a href="{% url 'experiencia' %}" class="{% if 'experiencia' in request.path %}active{% endif %}">
+                    <i class="fas fa-briefcase"></i> Experiencia Laboral
+                </a>
+                <a href="{% url 'productos_academicos' %}" class="{% if 'productos_academicos' in request.path %}active{% endif %}">
+                    <i class="fas fa-book"></i> Prod. Académicos
+                </a>
+                <a href="{% url 'productos_laborales' %}" class="{% if 'productos_laborales' in request.path %}active{% endif %}">
+                    <i class="fas fa-tools"></i> Prod. Laborales
+                </a>
+                <a href="{% url 'cursos' %}" class="{% if 'cursos' in request.path %}active{% endif %}">
+                    <i class="fas fa-graduation-cap"></i> Educación y Cursos
+                </a>
+                <a href="{% url 'reconocimientos' %}" class="{% if 'reconocimientos' in request.path %}active{% endif %}">
+                    <i class="fas fa-trophy"></i> Logros
+                </a>
+                <a href="{% url 'garage' %}" class="{% if 'garage' in request.path %}active{% endif %}">
+                    <i class="fas fa-store"></i> Venta Garage
+                </a>
 
-    <nav>
-        <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">
-            <i class="fas fa-user"></i> Perfil
-        </a>
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    {% if user.is_authenticated %}
+                        <a href="/admin/" target="_blank" style="color: #cbd5e1;">
+                            <i class="fas fa-cogs"></i> Admin
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </aside>
 
-        <a href="{% url 'experiencia' %}" class="{% if '/experiencia/' in request.path %}active{% endif %}">
-            <i class="fas fa-briefcase"></i> Experiencia
-        </a>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
-        <a href="{% url 'cursos' %}" class="{% if '/cursos/' in request.path %}active{% endif %}">
-            <i class="fas fa-graduation-cap"></i> Cursos
-        </a>
-
-        <a href="{% url 'reconocimientos' %}" class="{% if '/reconocimientos/' in request.path %}active{% endif %}">
-            <i class="fas fa-award"></i> Reconocimientos
-        </a>
-
-        <a href="{% url 'productos_academicos' %}" class="{% if '/productos_academicos/' in request.path %}active{% endif %}">
-            <i class="fas fa-book"></i> Académicos
-        </a>
-
-        <a href="{% url 'productos_laborales' %}" class="{% if '/productos_laborales/' in request.path %}active{% endif %}">
-            <i class="fas fa-code"></i> Laborales
-        </a>
-
-        <a href="{% url 'garage' %}" class="{% if '/garage/' in request.path %}active{% endif %}">
-            <i class="fas fa-tools"></i> Garage
-        </a>
-
-        {% if user.is_authenticated and user.is_staff %}
-            <a href="/admin/" target="_blank">
-                <i class="fas fa-user-shield"></i> Admin
-            </a>
-        {% endif %}
-
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">
-                <i class="fas fa-sign-out-alt"></i> Salir
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </a>
-        {% endif %}
-    </nav>
-</aside>
-
-<main>
-    {% block content %}
-    {% endblock %}
-</main>
-
-</body>
+</body> 
 </html>

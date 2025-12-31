@@ -9,6 +9,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', views.home, name='home'),
+    
+    # --- ESTA ES LA ÚNICA LÍNEA NUEVA QUE AGREGAMOS ---
+    path('cv-completo/', views.cv_completo, name='cv_completo'),
+    # --------------------------------------------------
+
     path('experiencia/', views.experiencia, name='experiencia'),
     path('productos-academicos/', views.productos_academicos, name='productos_academicos'),
     path('productos-laborales/', views.productos_laborales, name='productos_laborales'),

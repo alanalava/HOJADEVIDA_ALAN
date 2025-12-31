@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CV Completo | {{ perfil.nombres }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ESTILOS PARA SIMULAR HOJA DE PAPEL EN PANTALLA */
+        body {
+            background: #525659; /* Fondo gris oscuro (visor PDF) */
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            background: white;
+            width: 21cm; /* Ancho A4 */
+            min-height: 29.7cm; /* Alto A4 */
+            padding: 1.5cm 2cm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* TIPOGRAFÍA DEL CV */
+        h1 { margin: 0; color: #2563eb; font-size: 24px; text-transform: uppercase; }
+        h2 { margin: 5px 0 20px 0; color: #1f2937; font-size: 16px; font-weight: 400; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+        
+        h3.section-title {
+            color: #2563eb;
+            font-size: 15px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            padding-bottom: 3px;
+        }
+
+        .item { margin-bottom: 12px; }
+        .item-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; color: #333; }
+        .item-sub { color: #2563eb; font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+        .item-desc { font-size: 12px; color: #555; line-height: 1.4; text-align: justify; }
+
+        /* CONTACTO EN GRID */
+        .contact-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            font-size: 12px;
+            gap: 5px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* BOTÓN FLOTANTE PARA DESCARGAR */
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2563eb;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 999;
+        }
+        .print-btn:hover { background: #1d4ed8; transform: scale(1.05); }
+
+        /* MODO IMPRESIÓN REAL (Limpia todo) */
+        @media print {
+            body { background: white; padding: 0; }
+            .page { width: 100%; box-shadow: none; margin: 0; padding: 0; }
+            .print-btn { display: none; }
+            @page { margin: 1.5cm 2cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="javascript:window.print()" class="print-btn">
+        <i class="fas fa-file-pdf"></i> Guardar como PDF
+    </a>
+
+    <div class="page">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+                <div style="color: #666; font-size: 14px; margin-top: 5px;">{{ perfil.descripcionperfil }}</div>
+            </div>
+            {% if perfil.fotoperfil %}
+            <img src="{{ perfil.fotoperfil.url }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #2563eb;">
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 20px;"></div>
+
+        <h3 class="section-title">Información de Contacto</h3>
+        <div class="contact-info">
+            <div><strong>Email:</strong> {{ perfil.email_contacto }}</div>
+            <div><strong>Teléfono:</strong> {{ perfil.telefono }}</div>
+            <div><strong>Cédula:</strong> {{ perfil.numerocedula }}</div>
+            <div><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
+        </div>
+
+        {% if experiencias %}
+        <h3 class="section-title">Experiencia Laboral</h3>
+        {% for exp in experiencias %}
+        <div class="item">
+            <div class="item-head">
+                <span>{{ exp.cargodesempenado }}</span>
+                <span>
+                    {{ exp.fechainiciogestion|date:"M Y" }} - 
+                    {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"M Y" }}{% else %}Actualidad{% endif %}
+                </span>
+            </div>
+            <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
+            <div class="item-desc">{{ exp.descripcionfunciones }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if cursos %}
+        <h3 class="section-title">Formación y Cursos</h3>
+        {% for curso in cursos %}
+        <div class="item">
+            <div class="item-head">
+                <span>{{ curso.nombrecurso }}</span>
+                <span>{{ curso.fechafin|date:"Y" }}</span>
+            </div>
+            <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
+            <div class="item-desc">{{ curso.descripcioncurso }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if productos_lab %}
+        <h3 class="section-title">Proyectos y Productos</h3>
+        {% for prod in productos_lab %}
+        <div class="item">
+            <div class="item-head">
+                <span>{{ prod.nombreproducto }}</span>
+                <span>{{ prod.fechaproducto|date:"Y" }}</span>
+            </div>
+            <div class="item-desc">{{ prod.descripcion }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if reconocimientos %}
+        <h3 class="section-title">Reconocimientos</h3>
+        {% for reco in reconocimientos %}
+        <div class="item">
+            <div class="item-head">
+                <span>{{ reco.descripcionreconocimiento }}</span>
+                <span>{{ reco.fechareconocimiento|date:"Y" }}</span>
+            </div>
+            <div class="item-desc">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

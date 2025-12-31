@@ -1,23 +1,40 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2 class="header-title"><i class="fas fa-tools"></i> Garage</h2>
-
-{% for item in garage %}
-    {% if item.activarparaqueseveaenfront %}
-    <div class="card">
-        <h3>{{ item.nombreproducto }}</h3>
-        <p>{{ item.descripcion }}</p>
-        <strong>Estado:</strong> {{ item.estadoproducto }} <br>
-        <strong>Precio:</strong> ${{ item.valordelbien }}
-
-        {% if item.documento_interes %}
-        <br>
-        <a href="{{ item.documento_interes.url }}" target="_blank">Ver documento</a>
-        {% endif %}
+    <h2 class="header-title"><i class="fas fa-store"></i> Venta de Garage</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px;">
+        {% for venta in perfil.ventagarage_set.all %}
+            {% if venta.activarparaqueseveaenfront %}
+            <div class="card" style="border-left: 5px solid #10b981; margin-bottom: 0; display: flex; flex-direction: column;">
+                
+                {% if venta.documento_interes %}
+                <div style="width: 100%; height: 200px; overflow: hidden; border-radius: 10px; margin-bottom: 15px; background: #f3f4f6;">
+                    <img src="{{ venta.documento_interes.url }}" alt="{{ venta.nombreproducto }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% endif %}
+                
+                <div style="flex-grow: 1;">
+                    <h3 style="margin-top: 0; font-size: 1.2rem;">{{ venta.nombreproducto }}</h3>
+                    <span style="background: #f3f4f6; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #555;">
+                        {{ venta.estadoproducto }}
+                    </span>
+                    <p style="margin: 10px 0; color: #64748b; font-size: 0.95rem;">{{ venta.descripcion }}</p>
+                </div>
+                
+                <div style="border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 1.4rem; font-weight: 700; color: #10b981;">
+                        ${{ venta.valordelbien }}
+                    </span>
+                    {% if venta.documento_interes %}
+                    <a href="{{ venta.documento_interes.url }}" target="_blank" style="color: #2563eb;">
+                        <i class="fas fa-expand"></i> Ver
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% empty %}
+            <div class="card"><p>No hay artículos disponibles.</p></div>
+        {% endfor %}
     </div>
-    {% endif %}
-{% empty %}
-<p>No hay productos en garage.</p>
-{% endfor %}
 {% endblock %}

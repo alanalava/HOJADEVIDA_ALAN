@@ -115,3 +115,43 @@ def garage(request):
         'perfil': perfil,
         'datos': datos
     })
+
+
+# --- NUEVA FUNCIÓN AGREGADA ---
+def cv_completo(request):
+    perfil = get_active_profile()
+    
+    context = {
+        'perfil': perfil,
+        'experiencias': ExperienciaLaboral.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        ).order_by('-fechainiciogestion'),
+        
+        'cursos': CursosRealizados.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        ).order_by('-fechafin'),
+        
+        'reconocimientos': Reconocimientos.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        ).order_by('-fechareconocimiento'),
+        
+        'productos_acad': ProductosAcademicos.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        ),
+        
+        'productos_lab': ProductosLaborales.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        ).order_by('-fechaproducto'),
+        
+        'garage': VentaGarage.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        )
+    }
+    
+    return render(request, 'cv_completo.html', context)

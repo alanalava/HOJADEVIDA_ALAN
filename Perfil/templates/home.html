@@ -1,38 +1,61 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h2 class="header-title"><i class="fas fa-user-circle"></i> Perfil Profesional</h2>
 
-{% if perfil %}
-<div class="card">
+    <div class="card" style="margin-bottom: 30px;">
+        <h3 style="margin-top: 0; color: #1f2937; margin-bottom: 15px;">Sobre mí</h3>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #4b5563;">
+            {{ perfil.descripcionperfil|default:"Sin descripción disponible." }}
+        </p>
+    </div>
 
-    {% if perfil.fotoperfil %}
-        <img src="{{ perfil.fotoperfil.url }}" style="max-width:150px;border-radius:50%;">
-    {% endif %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
 
-    <h2>{{ perfil.nombres }} {{ perfil.apellidos }}</h2>
+        <div class="card">
+            <h4 style="margin-top: 0; color: #2563eb; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 15px;">
+                <i class="fas fa-id-card"></i> Datos Personales
+            </h4>
+            
+            <p><strong>Cédula:</strong> {{ perfil.numerocedula }}</p>
+            <p><strong>Nacionalidad:</strong> {{ perfil.nacionalidad }}</p>
+            <p><strong>Estado Civil:</strong> {{ perfil.estadocivil }}</p>
+            <p><strong>Sexo:</strong> {{ perfil.get_sexo_display }}</p>
+            <p><strong>Fecha Nacimiento:</strong> {{ perfil.fechanacimiento|date:"d M, Y" }}</p>
+        </div>
 
-    {% if perfil.descripcionperfil %}
-        <p>{{ perfil.descripcionperfil }}</p>
-    {% endif %}
+        <div class="card">
+            <h4 style="margin-top: 0; color: #2563eb; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 15px;">
+                <i class="fas fa-address-book"></i> Contacto
+            </h4>
 
-    {% if perfil.email_contacto %}
-        <p>Email: {{ perfil.email_contacto }}</p>
-    {% endif %}
+            {% if perfil.telefonoconvencional %}
+            <p><strong>Tel. Móvil:</strong> {{ perfil.telefonoconvencional }}</p>
+            {% endif %}
+            
+            {% if perfil.telefonofijo %}
+            <p><strong>Tel. Fijo:</strong> {{ perfil.telefonofijo }}</p>
+            {% endif %}
 
-    {% if perfil.sitioweb %}
-        <a href="{{ perfil.sitioweb }}" target="_blank">Sitio Web</a>
-    {% endif %}
+            {% if perfil.email_contacto %}
+            <p><strong>Email:</strong> <a href="mailto:{{ perfil.email_contacto }}">{{ perfil.email_contacto }}</a></p>
+            {% endif %}
 
-    {% if perfil.archivocv %}
-        <br>
-        <a href="{{ perfil.archivocv.url }}" target="_blank">Descargar CV</a>
-    {% endif %}
+            {% if perfil.sitioweb %}
+            <p><strong>Web:</strong> <a href="{{ perfil.sitioweb }}" target="_blank">Visitar sitio</a></p>
+            {% endif %}
+        </div>
 
-</div>
-{% else %}
-<div class="card">
-    <p>No hay perfil activo configurado.</p>
-</div>
-{% endif %}
+        <div class="card">
+            <h4 style="margin-top: 0; color: #2563eb; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 15px;">
+                <i class="fas fa-map-marker-alt"></i> Ubicación
+            </h4>
+            <p><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</p>
+            <p><strong>Lugar Nacimiento:</strong> {{ perfil.lugarnacimiento }}</p>
+            {% if perfil.direcciontrabajo %}
+            <p><strong>Trabajo:</strong> {{ perfil.direcciontrabajo }}</p>
+            {% endif %}
+        </div>
 
+    </div>
 {% endblock %}
