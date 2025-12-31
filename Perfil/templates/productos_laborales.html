@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="header-title"><i class="fas fa-code"></i> Productos Laborales</h2>
+
+{% for prod in productos_laborales %}
+    {% if prod.activarparaqueseveaenfront %}
+    <div class="card">
+        <h3>{{ prod.nombreproducto }}</h3>
+        <small>{{ prod.fechaproducto }}</small>
+        <p>{{ prod.descripcion }}</p>
+    </div>
+    {% endif %}
+{% empty %}
+<p>No hay productos laborales.</p>
+{% endfor %}
+{% endblock %}

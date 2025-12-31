@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="header-title"><i class="fas fa-graduation-cap"></i> Educación y Cursos</h2>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:25px;">
+
+{% for curso in cursos %}
+    {% if curso.activarparaqueseveaenfront %}
+    <div class="card" style="display:flex;flex-direction:column;">
+        <h3 style="margin:0 0 10px 0;">{{ curso.nombrecurso }}</h3>
+
+        <div style="color:#6b7280;margin-bottom:15px;">
+            {{ curso.entidadpatrocinadora }} <br>
+            Finalizado: {{ curso.fechafin|date:"F Y" }}
+        </div>
+
+        <p style="flex-grow:1;">{{ curso.descripcioncurso }}</p>
+
+        <span>⏱ {{ curso.totalhoras }} horas</span>
+
+        {% if curso.rutacertificado %}
+        <hr>
+        <a href="{{ curso.rutacertificado.url }}" target="_blank">
+            Ver Certificado
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% empty %}
+<p>No hay cursos registrados.</p>
+{% endfor %}
+
+</div>
+{% endblock %}

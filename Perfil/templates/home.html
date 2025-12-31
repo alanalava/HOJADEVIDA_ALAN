@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if perfil %}
+<div class="card">
+
+    {% if perfil.fotoperfil %}
+        <img src="{{ perfil.fotoperfil.url }}" style="max-width:150px;border-radius:50%;">
+    {% endif %}
+
+    <h2>{{ perfil.nombres }} {{ perfil.apellidos }}</h2>
+
+    {% if perfil.descripcionperfil %}
+        <p>{{ perfil.descripcionperfil }}</p>
+    {% endif %}
+
+    {% if perfil.email_contacto %}
+        <p>Email: {{ perfil.email_contacto }}</p>
+    {% endif %}
+
+    {% if perfil.sitioweb %}
+        <a href="{{ perfil.sitioweb }}" target="_blank">Sitio Web</a>
+    {% endif %}
+
+    {% if perfil.archivocv %}
+        <br>
+        <a href="{{ perfil.archivocv.url }}" target="_blank">Descargar CV</a>
+    {% endif %}
+
+</div>
+{% else %}
+<div class="card">
+    <p>No hay perfil activo configurado.</p>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="header-title"><i class="fas fa-award"></i> Reconocimientos</h2>
+
+{% for reco in reconocimientos %}
+    {% if reco.activarparaqueseveaenfront %}
+    <div class="card">
+        <h3>{{ reco.tiporeconocimiento }} ({{ reco.fechareconocimiento|date:"Y" }})</h3>
+        <p>{{ reco.descripcionreconocimiento }}</p>
+        <small>{{ reco.entidadpatrocinadora }}</small>
+
+        {% if reco.rutacertificado %}
+        <br>
+        <a href="{{ reco.rutacertificado.url }}" target="_blank">Ver Certificado</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% empty %}
+<p>No hay reconocimientos.</p>
+{% endfor %}
+{% endblock %}

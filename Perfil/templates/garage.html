@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="header-title"><i class="fas fa-tools"></i> Garage</h2>
+
+{% for item in garage %}
+    {% if item.activarparaqueseveaenfront %}
+    <div class="card">
+        <h3>{{ item.nombreproducto }}</h3>
+        <p>{{ item.descripcion }}</p>
+        <strong>Estado:</strong> {{ item.estadoproducto }} <br>
+        <strong>Precio:</strong> ${{ item.valordelbien }}
+
+        {% if item.documento_interes %}
+        <br>
+        <a href="{{ item.documento_interes.url }}" target="_blank">Ver documento</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% empty %}
+<p>No hay productos en garage.</p>
+{% endfor %}
+{% endblock %}

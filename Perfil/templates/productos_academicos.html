@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="header-title"><i class="fas fa-book"></i> Productos Académicos</h2>
+
+{% for prod in productos_academicos %}
+    {% if prod.activarparaqueseveaenfront %}
+    <div class="card">
+        <h3>{{ prod.nombrerecurso }}</h3>
+        <strong>{{ prod.clasificador }}</strong>
+        <p>{{ prod.descripcion }}</p>
+    </div>
+    {% endif %}
+{% empty %}
+<p>No hay productos académicos.</p>
+{% endfor %}
+{% endblock %}

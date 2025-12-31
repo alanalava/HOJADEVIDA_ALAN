@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="header-title"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
+
+{% for exp in experiencias %}
+    {% if exp.activarparaqueseveaenfront %}
+    <div class="card">
+        <h3>{{ exp.cargodesempenado }}</h3>
+        <span>{{ exp.nombrempresa }} | {{ exp.fechainiciogestion }}</span>
+        <p>{{ exp.descripcionfunciones }}</p>
+
+        {% if exp.rutacertificado %}
+        <a href="{{ exp.rutacertificado.url }}" target="_blank">Ver respaldo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% empty %}
+<p>No hay experiencia registrada.</p>
+{% endfor %}
+{% endblock %}

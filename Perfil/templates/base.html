@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV | {{ perfil.nombres }}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: rgba(37, 99, 235, 0.1);
+            --sidebar-bg: #0f172a;
+            --bg-main: #f8fafc;
+            --text-main: #334155;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-main);
+            display: flex;
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        aside {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .identity-box {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .user-role {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        nav a.active,
+        nav a:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 3rem 4rem;
+        }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="identity-box">
+        <div class="avatar-container">
+            {% if perfil.fotoperfil %}
+                <img src="{{ perfil.fotoperfil.url }}" alt="Foto perfil" class="avatar-img">
+            {% else %}
+                <div class="avatar">
+                    {{ perfil.nombres|slice:":1"|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="user-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
+        <div class="user-role">{{ perfil.descripcionperfil|default:perfil.nacionalidad }}</div>
+    </div>
+
+    <nav>
+        <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">
+            <i class="fas fa-user"></i> Perfil
+        </a>
+
+        <a href="{% url 'experiencia' %}" class="{% if '/experiencia/' in request.path %}active{% endif %}">
+            <i class="fas fa-briefcase"></i> Experiencia
+        </a>
+
+        <a href="{% url 'cursos' %}" class="{% if '/cursos/' in request.path %}active{% endif %}">
+            <i class="fas fa-graduation-cap"></i> Cursos
+        </a>
+
+        <a href="{% url 'reconocimientos' %}" class="{% if '/reconocimientos/' in request.path %}active{% endif %}">
+            <i class="fas fa-award"></i> Reconocimientos
+        </a>
+
+        <a href="{% url 'productos_academicos' %}" class="{% if '/productos_academicos/' in request.path %}active{% endif %}">
+            <i class="fas fa-book"></i> Académicos
+        </a>
+
+        <a href="{% url 'productos_laborales' %}" class="{% if '/productos_laborales/' in request.path %}active{% endif %}">
+            <i class="fas fa-code"></i> Laborales
+        </a>
+
+        <a href="{% url 'garage' %}" class="{% if '/garage/' in request.path %}active{% endif %}">
+            <i class="fas fa-tools"></i> Garage
+        </a>
+
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="/admin/" target="_blank">
+                <i class="fas fa-user-shield"></i> Admin
+            </a>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+        {% endif %}
+    </nav>
+</aside>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+</body>
+</html>
