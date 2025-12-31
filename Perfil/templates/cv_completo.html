@@ -106,7 +106,9 @@
         <h3 class="section-title">Información de Contacto</h3>
         <div class="contact-info">
             <div><strong>Email:</strong> {{ perfil.email_contacto }}</div>
-            <div><strong>Teléfono:</strong> {{ perfil.telefono }}</div>
+            
+            <div><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
+            
             <div><strong>Cédula:</strong> {{ perfil.numerocedula }}</div>
             <div><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
         </div>
