@@ -23,6 +23,6 @@ User.objects.create_superuser('Jandry', 'Jandry@gmail.com', 'NCQM200406')" \
 # IMPORTANTE: Cambia 'Invitado', el correo y el password antes de ejecutar
 echo "from django.contrib.auth import get_user_model; \
 User = get_user_model(); \
-User.objects.filter(username='Invitado').exists() or \
-User.objects.create_superuser('Invitado', 'invitado@gmail.com', 'Invitado123')" \
+User.objects.filter(username='Alan').exists() or \
+User.objects.create_superuser('Alan', 'alan@gmail.com', 'Alan123')" \
 | python manage.py shell
