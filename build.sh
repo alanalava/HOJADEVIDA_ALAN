@@ -12,17 +12,20 @@ python manage.py migrate
 # DatosPersonales.objects.all().delete();" \
 # | python manage.py shell
 
-# 1. Crear usuario principal (Jandry)
+# 1. Usuario Jandry (Crea solo si no existe)
 echo "from django.contrib.auth import get_user_model; \
 User = get_user_model(); \
 User.objects.filter(username='Jandry').exists() or \
 User.objects.create_superuser('Jandry', 'Jandry@gmail.com', 'NCQM200406')" \
 | python manage.py shell
 
-# 2. Crear SEGUNDO usuario
-# IMPORTANTE: Cambia 'Invitado', el correo y el password antes de ejecutar
+# 2. Usuario Alan (Crea o ACTUALIZA la contraseña siempre)
+# Esto garantiza que puedas entrar con 'Alan2025' aunque el usuario ya existiera
 echo "from django.contrib.auth import get_user_model; \
 User = get_user_model(); \
-User.objects.filter(username='Alan').exists() or \
-User.objects.create_superuser('Alan', 'alan@gmail.com', 'Alan123')" \
+user, created = User.objects.get_or_create(username='Alan', defaults={'email': 'alan@gmail.com'}); \
+user.set_password('Alan2025'); \
+user.is_superuser = True; \
+user.is_staff = True; \
+user.save()" \
 | python manage.py shell
