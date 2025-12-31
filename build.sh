@@ -16,6 +16,6 @@ python manage.py migrate
 # Crear/Asegurar superusuario (Esto sí se deja siempre)
 echo "from django.contrib.auth import get_user_model; \
 User = get_user_model(); \
-User.objects.filter(username='Alan').exists() or \
-User.objects.create_superuser('Alan', 'Alan@gmail.com', '123456789')" \
+User.objects.filter(username='Jandry').exists() or \
+User.objects.create_superuser('Jandry', 'Jandry@gmail.com', 'NCQM200406')" \
 | python manage.py shell
