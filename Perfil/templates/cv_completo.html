@@ -8,19 +8,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        @page {
-            size: A4;
-            margin: 0;
-        }
+        @page { size: A4; margin: 0; }
         body {
             background: #ffffff;
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 40px;
             color: #333;
+            max-width: 21cm; /* Ancho A4 para vista web */
+            margin: 0 auto;  /* Centrado en web */
         }
 
-        /* Encabezado */
+        /* --- ENCABEZADO --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -29,102 +28,64 @@
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
-        .header-text h1 {
-            margin: 0;
-            color: #2563eb;
-            font-size: 28px;
-            text-transform: uppercase;
-        }
-        .header-text p {
-            margin: 5px 0 0 0;
-            color: #666;
-            font-size: 14px;
-        }
+        .header-text h1 { margin: 0; color: #2563eb; font-size: 28px; text-transform: uppercase; }
+        .header-text p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
 
-        /* Foto de Perfil */
         .profile-img {
-            width: 100px;
-            height: 100px;
+            width: 100px; height: 100px;
             border-radius: 50%;
             border: 3px solid #2563eb;
             object-fit: cover;
+            background: #eee; /* Fondo gris por si no carga */
         }
 
-        /* Secciones */
+        /* --- SECCIONES --- */
         h3.section-title {
-            color: #1f2937;
-            font-size: 16px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #e5e7eb;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            font-weight: 700;
+            color: #1f2937; font-size: 16px; text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb; margin-top: 25px; margin-bottom: 15px;
+            padding-bottom: 5px; font-weight: 700;
         }
 
-        .item {
-            margin-bottom: 20px;
-            page-break-inside: avoid; /* Evita que se corte a la mitad al imprimir */
-        }
+        .item { margin-bottom: 20px; page-break-inside: avoid; border-bottom: 1px dashed #eee; padding-bottom: 15px; }
+        .item:last-child { border-bottom: none; }
 
-        .item-head {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: 14px;
-            color: #111;
-        }
-        
-        .item-sub {
-            color: #2563eb;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
+        .item-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; color: #111; }
+        .item-sub { color: #2563eb; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+        .item-desc { font-size: 12px; color: #555; line-height: 1.5; text-align: justify; }
 
-        .item-desc {
-            font-size: 12px;
-            color: #555;
-            line-height: 1.5;
-            text-align: justify;
-        }
-
-        /* Imágenes de evidencia */
+        /* --- IMÁGENES DE EVIDENCIA --- */
+        .evidence-container { margin-top: 10px; }
         .evidence-img {
-            margin-top: 10px;
-            width: 120px; /* Tamaño fijo para que no rompa el PDF */
-            height: auto;
-            border: 1px solid #ccc;
-            padding: 3px;
-            border-radius: 5px;
+            max-width: 150px; /* Tamaño controlado */
+            max-height: 150px;
+            border: 1px solid #ccc; padding: 3px; border-radius: 5px;
             display: block;
+        }
+        .evidence-link {
+            display: inline-block; margin-top: 5px; font-size: 11px;
+            color: #2563eb; text-decoration: none; border: 1px solid #2563eb;
+            padding: 2px 8px; border-radius: 10px;
         }
 
         .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 12px;
-            margin-bottom: 20px;
-            color: #444;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            font-size: 12px; margin-bottom: 20px; color: #444;
         }
 
-        /* Botón solo visible en web, oculto al imprimir */
+        /* BOTÓN FLOTANTE */
         .print-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #2563eb;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2563eb; color: white; padding: 12px 25px;
+            border-radius: 50px; text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s;
+            z-index: 9999;
         }
+        .print-btn:hover { transform: scale(1.05); background: #1d4ed8; }
+
         @media print {
-            .print-btn { display: none; }
-            body { padding: 0 20px; }
+            .print-btn { display: none !important; }
+            body { padding: 0; max-width: 100%; }
         }
     </style>
 </head>
@@ -141,9 +102,11 @@
         </div>
         
         {% if perfil.fotoperfil %}
-        <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ perfil.fotoperfil.url }}" 
-             class="profile-img" alt="Foto Perfil"
-             onerror="this.style.display='none'"> 
+            <img src="{{ perfil.fotoperfil.url }}" class="profile-img" alt="Perfil">
+        {% else %}
+            <div class="profile-img" style="display:flex; align-items:center; justify-content:center; color:#2563eb; font-size:40px; font-weight:bold;">
+                {{ perfil.nombres|slice:":1" }}
+            </div>
         {% endif %}
     </div>
 
@@ -180,13 +143,19 @@
         <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
         
-        {% if curso.certificado %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ curso.certificado.url }}" 
-                 class="evidence-img">
-        {% elif curso.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ curso.imagen.url }}" 
-                 class="evidence-img">
-        {% endif %}
+        <div class="evidence-container">
+            {% with evidencia=curso.certificado|default:curso.imagen|default:curso.archivo|default:curso.documento %}
+                {% if evidencia %}
+                    {% if evidencia.url|lower|slice:"-3:" == "jpg" or evidencia.url|lower|slice:"-3:" == "png" or evidencia.url|lower|slice:"-4:" == "jpeg" %}
+                        <img src="{{ evidencia.url }}" class="evidence-img" alt="Certificado">
+                    {% else %}
+                        <a href="{{ evidencia.url }}" target="_blank" class="evidence-link">
+                            <i class="fas fa-paperclip"></i> Ver Documento Adjunto
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
     {% endfor %}
     {% endif %}
@@ -197,14 +166,23 @@
     <div class="item">
         <div class="item-head">
             <span>{{ item.nombrerecurso }}</span>
-            <span style="font-size:11px; color:#666;">{{ item.clasificador }}</span>
+            <span style="font-size:11px; background:#f3f4f6; padding:2px 6px; border-radius:4px;">{{ item.clasificador }}</span>
         </div>
         <div class="item-desc">{{ item.descripcion }}</div>
 
-        {% if item.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ item.imagen.url }}" 
-                 class="evidence-img">
-        {% endif %}
+        <div class="evidence-container">
+            {% with evidencia=item.imagen|default:item.archivo|default:item.documento|default:item.foto %}
+                {% if evidencia %}
+                    {% if evidencia.url|lower|slice:"-3:" == "jpg" or evidencia.url|lower|slice:"-3:" == "png" or evidencia.url|lower|slice:"-4:" == "jpeg" %}
+                        <img src="{{ evidencia.url }}" class="evidence-img" alt="Evidencia">
+                    {% else %}
+                        <a href="{{ evidencia.url }}" target="_blank" class="evidence-link">
+                            <i class="fas fa-paperclip"></i> Ver Archivo
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
     {% endfor %}
     {% endif %}
@@ -219,10 +197,35 @@
         </div>
         <div class="item-desc">{{ prod.descripcion }}</div>
 
-        {% if prod.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ prod.imagen.url }}" 
-                 class="evidence-img">
-        {% endif %}
+        <div class="evidence-container">
+            {% with evidencia=prod.imagen|default:prod.archivo|default:prod.documento|default:prod.foto %}
+                {% if evidencia %}
+                    <img src="{{ evidencia.url }}" class="evidence-img" onerror="this.style.display='none'">
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if garage %}
+    <h3 class="section-title">Venta de Garage</h3>
+    {% for item in garage %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ item.nombreproducto }}</span>
+            <span>${{ item.valordelbien }}</span>
+        </div>
+        <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
+        <div class="item-desc">{{ item.descripcion }}</div>
+        
+        <div class="evidence-container">
+            {% with evidencia=item.imagen|default:item.foto|default:item.archivo %}
+                {% if evidencia %}
+                     <img src="{{ evidencia.url }}" class="evidence-img" alt="Foto Producto" onerror="this.style.display='none'">
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
     {% endfor %}
     {% endif %}
@@ -237,29 +240,19 @@
         </div>
         <div class="item-sub">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
         
-        {% if reco.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ reco.imagen.url }}" 
-                 class="evidence-img">
-        {% endif %}
-    </div>
-    {% endfor %}
-    {% endif %}
-    
-    {% if garage %}
-    <h3 class="section-title">Venta de Garage</h3>
-    {% for item in garage %}
-    <div class="item">
-        <div class="item-head">
-            <span>{{ item.nombreproducto }}</span>
-            <span>${{ item.valordelbien }}</span>
+        <div class="evidence-container">
+            {% with evidencia=reco.imagen|default:reco.certificado|default:reco.documento|default:reco.archivo %}
+                {% if evidencia %}
+                    {% if evidencia.url|lower|slice:"-3:" == "jpg" or evidencia.url|lower|slice:"-3:" == "png" or evidencia.url|lower|slice:"-4:" == "jpeg" %}
+                        <img src="{{ evidencia.url }}" class="evidence-img" alt="Reconocimiento">
+                    {% else %}
+                        <a href="{{ evidencia.url }}" target="_blank" class="evidence-link">
+                            <i class="fas fa-paperclip"></i> Ver Documento
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
         </div>
-        <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
-        <div class="item-desc">{{ item.descripcion }}</div>
-        
-        {% if item.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ item.imagen.url }}" 
-                 class="evidence-img">
-        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
