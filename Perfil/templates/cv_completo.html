@@ -4,100 +4,139 @@
 <head>
     <meta charset="UTF-8">
     <title>CV Completo | {{ perfil.nombres }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        @page { size: A4; margin: 0; }
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
         body {
-            background: #ffffff;
-            font-family: 'Poppins', sans-serif;
+            font-family: Helvetica, Arial, sans-serif; /* xhtml2pdf prefiere fuentes estándar */
             margin: 0;
-            padding: 40px;
+            padding: 0;
             color: #333;
-            max-width: 21cm;
-            margin: 0 auto;
+            background: #fff;
         }
 
-        /* --- ENCABEZADO --- */
+        /* ENCABEZADO */
         .header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 3px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
-        .header-text h1 { margin: 0; color: #2563eb; font-size: 28px; text-transform: uppercase; }
-        .header-text p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
-
+        .header-content {
+            /* xhtml2pdf usa tablas para layouts complejos, pero float suele fallar */
+            position: relative;
+            height: 120px;
+        }
+        .header-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 70%;
+        }
+        .header-text h1 {
+            margin: 0;
+            color: #2563eb;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        .header-text p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .header-img {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+        }
         .profile-img {
-            width: 100px; height: 100px; border-radius: 50%;
-            border: 3px solid #2563eb; object-fit: cover; background: #eee;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%; /* Nota: xhtml2pdf a veces ignora border-radius */
+            border: 2px solid #2563eb;
         }
 
-        /* --- SECCIONES --- */
+        /* SECCIONES */
         h3.section-title {
-            color: #1f2937; font-size: 16px; text-transform: uppercase;
-            border-bottom: 1px solid #e5e7eb; margin-top: 25px; margin-bottom: 15px;
-            padding-bottom: 5px; font-weight: 700;
+            color: #1f2937;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ccc;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 3px;
         }
 
-        .item { margin-bottom: 20px; page-break-inside: avoid; border-bottom: 1px dashed #eee; padding-bottom: 15px; }
-        .item:last-child { border-bottom: none; }
+        /* ITEMS */
+        .item {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dotted #eee;
+        }
+        .item-head {
+            font-weight: bold;
+            font-size: 14px;
+            color: #000;
+            margin-bottom: 2px;
+        }
+        .item-date {
+            float: right;
+            color: #666;
+            font-weight: normal;
+            font-size: 12px;
+        }
+        .item-sub {
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .item-desc {
+            font-size: 12px;
+            color: #444;
+            line-height: 1.4;
+        }
 
-        .item-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; color: #111; }
-        .item-sub { color: #2563eb; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
-        .item-desc { font-size: 12px; color: #555; line-height: 1.5; text-align: justify; }
-
-        /* IMÁGENES */
+        /* CONTACTO */
+        .contact-info {
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        
+        /* IMÁGENES EVIDENCIA */
         .evidence-img {
-            margin-top: 10px; max-width: 150px; max-height: 150px;
-            border: 1px solid #ccc; padding: 3px; border-radius: 5px; display: block;
-        }
-
-        .contact-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-            font-size: 12px; margin-bottom: 20px; color: #444;
-        }
-
-        /* BOTÓN FLOTANTE */
-        .print-btn {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #2563eb; color: white; padding: 12px 25px;
-            border-radius: 50px; text-decoration: none; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-            z-index: 9999;
-        }
-        @media print {
-            .print-btn { display: none !important; }
-            body { padding: 0; max-width: 100%; }
+            margin-top: 8px;
+            width: 150px; /* Tamaño fijo */
+            height: 120px;
+            object-fit: contain;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
 
-    <a href="javascript:window.print()" class="print-btn">
-        <i class="fas fa-file-pdf"></i> Imprimir / Guardar PDF
-    </a>
-
     <div class="header">
-        <div class="header-text">
-            <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-            <p>{{ perfil.descripcionperfil }}</p>
-        </div>
-        
-        {% if perfil.fotoperfil %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ perfil.fotoperfil.url }}" class="profile-img">
-        {% else %}
-            <div class="profile-img" style="display:flex; align-items:center; justify-content:center; color:#2563eb; font-size:30px; font-weight:bold;">
-                {{ perfil.nombres|slice:":1" }}
+        <div class="header-content">
+            <div class="header-text">
+                <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+                <p>{{ perfil.descripcionperfil }}</p>
             </div>
-        {% endif %}
+            <div class="header-img">
+                {% if perfil.fotoperfil %}
+                    <img src="{{ perfil.fotoperfil.url }}" class="profile-img">
+                {% endif %}
+            </div>
+        </div>
     </div>
 
-    <h3 class="section-title">Información de Contacto</h3>
-    <div class="contact-grid">
-        <div><strong>Email:</strong> {{ perfil.email_contacto }}</div>
-        <div><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
-        <div><strong>Cédula:</strong> {{ perfil.numerocedula }}</div>
-        <div><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
+    <div class="contact-info">
+        <strong>Email:</strong> {{ perfil.email_contacto }} <br>
+        <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }} <br>
+        <strong>Cédula:</strong> {{ perfil.numerocedula }} <br>
+        <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
     </div>
 
     {% if experiencias %}
@@ -105,8 +144,11 @@
     {% for exp in experiencias %}
     <div class="item">
         <div class="item-head">
-            <span>{{ exp.cargodesempenado }}</span>
-            <span>{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</span>
+            {{ exp.cargodesempenado }}
+            <span class="item-date">
+                {{ exp.fechainiciogestion|date:"Y" }} - 
+                {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}
+            </span>
         </div>
         <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
@@ -119,14 +161,15 @@
     {% for curso in cursos %}
     <div class="item">
         <div class="item-head">
-            <span>{{ curso.nombrecurso }}</span>
-            <span>{{ curso.fechafin|date:"Y" }}</span>
+            {{ curso.nombrecurso }}
+            <span class="item-date">{{ curso.fechafin|date:"Y" }}</span>
         </div>
         <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
         
         {% if curso.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ curso.imagen.url }}" class="evidence-img">
+            <br>
+            <img src="{{ curso.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -137,13 +180,14 @@
     {% for item in productos_acad %}
     <div class="item">
         <div class="item-head">
-            <span>{{ item.nombrerecurso }}</span>
-            <span style="font-size:11px; background:#f3f4f6; padding:2px 6px; border-radius:4px;">{{ item.clasificador }}</span>
+            {{ item.nombrerecurso }}
+            <span class="item-date" style="background:#eee; padding:2px;">{{ item.clasificador }}</span>
         </div>
         <div class="item-desc">{{ item.descripcion }}</div>
 
         {% if item.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ item.imagen.url }}" class="evidence-img">
+            <br>
+            <img src="{{ item.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -154,13 +198,14 @@
     {% for prod in productos_lab %}
     <div class="item">
         <div class="item-head">
-            <span>{{ prod.nombreproducto }}</span>
-            <span>{{ prod.fechaproducto|date:"Y" }}</span>
+            {{ prod.nombreproducto }}
+            <span class="item-date">{{ prod.fechaproducto|date:"Y" }}</span>
         </div>
         <div class="item-desc">{{ prod.descripcion }}</div>
         
         {% if prod.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ prod.imagen.url }}" class="evidence-img">
+            <br>
+            <img src="{{ prod.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -171,14 +216,15 @@
     {% for item in garage %}
     <div class="item">
         <div class="item-head">
-            <span>{{ item.nombreproducto }}</span>
-            <span>${{ item.valordelbien }}</span>
+            {{ item.nombreproducto }}
+            <span class="item-date">${{ item.valordelbien }}</span>
         </div>
         <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
         
         {% if item.imagen %}
-             <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ item.imagen.url }}" class="evidence-img">
+            <br>
+            <img src="{{ item.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -189,13 +235,14 @@
     {% for reco in reconocimientos %}
     <div class="item">
         <div class="item-head">
-            <span>{{ reco.descripcionreconocimiento }}</span>
-            <span>{{ reco.fechareconocimiento|date:"Y" }}</span>
+            {{ reco.descripcionreconocimiento }}
+            <span class="item-date">{{ reco.fechareconocimiento|date:"Y" }}</span>
         </div>
         <div class="item-sub">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
         
         {% if reco.imagen %}
-            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ reco.imagen.url }}" class="evidence-img">
+            <br>
+            <img src="{{ reco.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
