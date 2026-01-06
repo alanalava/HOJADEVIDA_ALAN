@@ -8,209 +8,261 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
         body {
-            background: #525659;
+            background: #ffffff;
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 40px;
+            color: #333;
+        }
+
+        /* Encabezado */
+        .header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
-
-        .page {
-            background: white;
-            width: 21cm;
-            min-height: 29.7cm;
-            padding: 1.5cm 2cm;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        h1 { margin: 0; color: #2563eb; font-size: 24px; text-transform: uppercase; }
-        h2 { margin: 5px 0 20px 0; color: #1f2937; font-size: 16px; font-weight: 400; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
-        
-        h3.section-title {
+        .header-text h1 {
+            margin: 0;
             color: #2563eb;
-            font-size: 15px;
+            font-size: 28px;
             text-transform: uppercase;
-            border-bottom: 1px solid #eee;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            padding-bottom: 3px;
+        }
+        .header-text p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
         }
 
-        .item { margin-bottom: 15px; page-break-inside: avoid; }
-        .item-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; color: #333; }
-        .item-sub { color: #2563eb; font-size: 12px; font-weight: 600; margin-bottom: 2px; }
-        .item-desc { font-size: 12px; color: #555; line-height: 1.4; text-align: justify; }
+        /* Foto de Perfil */
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #2563eb;
+            object-fit: cover;
+        }
 
-        /* Estilo para las imágenes dentro del PDF */
+        /* Secciones */
+        h3.section-title {
+            color: #1f2937;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .item {
+            margin-bottom: 20px;
+            page-break-inside: avoid; /* Evita que se corte a la mitad al imprimir */
+        }
+
+        .item-head {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 14px;
+            color: #111;
+        }
+        
+        .item-sub {
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-desc {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.5;
+            text-align: justify;
+        }
+
+        /* Imágenes de evidencia */
         .evidence-img {
-            margin-top: 8px;
-            max-width: 150px;
-            max-height: 120px;
-            border: 1px solid #e5e7eb;
+            margin-top: 10px;
+            width: 120px; /* Tamaño fijo para que no rompa el PDF */
+            height: auto;
+            border: 1px solid #ccc;
             padding: 3px;
-            border-radius: 4px;
+            border-radius: 5px;
             display: block;
         }
 
-        .contact-info {
-            display: grid; grid-template-columns: 1fr 1fr; font-size: 12px; gap: 5px; color: #444; margin-bottom: 20px;
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            color: #444;
         }
 
+        /* Botón solo visible en web, oculto al imprimir */
         .print-btn {
-            position: fixed; bottom: 30px; right: 30px; background: #2563eb; color: white;
-            padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 999;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .print-btn:hover { background: #1d4ed8; transform: scale(1.05); }
-
         @media print {
-            body { background: white; padding: 0; }
-            .page { width: 100%; box-shadow: none; margin: 0; padding: 0; }
             .print-btn { display: none; }
-            @page { margin: 1.5cm 2cm; }
+            body { padding: 0 20px; }
         }
     </style>
 </head>
 <body>
 
     <a href="javascript:window.print()" class="print-btn">
-        <i class="fas fa-file-pdf"></i> Guardar como PDF
+        <i class="fas fa-file-pdf"></i> Imprimir / Guardar PDF
     </a>
 
-    <div class="page">
+    <div class="header">
+        <div class="header-text">
+            <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+            <p>{{ perfil.descripcionperfil }}</p>
+        </div>
         
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div style="flex: 1;">
-                <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-                <div style="color: #666; font-size: 14px; margin-top: 5px;">{{ perfil.descripcionperfil }}</div>
-            </div>
-            {% if perfil.fotoperfil %}
-            <img src="{{ perfil.fotoperfil.url }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #2563eb;">
-            {% endif %}
-        </div>
-
-        <div style="margin-top: 20px;"></div>
-
-        <h3 class="section-title">Información de Contacto</h3>
-        <div class="contact-info">
-            <div><strong>Email:</strong> {{ perfil.email_contacto }}</div>
-            <div><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
-            <div><strong>Cédula:</strong> {{ perfil.numerocedula }}</div>
-            <div><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
-        </div>
-
-        {% if experiencias %}
-        <h3 class="section-title">Experiencia Laboral</h3>
-        {% for exp in experiencias %}
-        <div class="item">
-            <div class="item-head">
-                <span>{{ exp.cargodesempenado }}</span>
-                <span>
-                    {{ exp.fechainiciogestion|date:"M Y" }} - 
-                    {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"M Y" }}{% else %}Actualidad{% endif %}
-                </span>
-            </div>
-            <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
-            <div class="item-desc">{{ exp.descripcionfunciones }}</div>
-        </div>
-        {% endfor %}
+        {% if perfil.fotoperfil %}
+        <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ perfil.fotoperfil.url }}" 
+             class="profile-img" alt="Foto Perfil"
+             onerror="this.style.display='none'"> 
         {% endif %}
-
-        {% if cursos %}
-        <h3 class="section-title">Formación y Cursos</h3>
-        {% for curso in cursos %}
-        <div class="item">
-            <div class="item-head">
-                <span>{{ curso.nombrecurso }}</span>
-                <span>{{ curso.fechafin|date:"Y" }}</span>
-            </div>
-            <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
-            <div class="item-desc">{{ curso.descripcioncurso }}</div>
-            
-            {% if curso.certificado %}
-                <img src="{{ curso.certificado.url }}" class="evidence-img" alt="Certificado">
-            {% elif curso.imagen %}
-                <img src="{{ curso.imagen.url }}" class="evidence-img" alt="Imagen Curso">
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        {% if productos_acad %}
-        <h3 class="section-title">Productos Académicos</h3>
-        {% for item in productos_acad %}
-        <div class="item">
-            <div class="item-head">
-                <span>{{ item.nombrerecurso }}</span>
-                <span style="font-weight: normal; font-size: 11px; background: #eee; padding: 2px 6px; border-radius: 4px;">{{ item.clasificador }}</span>
-            </div>
-            <div class="item-desc">{{ item.descripcion }}</div>
-            
-            {% if item.imagen %}
-                <img src="{{ item.imagen.url }}" class="evidence-img" alt="Evidencia">
-            {% elif item.archivo and item.archivo.url|slice:"-4:" == ".jpg" or item.archivo.url|slice:"-4:" == ".png" %}
-                <img src="{{ item.archivo.url }}" class="evidence-img" alt="Evidencia">
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        {% if productos_lab %}
-        <h3 class="section-title">Proyectos Laborales</h3>
-        {% for prod in productos_lab %}
-        <div class="item">
-            <div class="item-head">
-                <span>{{ prod.nombreproducto }}</span>
-                <span>{{ prod.fechaproducto|date:"Y" }}</span>
-            </div>
-            <div class="item-desc">{{ prod.descripcion }}</div>
-            
-            {% if prod.imagen %}
-                <img src="{{ prod.imagen.url }}" class="evidence-img" alt="Evidencia Proyecto">
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        {% if garage %}
-        <h3 class="section-title">Venta de Garage</h3>
-        {% for item in garage %}
-        <div class="item">
-            <div class="item-head">
-                <span>{{ item.nombreproducto }}</span>
-                <span>${{ item.valordelbien }}</span>
-            </div>
-            <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
-            <div class="item-desc">{{ item.descripcion }}</div>
-            
-            {% if item.imagen %}
-                <img src="{{ item.imagen.url }}" class="evidence-img" alt="Foto Producto">
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        {% if reconocimientos %}
-        <h3 class="section-title">Reconocimientos</h3>
-        {% for reco in reconocimientos %}
-        <div class="item">
-            <div class="item-head">
-                <span>{{ reco.descripcionreconocimiento }}</span>
-                <span>{{ reco.fechareconocimiento|date:"Y" }}</span>
-            </div>
-            <div class="item-desc">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
-            
-            {% if reco.imagen %}
-                <img src="{{ reco.imagen.url }}" class="evidence-img" alt="Foto Reconocimiento">
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
     </div>
+
+    <h3 class="section-title">Información de Contacto</h3>
+    <div class="contact-grid">
+        <div><strong>Email:</strong> {{ perfil.email_contacto }}</div>
+        <div><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
+        <div><strong>Cédula:</strong> {{ perfil.numerocedula }}</div>
+        <div><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
+    </div>
+
+    {% if experiencias %}
+    <h3 class="section-title">Experiencia Laboral</h3>
+    {% for exp in experiencias %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ exp.cargodesempenado }}</span>
+            <span>{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</span>
+        </div>
+        <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
+        <div class="item-desc">{{ exp.descripcionfunciones }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if cursos %}
+    <h3 class="section-title">Educación y Cursos</h3>
+    {% for curso in cursos %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ curso.nombrecurso }}</span>
+            <span>{{ curso.fechafin|date:"Y" }}</span>
+        </div>
+        <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
+        <div class="item-desc">{{ curso.descripcioncurso }}</div>
+        
+        {% if curso.certificado %}
+            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ curso.certificado.url }}" 
+                 class="evidence-img">
+        {% elif curso.imagen %}
+            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ curso.imagen.url }}" 
+                 class="evidence-img">
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if productos_acad %}
+    <h3 class="section-title">Productos Académicos</h3>
+    {% for item in productos_acad %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ item.nombrerecurso }}</span>
+            <span style="font-size:11px; color:#666;">{{ item.clasificador }}</span>
+        </div>
+        <div class="item-desc">{{ item.descripcion }}</div>
+
+        {% if item.imagen %}
+            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ item.imagen.url }}" 
+                 class="evidence-img">
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if productos_lab %}
+    <h3 class="section-title">Proyectos Laborales</h3>
+    {% for prod in productos_lab %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ prod.nombreproducto }}</span>
+            <span>{{ prod.fechaproducto|date:"Y" }}</span>
+        </div>
+        <div class="item-desc">{{ prod.descripcion }}</div>
+
+        {% if prod.imagen %}
+            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ prod.imagen.url }}" 
+                 class="evidence-img">
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if reconocimientos %}
+    <h3 class="section-title">Logros y Reconocimientos</h3>
+    {% for reco in reconocimientos %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ reco.descripcionreconocimiento }}</span>
+            <span>{{ reco.fechareconocimiento|date:"Y" }}</span>
+        </div>
+        <div class="item-sub">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
+        
+        {% if reco.imagen %}
+            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ reco.imagen.url }}" 
+                 class="evidence-img">
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% if garage %}
+    <h3 class="section-title">Venta de Garage</h3>
+    {% for item in garage %}
+    <div class="item">
+        <div class="item-head">
+            <span>{{ item.nombreproducto }}</span>
+            <span>${{ item.valordelbien }}</span>
+        </div>
+        <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
+        <div class="item-desc">{{ item.descripcion }}</div>
+        
+        {% if item.imagen %}
+            <img src="{% if request.is_secure %}https{% else %}http{% endif %}://{{ request.get_host }}{{ item.imagen.url }}" 
+                 class="evidence-img">
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
 </body>
 </html>
