@@ -11,9 +11,8 @@
     <style>
         /* --- VARIABLES --- */
         :root {
-            /* Un poco más ancha que la versión compacta */
-            --sidebar-width-open: 260px;   
-            --sidebar-width-closed: 80px;  
+            --sidebar-width-open: 260px;
+            --sidebar-width-closed: 80px;
             --primary: #2563eb;     
             --sidebar-bg: #0f172a;   
             
@@ -41,123 +40,110 @@
             transition: background 0.3s ease;
         }
 
-        /* --- SIDEBAR ESTRUCTURA FLEXIBLE --- */
+        /* --- SIDEBAR FLEXIBLE (ESTRUCTURA ROBUSTA) --- */
         aside {
             position: fixed;
             top: 0; left: 0;
-            height: 100vh;
+            height: 100vh; /* Altura total de la ventana */
             width: var(--sidebar-width-closed);
             background: var(--sidebar-bg);
             color: white;
             z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transición más suave */
+            display: flex;       /* Flexbox activado */
+            flex-direction: column; /* Elementos uno debajo del otro */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
         aside:hover {
             width: var(--sidebar-width-open);
         }
 
-        /* 1. SECCIÓN SUPERIOR (PERFIL) - FIJA */
+        /* 1. SECCIÓN SUPERIOR (FIJA) */
         .sidebar-header {
-            padding: 20px 10px; /* Un poco más de espacio vertical */
-            flex-shrink: 0;
+            flex: 0 0 auto; /* No encoger ni estirar */
+            padding: 20px 10px 10px 10px;
             text-align: center;
-            /* border-bottom: 1px solid rgba(255,255,255,0.05); Eliminado borde para limpieza */
         }
 
-        /* 2. SECCIÓN MEDIA (MENÚ) - SCROLL ASEGURADO */
+        /* 2. SECCIÓN MEDIA (MENÚ SCROLLABLE) - AQUÍ ESTÁ LA MAGIA */
         .sidebar-menu {
-            flex-grow: 1;
-            overflow-y: auto; /* Scroll si hace falta */
-            padding: 10px 10px; /* Un poco más de padding lateral */
-            scrollbar-width: none;
+            flex: 1 1 auto;  /* Ocupa todo el espacio sobrante */
+            min-height: 0;   /* Crucial para que el scroll funcione dentro de flex */
+            overflow-y: auto; /* Scroll vertical si hace falta */
+            padding: 5px 10px;
+            
+            /* Ocultar barra de scroll visualmente pero mantener función */
+            scrollbar-width: none; 
         }
         .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* 3. SECCIÓN INFERIOR (FIJA ABAJO) */
+        /* 3. SECCIÓN INFERIOR (FIJA) */
         .sidebar-footer {
-            padding: 15px 10px; /* Un poco más de espacio */
-            flex-shrink: 0;
+            flex: 0 0 auto; /* No encoger ni estirar */
+            padding: 15px 10px;
+            background: var(--sidebar-bg); /* Fondo sólido para tapar el scroll del menú */
             border-top: 1px solid rgba(255,255,255,0.1);
-            background: var(--sidebar-bg);
         }
 
-        /* --- ESTILOS COMPONENTES (TAMAÑO MEDIO) --- */
+        /* --- ESTILOS DE ELEMENTOS (TAMAÑO EQUILIBRADO) --- */
         
-        /* Foto y Nombre */
+        /* Avatar */
         .avatar-container {
             width: 45px; height: 45px; margin: 0 auto 10px;
             border-radius: 50%; overflow: hidden; border: 2px solid white;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.3s;
         }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Foto más grande al abrir */
-        aside:hover .avatar-container { width: 90px; height: 90px; }
+        aside:hover .avatar-container { width: 85px; height: 85px; } /* Un poco más grande al abrir */
         
         .user-info { opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; }
         aside:hover .user-info { opacity: 1; max-height: 120px; margin-bottom: 15px; }
-        .user-name { font-weight: 700; font-size: 1.1rem; white-space: nowrap; margin-bottom: 5px; }
+        .user-name { font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
 
-        /* EFECTO TYPEWRITER (La animación de las letras) */
+        /* Typewriter (Letras que se borran) */
         .typewriter {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            display: block;
-            min-height: 1.2em; /* Reserva espacio para que no salte */
+            font-size: 0.8rem; color: #94a3b8; display: block; min-height: 1.5em; margin-top: 2px;
         }
-        /* El cursor parpadeante */
-        .typewriter::after {
-            content: '|';
-            animation: blink 1s step-end infinite;
-            color: var(--primary);
-        }
+        .typewriter::after { content: '|'; animation: blink 1s step-end infinite; color: var(--primary); }
         @keyframes blink { 50% { opacity: 0; } }
-
 
         /* Botón PDF */
         .btn-pdf {
             background: var(--primary); color: white; border-radius: 10px;
-            padding: 10px; /* Tamaño estándar */
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none; margin-bottom: 15px; transition: 0.2s;
-            font-weight: 500;
+            padding: 10px; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; margin-bottom: 10px; transition: 0.2s;
+            font-weight: 500; font-size: 0.9rem;
         }
-        .btn-pdf:hover { transform: translateY(-2px); background: #3b82f6; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .btn-pdf:hover { transform: translateY(-2px); background: #3b82f6; }
         .btn-text, .nav-text { display: none; margin-left: 12px; white-space: nowrap; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* Enlaces del Menú (Tamaño cómodo) */
+        /* Enlaces del Menú */
         nav a {
             display: flex; align-items: center; 
-            padding: 12px 10px; /* Más espacio para clic */
+            padding: 11px 10px; /* Padding cómodo */
             color: var(--text-muted); text-decoration: none;
-            border-radius: 10px; 
-            margin-bottom: 5px; /* Un poco más de aire entre botones */
-            transition: 0.2s;
+            border-radius: 10px; margin-bottom: 4px; transition: 0.2s;
             justify-content: center;
         }
         aside:hover nav a { justify-content: flex-start; padding-left: 15px; }
         
         nav a:hover, nav a.active { background: rgba(255,255,255,0.1); color: white; }
         nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-        .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; } /* Iconos tamaño normal */
+        .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
-        /* Botones Footer */
+        /* Footer Buttons */
         .footer-btn {
             background: transparent; border: none; color: #94a3b8;
             width: 100%; padding: 10px; border-radius: 10px; cursor: pointer;
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
-            font-size: 1rem; text-decoration: none;
+            font-size: 0.95rem; text-decoration: none;
         }
         .footer-btn:hover { background: rgba(255,255,255,0.1); color: white; }
         aside:hover .footer-btn { justify-content: flex-start; padding-left: 15px; }
 
-        /* --- CONTENIDO PRINCIPAL Y ANIMACIONES TARJETAS --- */
+        /* --- CONTENIDO PRINCIPAL --- */
         main { 
             margin-left: var(--sidebar-width-closed); 
             padding: 2.5rem; 
@@ -165,23 +151,23 @@
         }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* Animación Tarjetas al pasar mouse */
+        /* ANIMACIONES EN EL CONTENIDO (Home, Cards, etc.) */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: var(--shadow-card); margin-bottom: 20px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .card:hover {
-            transform: translateY(-7px);
+            transform: translateY(-5px); /* Se levanta al pasar el mouse */
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
         body.dark-mode .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
-        
-        /* Clase útil para animar fotos si quieres */
-        .zoom-on-hover { transition: transform 0.3s ease; }
-        .zoom-on-hover:hover { transform: scale(1.05); }
 
-        /* --- RESPONSIVE (MÓVIL) --- */
+        /* Clases para fotos */
+        .zoom-img { transition: transform 0.3s ease; }
+        .zoom-img:hover { transform: scale(1.05); }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             aside {
                 width: 100%; height: 60px; bottom: 0; top: auto; 
@@ -279,12 +265,12 @@
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
 
-        // --- 2. EFECTO TYPEWRITER (RESTAURADO) ---
-        // Usamos tu descripción del perfil y añadimos un par de roles genéricos
+        // --- 2. TYPEWRITER SCRIPT ---
         const roles = [
-            "{{ perfil.descripcionperfil|default:'Bienvenido'|escapejs }}",
+            "{{ perfil.descripcionperfil|default:'Hola'|escapejs }}",
             "Desarrollador Web",
-            "Entusiasta de la Tecnología"
+            "Seguridad Informática",
+            "Python Expert"
         ];
         let roleIndex = 0;
         let charIndex = 0;
@@ -293,32 +279,18 @@
 
         function type() {
             const currentRole = roles[roleIndex];
-            if (isDeleting) {
-                charIndex--;
-            } else {
-                charIndex++;
-            }
-            
-            // Escribir en el elemento
+            if (isDeleting) charIndex--; else charIndex++;
             typeElement.textContent = currentRole.substring(0, charIndex);
             
-            let typeSpeed = isDeleting ? 40 : 80; // Velocidad de borrado/escritura
-
+            let typeSpeed = isDeleting ? 40 : 80;
             if (!isDeleting && charIndex === currentRole.length) {
-                typeSpeed = 2500; // Pausa al terminar de escribir
-                isDeleting = true;
+                typeSpeed = 2000; isDeleting = true;
             } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                roleIndex = (roleIndex + 1) % roles.length; // Siguiente rol
-                typeSpeed = 500; // Pausa antes de empezar a escribir el nuevo
+                isDeleting = false; roleIndex = (roleIndex + 1) % roles.length; typeSpeed = 500;
             }
             setTimeout(type, typeSpeed);
         }
-        
-        // Iniciar el efecto cuando cargue la página
-        if (typeElement) {
-            document.addEventListener('DOMContentLoaded', type);
-        }
+        if (typeElement) document.addEventListener('DOMContentLoaded', type);
     </script>
 
 </body> 
