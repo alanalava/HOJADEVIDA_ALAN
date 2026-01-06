@@ -20,6 +20,29 @@
             --text-muted: #94a3b8;   
         }
 
+        /* --- KEYFRAMES (ANIMACIONES) --- */
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulseSoft {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        @keyframes floatAvatar {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
         body {
             font-family: 'Poppins', sans-serif; 
             background: var(--bg-main);
@@ -27,6 +50,7 @@
             margin: 0;
             min-height: 100vh;
             color: var(--text-main);
+            overflow-x: hidden; /* Evita scroll horizontal durante animaciones */
         }
         
         aside {
@@ -41,16 +65,31 @@
             box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
             z-index: 100;
             overflow-y: auto;
+            /* ANIMACIÓN DE ENTRADA SIDEBAR */
+            animation: slideInLeft 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         aside::-webkit-scrollbar { width: 5px; }
         aside::-webkit-scrollbar-track { background: transparent; }
         aside::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-        .identity-box { text-align: center; margin-bottom: 2rem; }
+        .identity-box { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            /* Animación suave al cargar */
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.2s; /* Espera un poco a que cargue el sidebar */
+            opacity: 0; /* Comienza invisible para el fadein */
+        }
 
         .avatar-container {
             position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Efecto al pasar el mouse sobre la foto */
+        .avatar-container:hover {
+            transform: scale(1.05);
         }
 
         .avatar, .avatar-img {
@@ -62,6 +101,7 @@
             font-size: 2.8rem; font-weight: 700; color: white;
             border: 3px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
         }
 
         .user-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
@@ -71,7 +111,10 @@
         .btn-pdf-container { 
             display: flex; 
             justify-content: center; 
-            margin-bottom: 1.5rem; 
+            margin-bottom: 1.5rem;
+            opacity: 0; 
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.3s;
         }
         
         .btn-pdf {
@@ -87,10 +130,21 @@
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
             display: inline-flex; align-items: center; gap: 8px;
             text-decoration: none;
+            /* Animación de latido suave */
+            animation: pulseSoft 2s infinite;
         }
-        .btn-pdf:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+        .btn-pdf:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); 
+        }
 
-        .nav-container { width: 100%; flex-grow: 1; }
+        .nav-container { 
+            width: 100%; 
+            flex-grow: 1; 
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.4s;
+        }
         
         nav a {
             display: flex; align-items: center; gap: 15px;
@@ -99,25 +153,47 @@
             text-decoration: none;
             border-radius: 12px;
             margin-bottom: 8px;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
         }
 
+        /* Efecto Hover avanzado en Links */
         nav a:hover, nav a.active {
             background: rgba(255, 255, 255, 0.1);
             color: white;
-            transform: translateX(5px);
+            transform: translateX(8px);
+            padding-left: 25px; /* Desplazamiento interno */
         }
         
-        nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        nav a.active { 
+            background: var(--primary); 
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); 
+            transform: translateX(0); /* El activo se queda quieto pero resaltado */
+            padding-left: 20px;
+        }
 
-        main { margin-left: var(--sidebar-width); flex: 1; padding: 3rem 4rem; }
+        main { 
+            margin-left: var(--sidebar-width); 
+            flex: 1; 
+            padding: 3rem 4rem; 
+            /* ANIMACIÓN DE ENTRADA CONTENIDO */
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
         
         .card {
             background: white; padding: 2.5rem; border-radius: 20px;
             box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); 
             margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.04);
             break-inside: avoid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Efecto Hover en Tarjetas */
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
         }
 
         .header-title {
@@ -131,18 +207,26 @@
         @media (max-width: 992px) { :root { --sidebar-width: 240px; } main { padding: 2rem; } }
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            aside { width: 100%; height: auto; position: relative; padding: 1.5rem; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; }
-            .identity-box { margin: 0; display: flex; align-items: center; gap: 15px; text-align: left; }
+            aside { 
+                width: 100%; height: auto; position: relative; padding: 1.5rem; 
+                flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; 
+                animation: fadeInUp 0.6s ease-out; /* Animación diferente en móvil */
+            }
+            .identity-box { margin: 0; display: flex; align-items: center; gap: 15px; text-align: left; animation: none; opacity: 1; }
             .avatar-container { width: 60px; height: 60px; margin: 0; }
-            .nav-container { width: 100%; margin-top: 1.5rem; display: flex; overflow-x: auto; gap: 10px; }
-            main { margin: 0; padding: 1.5rem; }
+            .nav-container { 
+                width: 100%; margin-top: 1.5rem; display: flex; overflow-x: auto; gap: 10px; 
+                animation: none; opacity: 1;
+            }
+            .btn-pdf-container { display: none; } /* Ocultar botón PDF en móvil si ocupa mucho espacio */
+            main { margin: 0; padding: 1.5rem; animation: fadeInUp 0.8s ease-out 0.2s backwards; }
         }
 
         /* --- ESTILOS DE IMPRESIÓN (PDF) --- */
         @media print {
             @page { size: A4; margin: 0cm; }
             
-            body { display: block; background: white; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { display: block; background: white; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; animation: none !important; }
             
             aside { 
                 position: relative !important; width: 100% !important; height: auto !important; 
@@ -150,11 +234,11 @@
                 padding: 15px 30px !important; 
                 display: flex !important; flex-direction: row !important; align-items: center !important; 
                 margin-bottom: 20px; box-shadow: none !important; 
+                animation: none !important;
             }
             
-            .identity-box { display: flex !important; align-items: center !important; gap: 20px !important; text-align: left !important; margin: 0 !important; }
+            .identity-box { display: flex !important; align-items: center !important; gap: 20px !important; text-align: left !important; margin: 0 !important; animation: none !important; opacity: 1 !important;}
             
-            /* CORRECCIÓN: Se eliminó el borde blanco que causaba el recuadro */
             .avatar-container { width: 70px !important; height: 70px !important; margin: 0 !important; }
             
             .user-name { font-size: 22px !important; color: white !important; margin: 0 !important; }
@@ -165,6 +249,7 @@
                 margin: 0 !important; 
                 padding: 0 20px !important; 
                 width: 100% !important; 
+                animation: none !important;
             }
             
             .card { 
@@ -173,6 +258,7 @@
                 padding: 15px !important; 
                 margin-bottom: 15px !important; 
                 break-inside: avoid; page-break-inside: avoid; 
+                transform: none !important; /* Quitar efectos hover en PDF */
             }
             
             h2, h3 { color: #000 !important; margin-top: 0 !important; }
