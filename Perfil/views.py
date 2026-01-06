@@ -4,7 +4,7 @@ from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from xhtml2pdf import pisa
-from pypdf import PdfWriter, PdfReader
+from pypdf import PdfWriter
 import os
 import io
 import urllib.request # Para descargar los PDFs de la nube
@@ -132,8 +132,10 @@ def cv_completo(request):
         if not campo_archivo: return
         try:
             url = campo_archivo.url
-            # Solo procesamos si termina en .pdf
-            if url.lower().endswith('.pdf'):
+            # --- CORRECCIÓN AQUÍ ---
+            # Verificamos si ".pdf" existe en cualquier parte de la URL (ignorando mayúsculas)
+            # Esto permite URLs de Cloudinary tipo "archivo.pdf?v=123"
+            if '.pdf' in url.lower():
                 # Descargamos el archivo a memoria
                 remote_file = urllib.request.urlopen(url)
                 memory_file = io.BytesIO(remote_file.read())

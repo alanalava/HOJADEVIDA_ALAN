@@ -3,72 +3,59 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>CV Completo | {{ perfil.nombres }}</title>
+    <title>CV Completo</title>
     <style>
         @page { size: A4; margin: 1.5cm; }
         body { font-family: Helvetica, Arial, sans-serif; color: #000; line-height: 1.3; font-size: 12px; }
-        
         .header { border-bottom: 4px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
         .header h1 { color: #2563eb; margin: 0; text-transform: uppercase; font-size: 24px; font-weight: bold; }
-        .header p.role { font-size: 14px; font-weight: bold; margin: 5px 0 10px; }
-        .profile-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #000; object-fit: cover; }
-        
-        .contact-info { font-size: 11px; margin-top: 8px; }
-        .contact-row { margin-bottom: 3px; display: block; }
-        
-        h3 { color: #000; background: #f0f0f0; padding: 4px 8px; border-left: 5px solid #2563eb; margin: 20px 0 10px; text-transform: uppercase; font-size: 14px; font-weight: bold; }
-        
         .item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; page-break-inside: avoid; }
-        .item:last-child { border-bottom: none; }
-        
         .item-table { width: 100%; margin-bottom: 2px; }
-        .td-left { text-align: left; font-weight: bold; font-size: 13px; vertical-align: top; }
-        .td-right { text-align: right; font-weight: bold; font-size: 12px; vertical-align: top; width: 25%; }
+        .td-left { text-align: left; font-weight: bold; font-size: 13px; }
+        .td-right { text-align: right; font-weight: bold; font-size: 12px; width: 25%; }
         
-        .item-sub { font-size: 12px; font-style: italic; margin-bottom: 4px; display: block; }
-        .item-desc { font-size: 11px; text-align: justify; margin-bottom: 5px; }
-        
-        /* IMÁGENES DENTRO DEL TEXTO */
-        .evidence-container { text-align: center; margin-top: 5px; padding: 5px; border: 1px dashed #ccc; background: #fff; }
+        /* Estilos Imágenes */
+        .evidence-container { text-align: center; margin-top: 5px; padding: 5px; border: 1px dashed #ccc; }
         .evidence-img { display: block; margin: 0 auto; max-width: 60%; max-height: 200px; object-fit: contain; }
         
-        /* NOTA PARA PDFS ADJUNTOS */
+        /* Nota PDF */
         .pdf-note { font-size: 10px; color: #2563eb; font-style: italic; font-weight: bold; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
-
     <div class="header">
-        <table style="width: 100%;">
-            <tr>
-                <td style="width: 75%; padding-right: 15px;">
-                    <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-                    <p class="role">{{ perfil.descripcionperfil }}</p>
-                    <div class="contact-info">
-                        <div class="contact-row"><strong>Email:</strong> {{ perfil.email_contacto }}</div>
-                        <div class="contact-row"><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
-                        <div class="contact-row"><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
-                        {% if perfil.sitioweb %}<div class="contact-row"><strong>Web:</strong> {{ perfil.sitioweb }}</div>{% endif %}
-                    </div>
-                </td>
-                <td style="width: 25%; text-align: right;">
-                    {% if perfil.fotoperfil %}<img src="{{ perfil.fotoperfil.url }}" class="profile-img">{% endif %}
-                </td>
-            </tr>
-        </table>
+        <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+        <p>{{ perfil.descripcionperfil }}</p>
+        <p>Email: {{ perfil.email_contacto }}</p>
     </div>
 
+    {% if reconocimientos %}
+    <h3 style="background:#f0f0f0; padding:5px; border-left:5px solid #2563eb;">Logros y Reconocimientos</h3>
+    {% for reco in reconocimientos %}
+    <div class="item">
+        <table class="item-table"><tr><td class="td-left">{{ reco.descripcionreconocimiento }}</td><td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td></tr></table>
+        <div>Entidad: {{ reco.entidadpatrocinadora }}</div>
+        
+        {% if reco.rutacertificado %}
+            {% if ".pdf" in reco.rutacertificado.url|lower %}
+                <span class="pdf-note">📄 Certificado (PDF) adjunto al final del documento</span>
+            {% else %}
+                <div class="evidence-container"><img src="{{ reco.rutacertificado.url }}" class="evidence-img"></div>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
     {% if experiencias %}
-    <h3>Experiencia Laboral</h3>
+    <h3 style="background:#f0f0f0; padding:5px; border-left:5px solid #2563eb;">Experiencia Laboral</h3>
     {% for exp in experiencias %}
     <div class="item">
-        <table class="item-table"><tr><td class="td-left">{{ exp.cargodesempenado }}</td><td class="td-right">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</td></tr></table>
-        <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
-        <div class="item-desc">{{ exp.descripcionfunciones }}</div>
-        
+        <table class="item-table"><tr><td class="td-left">{{ exp.cargodesempenado }}</td><td class="td-right">{{ exp.fechainiciogestion|date:"Y" }}</td></tr></table>
+        <div>{{ exp.nombrempresa }}</div>
         {% if exp.rutacertificado %}
-            {% if ".pdf" in exp.rutacertificado.url %}
-                <span class="pdf-note">📄 Certificado completo adjunto al final del documento</span>
+            {% if ".pdf" in exp.rutacertificado.url|lower %}
+                <span class="pdf-note">📄 Certificado (PDF) adjunto al final del documento</span>
             {% else %}
                 <div class="evidence-container"><img src="{{ exp.rutacertificado.url }}" class="evidence-img"></div>
             {% endif %}
@@ -77,77 +64,16 @@
     {% endfor %}
     {% endif %}
 
-    {% if cursos %}
-    <h3>Educación y Cursos</h3>
-    {% for curso in cursos %}
-    <div class="item">
-        <table class="item-table"><tr><td class="td-left">{{ curso.nombrecurso }}</td><td class="td-right">{{ curso.fechafin|date:"Y" }}</td></tr></table>
-        <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
-        <div class="item-desc">{{ curso.descripcioncurso }}</div>
-        
-        {% if curso.rutacertificado %}
-            {% if ".pdf" in curso.rutacertificado.url %}
-                <span class="pdf-note">📄 Certificado completo adjunto al final del documento</span>
-            {% else %}
-                <div class="evidence-container"><img src="{{ curso.rutacertificado.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    {% if productos_acad %}
-    <h3>Productos Académicos</h3>
-    {% for item in productos_acad %}
-    <div class="item">
-        <div class="item-head">{{ item.nombrerecurso }}</div>
-        <div class="item-sub">Tipo: {{ item.clasificador }}</div>
-        <div class="item-desc">{{ item.descripcion }}</div>
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    {% if productos_lab %}
-    <h3>Proyectos Laborales</h3>
-    {% for prod in productos_lab %}
-    <div class="item">
-        <table class="item-table"><tr><td class="td-left">{{ prod.nombreproducto }}</td><td class="td-right">{{ prod.fechaproducto|date:"Y" }}</td></tr></table>
-        <div class="item-desc">{{ prod.descripcion }}</div>
-    </div>
-    {% endfor %}
-    {% endif %}
-
     {% if garage %}
-    <h3>Venta de Garage</h3>
+    <h3 style="background:#f0f0f0; padding:5px; border-left:5px solid #2563eb;">Venta de Garage</h3>
     {% for item in garage %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ item.nombreproducto }}</td><td class="td-right">${{ item.valordelbien }}</td></tr></table>
-        <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
-        <div class="item-desc">{{ item.descripcion }}</div>
-        
         {% if item.documento_interes %}
-            {% if ".pdf" in item.documento_interes.url %}
-                <span class="pdf-note">📄 Documentación adjunta al final del documento</span>
+            {% if ".pdf" in item.documento_interes.url|lower %}
+                <span class="pdf-note">📄 Documento (PDF) adjunto al final</span>
             {% else %}
                 <div class="evidence-container"><img src="{{ item.documento_interes.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    {% if reconocimientos %}
-    <h3>Logros y Reconocimientos</h3>
-    {% for reco in reconocimientos %}
-    <div class="item">
-        <table class="item-table"><tr><td class="td-left">{{ reco.descripcionreconocimiento }}</td><td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td></tr></table>
-        <div class="item-sub">Entidad: {{ reco.entidadpatrocinadora }}</div>
-        
-        {% if reco.rutacertificado %}
-            {% if ".pdf" in reco.rutacertificado.url %}
-                <span class="pdf-note">📄 Certificado completo adjunto al final del documento</span>
-            {% else %}
-                <div class="evidence-container"><img src="{{ reco.rutacertificado.url }}" class="evidence-img"></div>
             {% endif %}
         {% endif %}
     </div>
