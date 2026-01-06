@@ -5,50 +5,135 @@
     <meta charset="UTF-8">
     <title>CV Completo | {{ perfil.nombres }}</title>
     <style>
-        @page { size: A4; margin: 1cm; }
-        body { font-family: Helvetica, Arial, sans-serif; color: #333; }
+        /* Configuración de página A4 con márgenes */
+        @page {
+            size: A4;
+            margin: 1.5cm; /* Un poco más de margen para que respire */
+            @bottom-center {
+                content: "Página " counter(page);
+                font-size: 10px;
+                color: #999;
+            }
+        }
         
-        /* CABECERA */
-        .header { border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 20px; }
-        .header h1 { color: #2563eb; margin: 0; text-transform: uppercase; font-size: 24px; }
-        .profile-img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #2563eb; }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+        }
         
-        /* SECCIONES */
-        h3 { color: #1f2937; border-bottom: 1px solid #ccc; margin-top: 20px; text-transform: uppercase; font-size: 16px; }
+        /* --- CABECERA --- */
+        .header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2563eb;
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 26px;
+            font-weight: bold;
+        }
+        .header p.role {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        .profile-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid #2563eb;
+            object-fit: cover;
+        }
+        .contact-info {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.6;
+        }
         
-        /* ITEMS */
-        .item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dotted #eee; page-break-inside: avoid; }
-        .item-head { font-weight: bold; font-size: 14px; }
-        .item-sub { color: #2563eb; font-size: 12px; font-weight: bold; }
-        .item-desc { font-size: 12px; margin-top: 5px; }
+        /* --- SECCIONES --- */
+        h3 {
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-size: 16px;
+            padding-bottom: 5px;
+        }
         
-        /* IMAGENES DE CERTIFICADOS (Ajustadas para que no rompan la hoja) */
-        .evidence-img { 
-            margin-top: 10px; 
-            width: 300px; /* Un poco más grande para que se lean */
-            height: auto; /* Altura automática para no deformar */
-            max-height: 400px; 
-            object-fit: contain; 
-            border: 1px solid #ddd; 
-            display: block; 
+        /* --- ITEMS (Cada experiencia/curso) --- */
+        .item {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dotted #ccc;
+            page-break-inside: avoid; /* Intenta no cortar un item a la mitad */
+        }
+        .item:last-child { border-bottom: none; }
+        
+        .item-head {
+            font-weight: bold;
+            font-size: 14px;
+            color: #000;
+            display: flex; justify-content: space-between; /* Intento de flex para fecha a la derecha */
+        }
+        .item-date {
+            font-weight: normal;
+            color: #666;
+            font-size: 12px;
+            float: right; /* Fallback para xhtml2pdf */
+        }
+        .item-sub {
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+        .item-desc {
+            font-size: 12px;
+            margin-top: 8px;
+            text-align: justify;
+        }
+        
+        /* --- IMAGENES DE CERTIFICADOS (MEJORADAS) --- */
+        .evidence-container {
+            text-align: center; /* Centra el contenedor */
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .evidence-img {
+            display: block; /* Comportamiento de bloque */
+            margin: 0 auto; /* Centrado horizontal */
+            width: 90%;     /* Ocupa el 90% del ancho disponible, mucho más grande */
+            height: auto;   /* Mantiene proporciones */
+            max-height: 800px; /* Permite que sea alto, casi una página entera */
+            object-fit: contain;
+            border: 1px solid #ddd; /* Marco gris suave */
+            padding: 5px;   /* Espacio blanco entre la imagen y el marco */
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave (si el generador la soporta) */
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <table style="width: 100%;">
+        <table style="width: 100%; border-collapse: collapse;">
             <tr>
-                <td style="width: 70%; vertical-align: top;">
+                <td style="width: 75%; vertical-align: top; padding-right: 20px;">
                     <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-                    <p>{{ perfil.descripcionperfil }}</p>
-                    <div style="font-size: 12px; margin-top: 10px;">
-                        <strong>Email:</strong> {{ perfil.email_contacto }}<br>
+                    <p class="role">{{ perfil.descripcionperfil }}</p>
+                    <div class="contact-info">
+                        <strong>Email:</strong> {{ perfil.email_contacto }} &nbsp;|&nbsp;
                         <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}<br>
                         <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
+                        {% if perfil.sitioweb %} | <strong>Web:</strong> {{ perfil.sitioweb }}{% endif %}
                     </div>
                 </td>
-                <td style="width: 30%; text-align: right; vertical-align: top;">
+                <td style="width: 25%; text-align: right; vertical-align: top;">
                     {% if perfil.fotoperfil %}
                         <img src="{{ perfil.fotoperfil.url }}" class="profile-img">
                     {% endif %}
@@ -61,12 +146,17 @@
     <h3>Experiencia Laboral</h3>
     {% for exp in experiencias %}
     <div class="item">
-        <div class="item-head">{{ exp.cargodesempenado }}</div>
-        <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.fechainiciogestion|date:"Y" }}</div>
+        <div class="item-head">
+            <span>{{ exp.cargodesempenado }}</span>
+            <span class="item-date">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</span>
+        </div>
+        <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
         
         {% if exp.rutacertificado %}
-            <br><img src="{{ exp.rutacertificado.url }}" class="evidence-img">
+        <div class="evidence-container">
+            <img src="{{ exp.rutacertificado.url }}" class="evidence-img" alt="Certificado Laboral">
+        </div>
         {% endif %}
     </div>
     {% endfor %}
@@ -76,12 +166,17 @@
     <h3>Educación y Cursos</h3>
     {% for curso in cursos %}
     <div class="item">
-        <div class="item-head">{{ curso.nombrecurso }}</div>
-        <div class="item-sub">{{ curso.entidadpatrocinadora }}</div>
+        <div class="item-head">
+            <span>{{ curso.nombrecurso }}</span>
+            <span class="item-date">{{ curso.fechafin|date:"Y" }}</span>
+        </div>
+        <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
         
         {% if curso.rutacertificado %}
-            <br><img src="{{ curso.rutacertificado.url }}" class="evidence-img">
+        <div class="evidence-container">
+            <img src="{{ curso.rutacertificado.url }}" class="evidence-img" alt="Certificado Curso">
+        </div>
         {% endif %}
     </div>
     {% endfor %}
@@ -91,9 +186,12 @@
     <h3>Productos Académicos</h3>
     {% for item in productos_acad %}
     <div class="item">
-        <div class="item-head">{{ item.nombrerecurso }}</div>
-        <div class="item-desc">{{ item.descripcion }}</div>
+        <div class="item-head">
+            <span>{{ item.nombrerecurso }}</span>
         </div>
+        <div class="item-sub">{{ item.clasificador }}</div>
+        <div class="item-desc">{{ item.descripcion }}</div>
+    </div>
     {% endfor %}
     {% endif %}
 
@@ -101,9 +199,12 @@
     <h3>Proyectos Laborales</h3>
     {% for prod in productos_lab %}
     <div class="item">
-        <div class="item-head">{{ prod.nombreproducto }}</div>
-        <div class="item-desc">{{ prod.descripcion }}</div>
+        <div class="item-head">
+            <span>{{ prod.nombreproducto }}</span>
+            <span class="item-date">{{ prod.fechaproducto|date:"Y" }}</span>
         </div>
+        <div class="item-desc">{{ prod.descripcion }}</div>
+    </div>
     {% endfor %}
     {% endif %}
 
@@ -111,12 +212,17 @@
     <h3>Venta de Garage</h3>
     {% for item in garage %}
     <div class="item">
-        <div class="item-head">{{ item.nombreproducto }} - ${{ item.valordelbien }}</div>
+        <div class="item-head">
+            <span>{{ item.nombreproducto }}</span>
+            <span class="item-date">${{ item.valordelbien }}</span>
+        </div>
         <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
         
         {% if item.documento_interes %}
-            <br><img src="{{ item.documento_interes.url }}" class="evidence-img">
+        <div class="evidence-container">
+            <img src="{{ item.documento_interes.url }}" class="evidence-img" alt="Foto Producto">
+        </div>
         {% endif %}
     </div>
     {% endfor %}
@@ -126,11 +232,16 @@
     <h3>Logros y Reconocimientos</h3>
     {% for reco in reconocimientos %}
     <div class="item">
-        <div class="item-head">{{ reco.descripcionreconocimiento }}</div>
-        <div class="item-sub">{{ reco.entidadpatrocinadora }}</div>
+        <div class="item-head">
+            <span>{{ reco.descripcionreconocimiento }}</span>
+            <span class="item-date">{{ reco.fechareconocimiento|date:"Y" }}</span>
+        </div>
+        <div class="item-sub">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
         
         {% if reco.rutacertificado %}
-            <br><img src="{{ reco.rutacertificado.url }}" class="evidence-img">
+        <div class="evidence-container">
+            <img src="{{ reco.rutacertificado.url }}" class="evidence-img" alt="Diploma Reconocimiento">
+        </div>
         {% endif %}
     </div>
     {% endfor %}
