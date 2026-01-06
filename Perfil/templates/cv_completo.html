@@ -8,9 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- ESTILOS VISUALES (LO QUE SE HABÍA BORRADO) --- */
         body {
-            background: #525659; /* Fondo gris oscuro */
+            background: #525659;
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 20px;
@@ -20,7 +19,7 @@
 
         .page {
             background: white;
-            width: 21cm; /* Ancho A4 */
+            width: 21cm;
             min-height: 29.7cm;
             padding: 1.5cm 2cm;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
@@ -28,7 +27,6 @@
             position: relative;
         }
 
-        /* TIPOGRAFÍA */
         h1 { margin: 0; color: #2563eb; font-size: 24px; text-transform: uppercase; }
         h2 { margin: 5px 0 20px 0; color: #1f2937; font-size: 16px; font-weight: 400; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
         
@@ -42,39 +40,33 @@
             padding-bottom: 3px;
         }
 
-        .item { margin-bottom: 12px; }
+        .item { margin-bottom: 15px; page-break-inside: avoid; }
         .item-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; color: #333; }
         .item-sub { color: #2563eb; font-size: 12px; font-weight: 600; margin-bottom: 2px; }
         .item-desc { font-size: 12px; color: #555; line-height: 1.4; text-align: justify; }
 
-        /* CONTACTO */
-        .contact-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            font-size: 12px;
-            gap: 5px;
-            color: #444;
-            margin-bottom: 20px;
+        /* Estilo para las imágenes dentro del PDF */
+        .evidence-img {
+            margin-top: 8px;
+            max-width: 150px;
+            max-height: 120px;
+            border: 1px solid #e5e7eb;
+            padding: 3px;
+            border-radius: 4px;
+            display: block;
         }
 
-        /* BOTÓN FLOTANTE */
+        .contact-info {
+            display: grid; grid-template-columns: 1fr 1fr; font-size: 12px; gap: 5px; color: #444; margin-bottom: 20px;
+        }
+
         .print-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #2563eb;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            cursor: pointer;
-            z-index: 999;
+            position: fixed; bottom: 30px; right: 30px; background: #2563eb; color: white;
+            padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 999;
         }
         .print-btn:hover { background: #1d4ed8; transform: scale(1.05); }
 
-        /* MODO IMPRESIÓN */
         @media print {
             body { background: white; padding: 0; }
             .page { width: 100%; box-shadow: none; margin: 0; padding: 0; }
@@ -138,6 +130,12 @@
             </div>
             <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
             <div class="item-desc">{{ curso.descripcioncurso }}</div>
+            
+            {% if curso.certificado %}
+                <img src="{{ curso.certificado.url }}" class="evidence-img" alt="Certificado">
+            {% elif curso.imagen %}
+                <img src="{{ curso.imagen.url }}" class="evidence-img" alt="Imagen Curso">
+            {% endif %}
         </div>
         {% endfor %}
         {% endif %}
@@ -151,6 +149,12 @@
                 <span style="font-weight: normal; font-size: 11px; background: #eee; padding: 2px 6px; border-radius: 4px;">{{ item.clasificador }}</span>
             </div>
             <div class="item-desc">{{ item.descripcion }}</div>
+            
+            {% if item.imagen %}
+                <img src="{{ item.imagen.url }}" class="evidence-img" alt="Evidencia">
+            {% elif item.archivo and item.archivo.url|slice:"-4:" == ".jpg" or item.archivo.url|slice:"-4:" == ".png" %}
+                <img src="{{ item.archivo.url }}" class="evidence-img" alt="Evidencia">
+            {% endif %}
         </div>
         {% endfor %}
         {% endif %}
@@ -164,6 +168,10 @@
                 <span>{{ prod.fechaproducto|date:"Y" }}</span>
             </div>
             <div class="item-desc">{{ prod.descripcion }}</div>
+            
+            {% if prod.imagen %}
+                <img src="{{ prod.imagen.url }}" class="evidence-img" alt="Evidencia Proyecto">
+            {% endif %}
         </div>
         {% endfor %}
         {% endif %}
@@ -178,6 +186,10 @@
             </div>
             <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
             <div class="item-desc">{{ item.descripcion }}</div>
+            
+            {% if item.imagen %}
+                <img src="{{ item.imagen.url }}" class="evidence-img" alt="Foto Producto">
+            {% endif %}
         </div>
         {% endfor %}
         {% endif %}
@@ -191,6 +203,10 @@
                 <span>{{ reco.fechareconocimiento|date:"Y" }}</span>
             </div>
             <div class="item-desc">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
+            
+            {% if reco.imagen %}
+                <img src="{{ reco.imagen.url }}" class="evidence-img" alt="Foto Reconocimiento">
+            {% endif %}
         </div>
         {% endfor %}
         {% endif %}

@@ -16,18 +16,41 @@
             --primary: #2563eb;     
             --primary-dark: #1d4ed8; 
             --sidebar-bg: #0f172a;   
+            
+            /* Variables Dinámicas (Modo Claro por defecto) */
             --bg-main: #f8fafc;      
+            --bg-card: #ffffff;
             --text-main: #334155;    
-            --text-muted: #94a3b8;   
+            --text-muted: #64748b;
+            --border-color: rgba(0,0,0,0.05);
+            --shadow-card: 0 10px 30px -5px rgba(0,0,0,0.05);
         }
 
+        /* --- MODO OSCURO --- */
+        body.dark-mode {
+            --bg-main: #0b1120;       
+            --bg-card: #1e293b;       
+            --text-main: #e2e8f0;     
+            --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.05);
+            --shadow-card: 0 10px 30px -5px rgba(0,0,0,0.3);
+        }
+
+        /* --- ANIMACIONES (RECUPERADAS) --- */
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulseSoft { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- CONFIGURACIÓN BASE --- */
         body {
             font-family: 'Poppins', sans-serif; 
             background: var(--bg-main);
+            color: var(--text-main);
             margin: 0;
             min-height: 100vh;
-            color: var(--text-main);
             overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* --- SIDEBAR --- */
@@ -43,12 +66,12 @@
             flex-direction: column;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
             z-index: 1000;
-            overflow-x: hidden; /* Oculta lo horizontal */
-            overflow-y: auto;   /* PERMITE SCROLL SI HAY MUCHOS ITEMS */
+            overflow-x: hidden;
+            overflow-y: auto;   
             transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            /* Ocultar barra de scroll estéticamente */
             scrollbar-width: none; 
             -ms-overflow-style: none;
+            animation: slideInLeft 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         aside::-webkit-scrollbar { display: none; }
 
@@ -63,29 +86,25 @@
             padding: 3rem 4rem; 
             transition: margin-left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             width: auto;
+            animation: fadeInUp 0.8s ease-out forwards;
         }
         
         aside:hover + main {
             margin-left: var(--sidebar-width-open);
         }
 
-        /* --- IDENTIDAD (PERFIL) --- */
+        /* --- PERFIL --- */
         .identity-box { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            width: 100%;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            flex-shrink: 0; /* Evita que se aplaste */
+            text-align: center; margin-bottom: 2rem; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            flex-shrink: 0;
+            animation: fadeInUp 0.8s ease-out forwards 0.2s; opacity: 0;
         }
 
         .avatar-container {
             width: 50px; height: 50px; margin: 0 auto 10px;
-            transition: all 0.4s ease;
-            position: relative;
+            transition: all 0.4s ease; position: relative;
         }
-        
         aside:hover .avatar-container { width: 100px; height: 100px; margin-bottom: 15px; }
 
         .avatar, .avatar-img {
@@ -94,128 +113,121 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; font-weight: 700; color: white;
             border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
         }
         aside:hover .avatar { font-size: 2.8rem; border-width: 3px; }
 
-        /* --- TEXTO DEBAJO DEL PERFIL (ARREGLADO) --- */
+        /* Información oculta al cerrar */
         .user-info-wrapper {
-            /* Por defecto OCULTO y sin altura para que no moleste */
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            width: 100%;
+            max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; width: 100%;
         }
+        aside:hover .user-info-wrapper { max-height: 150px; opacity: 1; }
 
-        aside:hover .user-info-wrapper {
-            max-height: 150px; /* Altura suficiente para el texto */
-            opacity: 1;
-        }
-
-        .user-name { font-weight: 700; font-size: 1.2rem; white-space: nowrap; margin-bottom: 5px; }
-        .user-role { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
-
-        /* --- BOTÓN PDF (ARREGLADO) --- */
-        .btn-pdf-container { 
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: 1.5rem; 
-            flex-shrink: 0; /* IMPORTANTE: Evita que desaparezca */
-        }
+        .user-name { font-weight: 700; font-size: 1.2rem; white-space: nowrap; margin-bottom: 5px; color: white; }
         
+        /* Efecto Typewriter */
+        .typewriter { 
+            color: #94a3b8; font-size: 0.85rem; display: block; white-space: nowrap;
+        }
+        .typewriter::after { content: '|'; animation: blink 1s infinite; color: var(--primary); }
+
+        /* --- BOTÓN PDF --- */
+        .btn-pdf-container { 
+            display: flex; justify-content: center; margin-bottom: 1.5rem; flex-shrink: 0; 
+            animation: fadeInUp 0.8s ease-out forwards 0.3s; opacity: 0;
+        }
         .btn-pdf {
             background: linear-gradient(to right, var(--primary), var(--primary-dark));
-            color: white; 
-            border: none; cursor: pointer; text-decoration: none;
-            /* Estado Cerrado: Círculo pequeño */
-            width: 45px; height: 45px; 
-            border-radius: 50%;
+            color: white; border: none; cursor: pointer; text-decoration: none;
+            width: 45px; height: 45px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+            animation: pulseSoft 2s infinite;
         }
-        
         aside:hover .btn-pdf {
-            /* Estado Abierto: Botón alargado */
-            width: 100%; 
-            height: auto; 
-            padding: 10px 20px; 
-            border-radius: 50px;
-            justify-content: center; /* Centrado */
-            gap: 10px;
+            width: 100%; height: auto; padding: 10px 20px; border-radius: 50px;
+            justify-content: center; gap: 10px;
         }
-
-        .btn-text { 
-            display: none; 
-            font-size: 0.9rem; font-weight: 600; white-space: nowrap;
-        }
+        .btn-text { display: none; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
         aside:hover .btn-text { display: inline-block; }
-
         .btn-pdf:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.5); }
 
         /* --- NAVEGACIÓN --- */
-        .nav-container { width: 100%; flex-grow: 1; }
+        .nav-container { width: 100%; flex-grow: 1; animation: fadeInUp 0.8s ease-out forwards 0.4s; opacity: 0; }
         
         nav a {
-            display: flex; align-items: center; 
-            padding: 12px;
+            display: flex; align-items: center; padding: 12px;
             color: var(--text-muted); text-decoration: none;
             border-radius: 12px; margin-bottom: 8px; transition: all 0.3s;
-            justify-content: center; /* Iconos centrados al estar cerrado */
+            justify-content: center; 
         }
-
-        aside:hover nav a {
-            justify-content: flex-start; /* Alineado izq al abrir */
-            padding: 12px 20px;
-            gap: 15px;
-        }
+        aside:hover nav a { justify-content: flex-start; padding: 12px 20px; gap: 15px; }
         
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
-        
         .nav-text { display: none; white-space: nowrap; font-weight: 500; }
         aside:hover .nav-text { display: inline-block; animation: fadeIn 0.3s ease forwards; }
 
         nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.1); color: white; }
         nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
 
-        /* Animación simple de aparición */
+        /* Botón Modo Oscuro */
+        .theme-toggle-container {
+            margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: center;
+        }
+        .btn-theme {
+            background: transparent; border: none; color: #94a3b8; cursor: pointer;
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .btn-theme:hover { background: rgba(255,255,255,0.1); color: white; }
+        aside:hover .btn-theme { width: 100%; border-radius: 10px; justify-content: flex-start; padding-left: 20px; gap: 15px; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- CARD --- */
         .card {
-            background: white; padding: 2.5rem; border-radius: 20px;
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); 
-            margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.04);
+            background: var(--bg-card); padding: 2.5rem; border-radius: 20px;
+            box-shadow: var(--shadow-card); 
+            margin-bottom: 30px; border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
         }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1); }
+
+        /* Scroll Reveal */
+        .reveal-on-scroll { opacity: 0; transform: translateY(40px); transition: all 0.6s ease-out; }
+        .reveal-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
         .header-title {
             color: var(--primary); font-weight: 700; font-size: 1.3rem;
             display: flex; align-items: center; gap: 12px;
-            margin-bottom: 1.5rem; border-bottom: 2px solid var(--bg-main); padding-bottom: 10px;
+            margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;
         }
 
-        /* --- RESPONSIVE MOBILE --- */
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             aside { 
                 width: 100%; height: auto; position: relative; padding: 1rem; 
                 flex-direction: row; align-items: center; justify-content: space-between;
-                overflow: visible;
+                overflow: visible; animation: fadeInUp 0.6s ease-out;
             }
             aside:hover { width: 100%; padding: 1rem; }
             aside:hover + main { margin-left: 0; }
             
-            .identity-box { width: auto; flex-direction: row; gap: 15px; margin: 0; text-align: left;}
+            .identity-box { width: auto; flex-direction: row; gap: 15px; margin: 0; text-align: left; animation: none; opacity: 1;}
             .avatar-container, aside:hover .avatar-container { width: 45px; height: 45px; margin: 0; }
             .user-info-wrapper, aside:hover .user-info-wrapper { max-height: none; opacity: 1; display: block; width: auto;}
-            .user-role { display: none; } /* Ocultar rol en móvil para ahorrar espacio */
+            .user-role { display: none; } 
             
-            .nav-container, .btn-pdf-container { display: none; } /* Menú hamburguesa sería ideal aquí */
-            
-            main { margin-left: 0; padding: 1.5rem; }
+            .nav-container, .btn-pdf-container { display: none; }
+            main { margin-left: 0; padding: 1.5rem; animation: fadeInUp 0.8s ease-out 0.2s backwards; }
         }
 
         @media print {
             aside { display: none !important; }
             main { margin: 0 !important; width: 100% !important; padding: 0 !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+            body { background: white !important; color: black !important; }
         }
     </style>
 </head>
@@ -238,7 +250,7 @@
             
             <div class="user-info-wrapper">
                 <div class="user-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
-                <div class="user-role">{{ perfil.descripcionperfil }}</div>
+                <span class="typewriter" id="typewriter-text"></span>
             </div>
         </div>
         {% else %}
@@ -282,13 +294,17 @@
                 </a>
 
                 {% if user.is_authenticated %}
-                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                    <a href="/admin/" target="_blank">
-                        <i class="fas fa-cogs nav-icon"></i> <span class="nav-text">Admin</span>
-                    </a>
-                </div>
+                <a href="/admin/" target="_blank" class="admin-link" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; display:flex;">
+                    <i class="fas fa-cogs nav-icon"></i> <span class="nav-text">Admin</span>
+                </a>
                 {% endif %}
             </nav>
+
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" class="btn-theme">
+                    <i class="fas fa-moon"></i> <span class="nav-text">Modo Oscuro</span>
+                </button>
+            </div>
         </div>
     </aside>
 
@@ -296,6 +312,69 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    <script>
+        // 1. MODO OSCURO
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const icon = toggleBtn.querySelector('i');
+        const textSpan = toggleBtn.querySelector('span');
+
+        if(localStorage.getItem('theme') === 'dark'){
+            body.classList.add('dark-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+            textSpan.textContent = "Modo Claro";
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            textSpan.textContent = isDark ? "Modo Claro" : "Modo Oscuro";
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // 2. TYPEWRITER (Usando tu descripción real si existe, o roles por defecto)
+        const roles = [
+            "{{ perfil.descripcionperfil|default:'Desarrollador Web' }}",
+            "Seguridad Informática",
+            "Python & Django"
+        ];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typeElement = document.getElementById('typewriter-text');
+
+        function type() {
+            const currentRole = roles[roleIndex];
+            if (isDeleting) charIndex--; else charIndex++;
+            
+            typeElement.textContent = currentRole.substring(0, charIndex);
+            
+            let typeSpeed = isDeleting ? 50 : 100;
+            if (!isDeleting && charIndex === currentRole.length) {
+                typeSpeed = 2000; isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false; roleIndex = (roleIndex + 1) % roles.length; typeSpeed = 500;
+            }
+            setTimeout(type, typeSpeed);
+        }
+        document.addEventListener('DOMContentLoaded', type);
+
+        // 3. SCROLL REVEAL
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.add('reveal-on-scroll');
+                observer.observe(card);
+            });
+        });
+    </script>
 
 </body> 
 </html>
