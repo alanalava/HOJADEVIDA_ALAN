@@ -11,8 +11,8 @@
     <style>
         /* --- VARIABLES --- */
         :root {
-            --sidebar-width: 280px;        /* Ancho abierto */
-            --sidebar-collapsed: 100px;    /* Ancho cerrado (solo iconos) */
+            --sidebar-width-open: 280px;   /* Ancho abierto */
+            --sidebar-width-closed: 90px;  /* Ancho cerrado */
             --primary: #2563eb;     
             --primary-dark: #1d4ed8; 
             --sidebar-bg: #0f172a;   
@@ -21,66 +21,69 @@
             --text-muted: #94a3b8;   
         }
 
-        /* --- ANIMACIONES --- */
-        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes pulseSoft { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
-
+        /* --- CONFIGURACIÓN BASE --- */
         body {
             font-family: 'Poppins', sans-serif; 
             background: var(--bg-main);
-            display: flex;
             margin: 0;
             min-height: 100vh;
             color: var(--text-main);
             overflow-x: hidden;
+            display: block; /* Importante para el flujo normal */
         }
-        
+
         /* --- SIDEBAR (ASIDE) --- */
         aside {
-            width: var(--sidebar-collapsed); /* ESTADO INICIAL: CERRADO */
+            width: var(--sidebar-width-closed);
             background: var(--sidebar-bg);
             color: white;
-            position: fixed;
+            position: fixed; /* Fijo a la izquierda */
+            top: 0;
+            left: 0;
             height: 100vh;
-            padding: 2rem 1rem; /* Padding reducido lateralmente */
+            padding: 2rem 1rem;
             display: flex;
             flex-direction: column;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
-            z-index: 100;
-            overflow: hidden; /* Importante para que no se vea el texto al cerrar */
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transición suave de anchura */
-            animation: slideInLeft 0.6s ease-out forwards;
+            z-index: 1000;
+            overflow: hidden;
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Suavidad del movimiento */
         }
 
-        /* ESTADO HOVER: EXPANDIR */
+        /* AL PASAR EL MOUSE (HOVER) SOBRE EL SIDEBAR */
         aside:hover {
-            width: var(--sidebar-width);
-            padding: 2rem 1.5rem; /* Recupera padding original */
+            width: var(--sidebar-width-open);
+            padding: 2rem 1.5rem;
         }
 
-        aside::-webkit-scrollbar { width: 0px; } /* Ocultar scrollbar estéticamente */
+        /* --- CONTENIDO PRINCIPAL (MAIN) --- */
+        main { 
+            /* Margen inicial igual al ancho del sidebar cerrado */
+            margin-left: var(--sidebar-width-closed); 
+            padding: 3rem 4rem; 
+            transition: margin-left 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Misma velocidad que el sidebar */
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
 
-        /* --- IDENTIDAD (FOTO Y TEXTO) --- */
+        /* --- EL TRUCO PARA MOVER LO BLANCO --- */
+        /* Cuando el 'aside' tiene hover, el 'main' que le sigue cambia su margen */
+        aside:hover + main {
+            margin-left: var(--sidebar-width-open);
+        }
+
+        /* --- ESTILOS INTERNOS DEL SIDEBAR --- */
         .identity-box { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            width: 100%;
-            /* Evita que el contenido salte */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center; margin-bottom: 2rem; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         .avatar-container {
-            position: relative; width: 60px; height: 60px; margin: 0 auto 1rem;
-            transition: all 0.5s ease;
+            position: relative; width: 50px; height: 50px; margin: 0 auto 1rem;
+            transition: all 0.4s ease;
         }
         
-        /* Al hacer hover en el sidebar, la foto crece */
-        aside:hover .avatar-container {
-            width: 100px; height: 100px;
-        }
+        aside:hover .avatar-container { width: 100px; height: 100px; }
 
         .avatar, .avatar-img {
             width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
@@ -88,159 +91,106 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; font-weight: 700; color: white;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
-            transition: all 0.5s ease;
+            transition: all 0.4s ease;
         }
         aside:hover .avatar { font-size: 2.8rem; border-width: 3px; }
 
-        /* Textos de usuario: Se ocultan al inicio */
-        .user-info-text {
+        /* Textos que aparecen/desaparecen */
+        .user-info-text, .nav-text, .btn-text {
             opacity: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            white-space: nowrap; /* Evita saltos de línea */
+            display: none; /* Ocultamos para que no ocupe espacio cerrado */
+            transition: opacity 0.2s ease 0.1s; /* Retraso para que aparezca suave */
         }
 
-        /* Textos de usuario: Aparecen al hover */
-        aside:hover .user-info-text {
-            opacity: 1;
-            max-height: 100px;
-            margin-top: 5px;
-        }
-
-        .user-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
-        .user-role { color: var(--text-muted); font-size: 0.95rem; }
-        
-        /* --- BOTÓN PDF --- */
-        .btn-pdf-container { 
-            display: flex; justify-content: center; margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-        
-        .btn-pdf {
-            background: linear-gradient(to right, var(--primary), var(--primary-dark));
-            color: white; 
-            padding: 12px; /* Padding cuadrado inicial */
-            border-radius: 50px; border: none; 
-            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.9rem;
-            cursor: pointer; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-            display: flex; align-items: center; justify-content: center; gap: 0;
-            text-decoration: none; width: 45px; /* Ancho inicial pequeño */
-            white-space: nowrap;
-        }
-        
-        aside:hover .btn-pdf {
-            width: auto; /* Se expande */
-            padding: 10px 24px;
-            gap: 10px;
-        }
-
-        .btn-text { display: none; opacity: 0; transition: opacity 0.3s; }
-        aside:hover .btn-text { display: inline; opacity: 1; }
-
-        .btn-pdf:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
-
-        /* --- NAVEGACIÓN --- */
-        .nav-container { width: 100%; flex-grow: 1; }
-        
-        nav a {
-            display: flex; align-items: center; 
-            justify-content: center; /* Centrado cuando está cerrado */
-            padding: 14px 10px;
-            color: var(--text-muted); text-decoration: none;
-            border-radius: 12px; margin-bottom: 8px;
-            transition: all 0.3s; font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        /* Al abrir, alineamos a la izquierda */
-        aside:hover nav a {
-            justify-content: flex-start;
-            padding: 14px 20px;
-            gap: 15px;
-        }
-
-        .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
-        
-        .nav-text {
-            opacity: 0;
-            transform: translateX(20px);
-            transition: all 0.3s ease;
-            display: none; /* Oculto completamente para no afectar layout */
-        }
-
-        aside:hover .nav-text {
+        aside:hover .user-info-text, 
+        aside:hover .nav-text, 
+        aside:hover .btn-text {
             display: inline-block;
             opacity: 1;
-            transform: translateX(0);
         }
 
-        nav a:hover, nav a.active {
-            background: rgba(255, 255, 255, 0.1); color: white;
-        }
-        
-        aside:hover nav a:hover {
-            transform: translateX(5px);
-        }
-        
-        nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .user-name { font-weight: 700; font-size: 1.2rem; white-space: nowrap; }
+        .user-role { color: var(--text-muted); font-size: 0.95rem; white-space: nowrap; }
 
-        /* --- CONTENIDO PRINCIPAL --- */
-        main { 
-            /* El margen es igual al ancho COLAPSADO del sidebar */
-            margin-left: var(--sidebar-collapsed); 
-            flex: 1; 
-            padding: 3rem 4rem; 
-            transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInUp 0.8s ease-out forwards;
+        /* Botón PDF */
+        .btn-pdf-container { display: flex; justify-content: center; margin-bottom: 1.5rem; overflow: hidden; }
+        .btn-pdf {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white; padding: 12px; border-radius: 50px; border: none; 
+            cursor: pointer; text-decoration: none; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+            white-space: nowrap;
         }
-        
-        /* Opcional: Si quieres que el contenido se empuje cuando abres el menú, descomenta esto:
-        aside:hover ~ main { margin-left: var(--sidebar-width); } 
-        Pero normalmente es mejor que el menú "flote" encima para no mover todo el texto.
-        */
+        aside:hover .btn-pdf { width: auto; padding: 10px 24px; gap: 10px; height: auto; }
+        .btn-pdf:hover { transform: scale(1.05); }
 
+        /* Navegación */
+        .nav-container { width: 100%; flex-grow: 1; }
+        nav a {
+            display: flex; align-items: center; justify-content: center; 
+            padding: 14px 10px; color: var(--text-muted); text-decoration: none;
+            border-radius: 12px; margin-bottom: 8px; transition: all 0.3s;
+            height: 50px; /* Altura fija para evitar saltos */
+        }
+        aside:hover nav a { justify-content: flex-start; padding: 14px 20px; gap: 15px; }
+        
+        .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
+        nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.1); color: white; }
+        nav a.active { background: var(--primary); }
+
+        /* --- CARD (CONTENIDO BLANCO) --- */
         .card {
             background: white; padding: 2.5rem; border-radius: 20px;
             box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); 
             margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.04);
-            break-inside: avoid; transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* Asegura que el contenido dentro de la card se adapte si se encoge */
+            width: 100%; 
+            box-sizing: border-box;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1); }
-
         .header-title {
             color: var(--primary); font-weight: 700; font-size: 1.3rem;
             display: flex; align-items: center; gap: 12px;
-            margin-bottom: 1.5rem; padding-bottom: 10px;
-            border-bottom: 2px solid var(--bg-main);
+            margin-bottom: 1.5rem; border-bottom: 2px solid var(--bg-main); padding-bottom: 10px;
         }
 
-        /* --- RESPONSIVE MOBILE --- */
+        /* --- RESPONSIVE MOBILE (Celulares y Tablets pequeñas) --- */
         @media (max-width: 768px) {
-            body { flex-direction: column; }
+            /* El Sidebar pasa a ser Header superior */
             aside { 
-                width: 100%; height: auto; position: relative; padding: 1rem; 
-                flex-direction: row; justify-content: space-between; 
-                animation: fadeInUp 0.6s ease-out;
+                width: 100%; 
+                height: auto; 
+                position: relative; /* Ya no es fijo */
+                padding: 1rem; 
+                flex-direction: row; 
+                justify-content: space-between; 
+                align-items: center;
+                overflow: visible;
             }
-            /* En móvil quitamos el efecto hover/collapse y mostramos todo normal o simplificado */
+            
+            /* Anulamos comportamiento hover en móvil */
             aside:hover { width: 100%; padding: 1rem; }
-            .identity-box { flex-direction: row; gap: 15px; margin: 0; align-items: center; width: auto; }
-            .user-info-text { opacity: 1; max-height: none; display: block; margin: 0; text-align: left; }
-            .nav-container { display: none; } /* Ocultar menú en header móvil, usar toggle si es necesario */
-            .avatar-container { width: 50px; height: 50px; margin: 0; }
-            aside:hover .avatar-container { width: 50px; height: 50px; } 
-            main { margin: 0; padding: 1.5rem; }
-            .btn-pdf-container { display: none; }
-        }
-        
-        /* --- PRINT --- */
-        @media print {
-            aside { display: none !important; }
-            main { margin: 0 !important; width: 100% !important; padding: 0 !important; }
+            aside:hover + main { margin-left: 0; }
+
+            /* Ajustes de elementos internos en móvil */
+            .identity-box { width: auto; flex-direction: row; gap: 10px; margin: 0; }
+            .avatar-container { width: 40px; height: 40px; margin: 0; }
+            aside:hover .avatar-container { width: 40px; height: 40px; }
+            
+            .user-info-text { display: block; opacity: 1; text-align: left; margin-left: 10px;}
+            .user-name { font-size: 1rem; margin: 0; }
+            .user-role { font-size: 0.8rem; display: none; } /* Ocultar rol en móvil si falta espacio */
+
+            /* Ocultar menú lateral y mostrar iconos simples o botón menú */
+            .nav-container, .btn-pdf-container { display: none; }
+            
+            /* Main ocupa todo el ancho */
+            main { 
+                margin-left: 0; 
+                padding: 1.5rem; 
+                width: 100%;
+            }
+
+            .card { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -270,7 +220,6 @@
              <div class="avatar-container"><div class="avatar">?</div></div>
              <div class="user-info-text">
                  <div class="user-name">Bienvenido</div>
-                 <div class="user-role">Sin perfil</div>
              </div>
         </div>
         {% endif %}
@@ -307,8 +256,8 @@
 
                 <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
                     {% if user.is_authenticated %}
-                        <a href="/admin/" target="_blank" style="color: #cbd5e1;">
-                            <i class="fas fa-cogs nav-icon"></i> <span class="nav-text">Admin</span>
+                        <a href="/admin/" target="_blank" style="color: #cbd5e1; display: flex; justify-content: center; width: 100%;">
+                            <i class="fas fa-cogs nav-icon"></i>
                         </a>
                     {% endif %}
                 </div>
