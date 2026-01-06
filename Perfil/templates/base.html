@@ -9,9 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- VARIABLES Y ESTILOS GLOBALES --- */
+        /* --- VARIABLES --- */
         :root {
-            --sidebar-width: 280px; 
+            --sidebar-width: 280px;        /* Ancho abierto */
+            --sidebar-collapsed: 100px;    /* Ancho cerrado (solo iconos) */
             --primary: #2563eb;     
             --primary-dark: #1d4ed8; 
             --sidebar-bg: #0f172a;   
@@ -20,28 +21,10 @@
             --text-muted: #94a3b8;   
         }
 
-        /* --- KEYFRAMES (ANIMACIONES) --- */
-        @keyframes slideInLeft {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes pulseSoft {
-            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-        }
-
-        @keyframes floatAvatar {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
-        }
+        /* --- ANIMACIONES --- */
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulseSoft { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
 
         body {
             font-family: 'Poppins', sans-serif; 
@@ -50,151 +33,183 @@
             margin: 0;
             min-height: 100vh;
             color: var(--text-main);
-            overflow-x: hidden; /* Evita scroll horizontal durante animaciones */
+            overflow-x: hidden;
         }
         
+        /* --- SIDEBAR (ASIDE) --- */
         aside {
-            width: var(--sidebar-width);
+            width: var(--sidebar-collapsed); /* ESTADO INICIAL: CERRADO */
             background: var(--sidebar-bg);
             color: white;
             position: fixed;
             height: 100vh;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1rem; /* Padding reducido lateralmente */
             display: flex;
             flex-direction: column;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
             z-index: 100;
-            overflow-y: auto;
-            /* ANIMACIÓN DE ENTRADA SIDEBAR */
-            animation: slideInLeft 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            overflow: hidden; /* Importante para que no se vea el texto al cerrar */
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transición suave de anchura */
+            animation: slideInLeft 0.6s ease-out forwards;
         }
 
-        aside::-webkit-scrollbar { width: 5px; }
-        aside::-webkit-scrollbar-track { background: transparent; }
-        aside::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        /* ESTADO HOVER: EXPANDIR */
+        aside:hover {
+            width: var(--sidebar-width);
+            padding: 2rem 1.5rem; /* Recupera padding original */
+        }
 
+        aside::-webkit-scrollbar { width: 0px; } /* Ocultar scrollbar estéticamente */
+
+        /* --- IDENTIDAD (FOTO Y TEXTO) --- */
         .identity-box { 
             text-align: center; 
             margin-bottom: 2rem; 
-            /* Animación suave al cargar */
-            animation: fadeInUp 0.8s ease-out forwards;
-            animation-delay: 0.2s; /* Espera un poco a que cargue el sidebar */
-            opacity: 0; /* Comienza invisible para el fadein */
+            width: 100%;
+            /* Evita que el contenido salte */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .avatar-container {
-            position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;
-            transition: transform 0.3s ease;
+            position: relative; width: 60px; height: 60px; margin: 0 auto 1rem;
+            transition: all 0.5s ease;
         }
         
-        /* Efecto al pasar el mouse sobre la foto */
-        .avatar-container:hover {
-            transform: scale(1.05);
+        /* Al hacer hover en el sidebar, la foto crece */
+        aside:hover .avatar-container {
+            width: 100px; height: 100px;
         }
 
         .avatar, .avatar-img {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             display: flex; align-items: center; justify-content: center;
-            font-size: 2.8rem; font-weight: 700; color: white;
-            border: 3px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.5rem; font-weight: 700; color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.5s ease;
+        }
+        aside:hover .avatar { font-size: 2.8rem; border-width: 3px; }
+
+        /* Textos de usuario: Se ocultan al inicio */
+        .user-info-text {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
             transition: all 0.3s ease;
+            white-space: nowrap; /* Evita saltos de línea */
+        }
+
+        /* Textos de usuario: Aparecen al hover */
+        aside:hover .user-info-text {
+            opacity: 1;
+            max-height: 100px;
+            margin-top: 5px;
         }
 
         .user-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
         .user-role { color: var(--text-muted); font-size: 0.95rem; }
         
-        /* --- BOTÓN CENTRADO Y PEQUEÑO --- */
+        /* --- BOTÓN PDF --- */
         .btn-pdf-container { 
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: 1.5rem;
-            opacity: 0; 
-            animation: fadeInUp 0.8s ease-out forwards;
-            animation-delay: 0.3s;
+            display: flex; justify-content: center; margin-bottom: 1.5rem;
+            overflow: hidden;
         }
         
         .btn-pdf {
             background: linear-gradient(to right, var(--primary), var(--primary-dark));
             color: white; 
-            padding: 10px 24px; 
-            border-radius: 50px; 
-            border: none; 
-            width: auto; 
+            padding: 12px; /* Padding cuadrado inicial */
+            border-radius: 50px; border: none; 
             font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            cursor: pointer; transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-            display: inline-flex; align-items: center; gap: 8px;
-            text-decoration: none;
-            /* Animación de latido suave */
-            animation: pulseSoft 2s infinite;
-        }
-        .btn-pdf:hover { 
-            transform: translateY(-3px) scale(1.02); 
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); 
-        }
-
-        .nav-container { 
-            width: 100%; 
-            flex-grow: 1; 
-            opacity: 0;
-            animation: fadeInUp 0.8s ease-out forwards;
-            animation-delay: 0.4s;
+            display: flex; align-items: center; justify-content: center; gap: 0;
+            text-decoration: none; width: 45px; /* Ancho inicial pequeño */
+            white-space: nowrap;
         }
         
+        aside:hover .btn-pdf {
+            width: auto; /* Se expande */
+            padding: 10px 24px;
+            gap: 10px;
+        }
+
+        .btn-text { display: none; opacity: 0; transition: opacity 0.3s; }
+        aside:hover .btn-text { display: inline; opacity: 1; }
+
+        .btn-pdf:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+
+        /* --- NAVEGACIÓN --- */
+        .nav-container { width: 100%; flex-grow: 1; }
+        
         nav a {
-            display: flex; align-items: center; gap: 15px;
-            padding: 14px 20px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            font-weight: 500;
-            position: relative;
+            display: flex; align-items: center; 
+            justify-content: center; /* Centrado cuando está cerrado */
+            padding: 14px 10px;
+            color: var(--text-muted); text-decoration: none;
+            border-radius: 12px; margin-bottom: 8px;
+            transition: all 0.3s; font-weight: 500;
+            white-space: nowrap;
             overflow: hidden;
         }
 
-        /* Efecto Hover avanzado en Links */
-        nav a:hover, nav a.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(8px);
-            padding-left: 25px; /* Desplazamiento interno */
-        }
-        
-        nav a.active { 
-            background: var(--primary); 
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); 
-            transform: translateX(0); /* El activo se queda quieto pero resaltado */
-            padding-left: 20px;
+        /* Al abrir, alineamos a la izquierda */
+        aside:hover nav a {
+            justify-content: flex-start;
+            padding: 14px 20px;
+            gap: 15px;
         }
 
+        .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
+        
+        .nav-text {
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            display: none; /* Oculto completamente para no afectar layout */
+        }
+
+        aside:hover .nav-text {
+            display: inline-block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.1); color: white;
+        }
+        
+        aside:hover nav a:hover {
+            transform: translateX(5px);
+        }
+        
+        nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+
+        /* --- CONTENIDO PRINCIPAL --- */
         main { 
-            margin-left: var(--sidebar-width); 
+            /* El margen es igual al ancho COLAPSADO del sidebar */
+            margin-left: var(--sidebar-collapsed); 
             flex: 1; 
             padding: 3rem 4rem; 
-            /* ANIMACIÓN DE ENTRADA CONTENIDO */
+            transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             animation: fadeInUp 0.8s ease-out forwards;
         }
         
+        /* Opcional: Si quieres que el contenido se empuje cuando abres el menú, descomenta esto:
+        aside:hover ~ main { margin-left: var(--sidebar-width); } 
+        Pero normalmente es mejor que el menú "flote" encima para no mover todo el texto.
+        */
+
         .card {
             background: white; padding: 2.5rem; border-radius: 20px;
             box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); 
             margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.04);
-            break-inside: avoid;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            break-inside: avoid; transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
-        /* Efecto Hover en Tarjetas */
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
-        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1); }
 
         .header-title {
             color: var(--primary); font-weight: 700; font-size: 1.3rem;
@@ -203,66 +218,29 @@
             border-bottom: 2px solid var(--bg-main);
         }
 
-        /* --- RESPONSIVE --- */
-        @media (max-width: 992px) { :root { --sidebar-width: 240px; } main { padding: 2rem; } }
+        /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             aside { 
-                width: 100%; height: auto; position: relative; padding: 1.5rem; 
-                flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; 
-                animation: fadeInUp 0.6s ease-out; /* Animación diferente en móvil */
+                width: 100%; height: auto; position: relative; padding: 1rem; 
+                flex-direction: row; justify-content: space-between; 
+                animation: fadeInUp 0.6s ease-out;
             }
-            .identity-box { margin: 0; display: flex; align-items: center; gap: 15px; text-align: left; animation: none; opacity: 1; }
-            .avatar-container { width: 60px; height: 60px; margin: 0; }
-            .nav-container { 
-                width: 100%; margin-top: 1.5rem; display: flex; overflow-x: auto; gap: 10px; 
-                animation: none; opacity: 1;
-            }
-            .btn-pdf-container { display: none; } /* Ocultar botón PDF en móvil si ocupa mucho espacio */
-            main { margin: 0; padding: 1.5rem; animation: fadeInUp 0.8s ease-out 0.2s backwards; }
+            /* En móvil quitamos el efecto hover/collapse y mostramos todo normal o simplificado */
+            aside:hover { width: 100%; padding: 1rem; }
+            .identity-box { flex-direction: row; gap: 15px; margin: 0; align-items: center; width: auto; }
+            .user-info-text { opacity: 1; max-height: none; display: block; margin: 0; text-align: left; }
+            .nav-container { display: none; } /* Ocultar menú en header móvil, usar toggle si es necesario */
+            .avatar-container { width: 50px; height: 50px; margin: 0; }
+            aside:hover .avatar-container { width: 50px; height: 50px; } 
+            main { margin: 0; padding: 1.5rem; }
+            .btn-pdf-container { display: none; }
         }
-
-        /* --- ESTILOS DE IMPRESIÓN (PDF) --- */
+        
+        /* --- PRINT --- */
         @media print {
-            @page { size: A4; margin: 0cm; }
-            
-            body { display: block; background: white; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; animation: none !important; }
-            
-            aside { 
-                position: relative !important; width: 100% !important; height: auto !important; 
-                background: var(--primary) !important; color: white !important; 
-                padding: 15px 30px !important; 
-                display: flex !important; flex-direction: row !important; align-items: center !important; 
-                margin-bottom: 20px; box-shadow: none !important; 
-                animation: none !important;
-            }
-            
-            .identity-box { display: flex !important; align-items: center !important; gap: 20px !important; text-align: left !important; margin: 0 !important; animation: none !important; opacity: 1 !important;}
-            
-            .avatar-container { width: 70px !important; height: 70px !important; margin: 0 !important; }
-            
-            .user-name { font-size: 22px !important; color: white !important; margin: 0 !important; }
-            
-            .nav-container, .btn-pdf-container, button, nav { display: none !important; }
-            
-            main { 
-                margin: 0 !important; 
-                padding: 0 20px !important; 
-                width: 100% !important; 
-                animation: none !important;
-            }
-            
-            .card { 
-                box-shadow: none !important; 
-                border: 1px solid #ddd !important; 
-                padding: 15px !important; 
-                margin-bottom: 15px !important; 
-                break-inside: avoid; page-break-inside: avoid; 
-                transform: none !important; /* Quitar efectos hover en PDF */
-            }
-            
-            h2, h3 { color: #000 !important; margin-top: 0 !important; }
-            a { text-decoration: none !important; color: #000 !important; }
+            aside { display: none !important; }
+            main { margin: 0 !important; width: 100% !important; padding: 0 !important; }
         }
     </style>
 </head>
@@ -282,7 +260,7 @@
                     {% endif %}
                 </div>
             </a>
-            <div>
+            <div class="user-info-text">
                 <div class="user-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
                 <div class="user-role">{{ perfil.descripcionperfil }}</div>
             </div>
@@ -290,45 +268,47 @@
         {% else %}
         <div class="identity-box">
              <div class="avatar-container"><div class="avatar">?</div></div>
-             <div class="user-name">Bienvenido</div>
-             <div class="user-role">Sin perfil activo</div>
+             <div class="user-info-text">
+                 <div class="user-name">Bienvenido</div>
+                 <div class="user-role">Sin perfil</div>
+             </div>
         </div>
         {% endif %}
         
         <div class="btn-pdf-container">
             <a href="{% url 'cv_completo' %}" target="_blank" class="btn-pdf">
-                <i class="fas fa-file-pdf"></i> Generar CV Completo
+                <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar CV</span>
             </a>
         </div>
 
         <div class="nav-container">
             <nav>
                 <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                    <i class="fas fa-user-circle"></i> Perfil Profesional
+                    <i class="fas fa-user-circle nav-icon"></i> <span class="nav-text">Perfil Profesional</span>
                 </a>
                 <a href="{% url 'experiencia' %}" class="{% if 'experiencia' in request.path %}active{% endif %}">
-                    <i class="fas fa-briefcase"></i> Experiencia Laboral
+                    <i class="fas fa-briefcase nav-icon"></i> <span class="nav-text">Experiencia Laboral</span>
                 </a>
                 <a href="{% url 'productos_academicos' %}" class="{% if 'productos_academicos' in request.path %}active{% endif %}">
-                    <i class="fas fa-book"></i> Prod. Académicos
+                    <i class="fas fa-book nav-icon"></i> <span class="nav-text">Prod. Académicos</span>
                 </a>
                 <a href="{% url 'productos_laborales' %}" class="{% if 'productos_laborales' in request.path %}active{% endif %}">
-                    <i class="fas fa-tools"></i> Prod. Laborales
+                    <i class="fas fa-tools nav-icon"></i> <span class="nav-text">Prod. Laborales</span>
                 </a>
                 <a href="{% url 'cursos' %}" class="{% if 'cursos' in request.path %}active{% endif %}">
-                    <i class="fas fa-graduation-cap"></i> Educación y Cursos
+                    <i class="fas fa-graduation-cap nav-icon"></i> <span class="nav-text">Educación</span>
                 </a>
                 <a href="{% url 'reconocimientos' %}" class="{% if 'reconocimientos' in request.path %}active{% endif %}">
-                    <i class="fas fa-trophy"></i> Logros
+                    <i class="fas fa-trophy nav-icon"></i> <span class="nav-text">Logros</span>
                 </a>
                 <a href="{% url 'garage' %}" class="{% if 'garage' in request.path %}active{% endif %}">
-                    <i class="fas fa-store"></i> Venta Garage
+                    <i class="fas fa-store nav-icon"></i> <span class="nav-text">Venta Garage</span>
                 </a>
 
                 <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
                     {% if user.is_authenticated %}
                         <a href="/admin/" target="_blank" style="color: #cbd5e1;">
-                            <i class="fas fa-cogs"></i> Admin
+                            <i class="fas fa-cogs nav-icon"></i> <span class="nav-text">Admin</span>
                         </a>
                     {% endif %}
                 </div>
