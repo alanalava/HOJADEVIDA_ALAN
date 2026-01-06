@@ -5,57 +5,92 @@
     <meta charset="UTF-8">
     <title>CV Completo</title>
     <style>
+        /* --- CONFIGURACIÓN GENERAL --- */
         @page { size: A4; margin: 1.5cm; }
-        body { font-family: Helvetica, Arial, sans-serif; color: #000; line-height: 1.3; font-size: 12px; }
-        .header { border-bottom: 4px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
-        .header h1 { color: #2563eb; margin: 0; text-transform: uppercase; font-size: 24px; font-weight: bold; }
-        .item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; page-break-inside: avoid; }
-        .item-table { width: 100%; margin-bottom: 2px; }
-        .td-left { text-align: left; font-weight: bold; font-size: 13px; }
-        .td-right { text-align: right; font-weight: bold; font-size: 12px; width: 25%; }
+        body { font-family: Helvetica, Arial, sans-serif; color: #222; line-height: 1.4; font-size: 12px; }
         
-        /* Estilos Imágenes */
-        .evidence-container { text-align: center; margin-top: 5px; padding: 5px; border: 1px dashed #ccc; }
-        .evidence-img { display: block; margin: 0 auto; max-width: 60%; max-height: 200px; object-fit: contain; }
+        /* --- CABECERA --- */
+        .header { border-bottom: 3px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: #2563eb; margin: 0; text-transform: uppercase; font-size: 26px; font-weight: bold; }
+        .header-role { font-size: 14px; font-weight: bold; color: #444; margin: 8px 0 15px; }
+        .header-contact { font-size: 11px; color: #555; }
+        .profile-img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid #2563eb; object-fit: cover; }
         
-        /* Nota PDF */
-        .pdf-note { font-size: 10px; color: #2563eb; font-style: italic; font-weight: bold; margin-top: 5px; display: block; }
+        /* --- TÍTULOS DE SECCIÓN --- */
+        h3 { color: #1e293b; background-color: #f1f5f9; padding: 6px 12px; border-left: 6px solid #2563eb; margin: 25px 0 15px; text-transform: uppercase; font-size: 14px; font-weight: bold; }
+        
+        /* --- ITEMS --- */
+        .item { margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; page-break-inside: avoid; }
+        .item:last-child { border-bottom: none; }
+        
+        /* TABLAS PARA ALINEACIÓN */
+        .item-table { width: 100%; margin-bottom: 4px; border-collapse: collapse; }
+        .td-left { text-align: left; font-weight: bold; font-size: 13px; color: #000; vertical-align: top; }
+        .td-right { text-align: right; font-weight: bold; font-size: 12px; color: #555; vertical-align: top; width: 25%; }
+        
+        .item-sub { color: #2563eb; font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; }
+        .item-desc { font-size: 11px; color: #333; text-align: justify; margin-bottom: 8px; }
+        
+        /* --- ESTILO EVIDENCIAS (SE VE FE0 ARREGLADO) --- */
+        
+        /* Contenedor de Imágenes (Limpio) */
+        .evidence-container {
+            text-align: center; margin-top: 12px;
+        }
+        .evidence-img {
+            display: block; margin: 0 auto;
+            max-width: 70%; /* Tamaño controlado */
+            max-height: 250px;
+            object-fit: contain;
+            border: 1px solid #e5e7eb; /* Borde sutil */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombrita elegante */
+            border-radius: 4px;
+        }
+        
+        /* Nota de PDF (Profesional) */
+        .pdf-note {
+            font-size: 11px; color: #1e40af; /* Azul más oscuro */
+            background-color: #dbeafe; /* Fondo azul claro */
+            padding: 8px 12px; border-radius: 6px;
+            border-left: 4px solid #2563eb; /* Borde lateral azul fuerte */
+            margin-top: 12px; display: block; font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-        <p>{{ perfil.descripcionperfil }}</p>
-        <p>Email: {{ perfil.email_contacto }}</p>
-    </div>
 
-    {% if reconocimientos %}
-    <h3 style="background:#f0f0f0; padding:5px; border-left:5px solid #2563eb;">Logros y Reconocimientos</h3>
-    {% for reco in reconocimientos %}
-    <div class="item">
-        <table class="item-table"><tr><td class="td-left">{{ reco.descripcionreconocimiento }}</td><td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td></tr></table>
-        <div>Entidad: {{ reco.entidadpatrocinadora }}</div>
-        
-        {% if reco.rutacertificado %}
-            {% if ".pdf" in reco.rutacertificado.url|lower %}
-                <span class="pdf-note">📄 Certificado (PDF) adjunto al final del documento</span>
-            {% else %}
-                <div class="evidence-container"><img src="{{ reco.rutacertificado.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
+    <div class="header">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 75%; vertical-align: top; padding-right: 20px;">
+                    <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+                    <div class="header-role">{{ perfil.descripcionperfil }}</div>
+                    <div class="header-contact">
+                        <div><strong>Email:</strong> {{ perfil.email_contacto }}</div>
+                        <div><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
+                        <div><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
+                        {% if perfil.sitioweb %}<div><strong>Web:</strong> {{ perfil.sitioweb }}</div>{% endif %}
+                    </div>
+                </td>
+                <td style="width: 25%; text-align: right; vertical-align: top;">
+                    {% if perfil.fotoperfil %}<img src="{{ perfil.fotoperfil.url }}" class="profile-img">{% endif %}
+                </td>
+            </tr>
+        </table>
     </div>
-    {% endfor %}
-    {% endif %}
 
     {% if experiencias %}
-    <h3 style="background:#f0f0f0; padding:5px; border-left:5px solid #2563eb;">Experiencia Laboral</h3>
+    <h3>Experiencia Laboral</h3>
     {% for exp in experiencias %}
     <div class="item">
-        <table class="item-table"><tr><td class="td-left">{{ exp.cargodesempenado }}</td><td class="td-right">{{ exp.fechainiciogestion|date:"Y" }}</td></tr></table>
-        <div>{{ exp.nombrempresa }}</div>
+        <table class="item-table"><tr><td class="td-left">{{ exp.cargodesempenado }}</td><td class="td-right">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</td></tr></table>
+        <span class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</span>
+        <div class="item-desc">{{ exp.descripcionfunciones }}</div>
+        
         {% if exp.rutacertificado %}
-            {% if ".pdf" in exp.rutacertificado.url|lower %}
-                <span class="pdf-note">📄 Certificado (PDF) adjunto al final del documento</span>
+            {% if '.pdf' in exp.rutacertificado.url|lower %}
+                <div class="pdf-note">📄 Certificado completo (PDF) adjunto al final del documento.</div>
             {% else %}
                 <div class="evidence-container"><img src="{{ exp.rutacertificado.url }}" class="evidence-img"></div>
             {% endif %}
@@ -64,16 +99,77 @@
     {% endfor %}
     {% endif %}
 
+    {% if cursos %}
+    <h3>Educación y Cursos</h3>
+    {% for curso in cursos %}
+    <div class="item">
+        <table class="item-table"><tr><td class="td-left">{{ curso.nombrecurso }}</td><td class="td-right">{{ curso.fechafin|date:"Y" }}</td></tr></table>
+        <span class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</span>
+        <div class="item-desc">{{ curso.descripcioncurso }}</div>
+        
+        {% if curso.rutacertificado %}
+            {% if '.pdf' in curso.rutacertificado.url|lower %}
+                <div class="pdf-note">📄 Certificado completo (PDF) adjunto al final del documento.</div>
+            {% else %}
+                <div class="evidence-container"><img src="{{ curso.rutacertificado.url }}" class="evidence-img"></div>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if productos_acad %}
+    <h3>Productos Académicos</h3>
+    {% for item in productos_acad %}
+    <div class="item">
+        <div class="td-left" style="margin-bottom: 4px;">{{ item.nombrerecurso }}</div>
+        <span class="item-sub">Tipo: {{ item.clasificador }}</span>
+        <div class="item-desc">{{ item.descripcion }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if productos_lab %}
+    <h3>Proyectos Laborales</h3>
+    {% for prod in productos_lab %}
+    <div class="item">
+        <table class="item-table"><tr><td class="td-left">{{ prod.nombreproducto }}</td><td class="td-right">{{ prod.fechaproducto|date:"Y" }}</td></tr></table>
+        <div class="item-desc">{{ prod.descripcion }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
     {% if garage %}
-    <h3 style="background:#f0f0f0; padding:5px; border-left:5px solid #2563eb;">Venta de Garage</h3>
+    <h3>Venta de Garage</h3>
     {% for item in garage %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ item.nombreproducto }}</td><td class="td-right">${{ item.valordelbien }}</td></tr></table>
+        <span class="item-sub">Estado: {{ item.estadoproducto }}</span>
+        <div class="item-desc">{{ item.descripcion }}</div>
+        
         {% if item.documento_interes %}
-            {% if ".pdf" in item.documento_interes.url|lower %}
-                <span class="pdf-note">📄 Documento (PDF) adjunto al final</span>
+            {% if '.pdf' in item.documento_interes.url|lower %}
+                <div class="pdf-note">📄 Documentación (PDF) adjunta al final del documento.</div>
             {% else %}
                 <div class="evidence-container"><img src="{{ item.documento_interes.url }}" class="evidence-img"></div>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if reconocimientos %}
+    <h3>Logros y Reconocimientos</h3>
+    {% for reco in reconocimientos %}
+    <div class="item">
+        <table class="item-table"><tr><td class="td-left">{{ reco.descripcionreconocimiento }}</td><td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td></tr></table>
+        <span class="item-sub">Entidad: {{ reco.entidadpatrocinadora }}</span>
+        
+        {% if reco.rutacertificado %}
+            {% if '.pdf' in reco.rutacertificado.url|lower %}
+                <div class="pdf-note">📄 Certificado completo (PDF) adjunto al final del documento.</div>
+            {% else %}
+                <div class="evidence-container"><img src="{{ reco.rutacertificado.url }}" class="evidence-img"></div>
             {% endif %}
         {% endif %}
     </div>

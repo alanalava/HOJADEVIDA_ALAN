@@ -7,7 +7,7 @@ from xhtml2pdf import pisa
 from pypdf import PdfWriter
 import os
 import io
-import urllib.request # Para descargar los PDFs de la nube
+import requests  # <--- USAMOS ESTA LIBRERÍA AHORA, ES MEJOR
 
 from .models import (
     DatosPersonales,
@@ -19,7 +19,7 @@ from .models import (
     ProductosLaborales
 )
 
-# --- FUNCIÓN PARA IMÁGENES LOCALES/NUBE ---
+# --- FUNCIÓN PARA IMÁGENES LOCALES/NUBE (SIN CAMBIOS) ---
 def link_callback(uri, rel):
     result = finders.find(uri)
     if result:
@@ -41,11 +41,11 @@ def link_callback(uri, rel):
     if os.path.isfile(path): return path
     return uri
 
-# --- FUNCIÓN HELPER PARA OBTENER PERFIL ---
+# --- HELPER PERFIL (SIN CAMBIOS) ---
 def get_active_profile():
     return DatosPersonales.objects.filter(perfilactivo=1).first()
 
-# --- VISTAS NORMALES ---
+# --- VISTAS NORMALES (SIN CAMBIOS) ---
 def home(request):
     perfil = get_active_profile()
     context = {
@@ -89,11 +89,10 @@ def garage(request):
     datos = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     return render(request, 'garage.html', {'perfil': perfil, 'datos': datos})
 
-# --- VISTA PDF CON FUSIÓN (PYPDF) ---
+# --- VISTA PDF BLINDADA ---
 def cv_completo(request):
     perfil = get_active_profile()
     
-    # 1. Obtenemos datos
     experiencias = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion')
     cursos_list = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')
     reconocimientos_list = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')
@@ -109,52 +108,61 @@ def cv_completo(request):
         'garage': garage_list
     }
     
-    # 2. Generar el PDF principal (HTML -> PDF) en memoria
-    template_path = 'cv_completo.html'
-    template = get_template(template_path)
+    # 1. Generar HTML
+    template = get_template('cv_completo.html')
     html = template.render(context)
     
+    # 2. Convertir a PDF en memoria
     main_pdf_buffer = io.BytesIO()
     pisa_status = pisa.CreatePDF(html, dest=main_pdf_buffer, link_callback=link_callback)
     
     if pisa_status.err:
-        return HttpResponse('Hubo errores al generar el PDF principal <pre>' + html + '</pre>')
+        return HttpResponse(f'Error generando PDF base: {html}')
 
-    # 3. Usar PyPDF para fusionar certificados
+    # 3. Iniciar Fusionador
     merger = PdfWriter()
-    
-    # Agregamos primero el CV generado
     main_pdf_buffer.seek(0)
     merger.append(main_pdf_buffer)
 
-    # Función interna para descargar y adjuntar si es PDF
+    # --- FUNCIÓN DE DESCARGA ROBUSTA (USANDO REQUESTS) ---
     def adjuntar_pdf_externo(campo_archivo):
         if not campo_archivo: return
-        try:
-            url = campo_archivo.url
-            # --- CORRECCIÓN AQUÍ ---
-            # Verificamos si ".pdf" existe en cualquier parte de la URL (ignorando mayúsculas)
-            # Esto permite URLs de Cloudinary tipo "archivo.pdf?v=123"
-            if '.pdf' in url.lower():
-                # Descargamos el archivo a memoria
-                remote_file = urllib.request.urlopen(url)
-                memory_file = io.BytesIO(remote_file.read())
-                merger.append(memory_file)
-        except Exception as e:
-            print(f"No se pudo adjuntar PDF: {e}")
+        url = campo_archivo.url
+        
+        # Detección flexible de PDF (ignora mayúsculas/parámetros url)
+        if '.pdf' in url.lower():
+            print(f"---- INTENTANDO DESCARGAR PDF: {url} ----") # LOG PARA RENDER
+            try:
+                # Usamos requests, que maneja mejor Cloudinary/SSL
+                response = requests.get(url, stream=True, timeout=10)
+                
+                if response.status_code == 200:
+                    # Convertimos los bytes descargados en un archivo en memoria
+                    memory_file = io.BytesIO(response.content)
+                    merger.append(memory_file)
+                    print("  -> ¡ÉXITO! PDF adjuntado correctamente.")
+                else:
+                     print(f"  -> ERROR: El servidor devolvió código {response.status_code}")
 
-    # Recorremos los modelos buscando PDFs
+            except Exception as e:
+                # Este print saldrá en los logs de Render si algo falla
+                print(f"  -> ERROR CRÍTICO descargando/uniendo PDF: {e}")
+        else:
+             print(f"---- Archivo ignorado (no parece PDF): {url} ----")
+
+    # 4. Procesar adjuntos
+    print("\nINICIANDO PROCESO DE ADJUNTOS...")
     for item in experiencias: adjuntar_pdf_externo(item.rutacertificado)
     for item in cursos_list: adjuntar_pdf_externo(item.rutacertificado)
     for item in reconocimientos_list: adjuntar_pdf_externo(item.rutacertificado)
     for item in garage_list: adjuntar_pdf_externo(item.documento_interes)
+    print("FIN PROCESO DE ADJUNTOS.\n")
 
-    # 4. Generar el archivo final fusionado
+    # 5. Generar salida final
     final_output = io.BytesIO()
     merger.write(final_output)
     merger.close()
     
-    # 5. Devolver respuesta
     response = HttpResponse(final_output.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="cv_completo_con_anexos.pdf"'
+    response['Content-Disposition'] = 'inline; filename="cv_completo_vFinal.pdf"'
     return response
