@@ -5,244 +5,123 @@
     <meta charset="UTF-8">
     <title>CV Completo | {{ perfil.nombres }}</title>
     <style>
-        @page {
-            size: A4;
-            margin: 1cm;
-        }
-        body {
-            font-family: Helvetica, Arial, sans-serif; /* xhtml2pdf prefiere fuentes estándar */
-            margin: 0;
-            padding: 0;
-            color: #333;
-            background: #fff;
-        }
-
-        /* ENCABEZADO */
-        .header {
-            border-bottom: 2px solid #2563eb;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .header-content {
-            /* xhtml2pdf usa tablas para layouts complejos, pero float suele fallar */
-            position: relative;
-            height: 120px;
-        }
-        .header-text {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 70%;
-        }
-        .header-text h1 {
-            margin: 0;
-            color: #2563eb;
-            font-size: 24px;
-            text-transform: uppercase;
-        }
-        .header-text p {
-            margin: 5px 0 0 0;
-            color: #666;
-            font-size: 14px;
-        }
-        .header-img {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-        }
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%; /* Nota: xhtml2pdf a veces ignora border-radius */
-            border: 2px solid #2563eb;
-        }
-
-        /* SECCIONES */
-        h3.section-title {
-            color: #1f2937;
-            font-size: 16px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #ccc;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            padding-bottom: 3px;
-        }
-
-        /* ITEMS */
-        .item {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px dotted #eee;
-        }
-        .item-head {
-            font-weight: bold;
-            font-size: 14px;
-            color: #000;
-            margin-bottom: 2px;
-        }
-        .item-date {
-            float: right;
-            color: #666;
-            font-weight: normal;
-            font-size: 12px;
-        }
-        .item-sub {
-            color: #2563eb;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .item-desc {
-            font-size: 12px;
-            color: #444;
-            line-height: 1.4;
-        }
-
-        /* CONTACTO */
-        .contact-info {
-            font-size: 12px;
-            color: #444;
-            margin-bottom: 20px;
-        }
+        @page { size: A4; margin: 1cm; }
+        body { font-family: Helvetica, Arial, sans-serif; color: #333; }
         
-        /* IMÁGENES EVIDENCIA */
-        .evidence-img {
-            margin-top: 8px;
-            width: 150px; /* Tamaño fijo */
-            height: 120px;
-            object-fit: contain;
-            border: 1px solid #ddd;
-        }
+        /* CABECERA */
+        .header { border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 20px; }
+        .header h1 { color: #2563eb; margin: 0; text-transform: uppercase; font-size: 24px; }
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #2563eb; }
+        
+        /* SECCIONES */
+        h3 { color: #1f2937; border-bottom: 1px solid #ccc; margin-top: 20px; text-transform: uppercase; font-size: 16px; }
+        
+        /* ITEMS */
+        .item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dotted #eee; page-break-inside: avoid; }
+        .item-head { font-weight: bold; font-size: 14px; }
+        .item-sub { color: #2563eb; font-size: 12px; font-weight: bold; }
+        .item-desc { font-size: 12px; margin-top: 5px; }
+        
+        /* IMAGENES */
+        .evidence-img { margin-top: 8px; width: 150px; height: 120px; object-fit: contain; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="header-content">
-            <div class="header-text">
-                <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-                <p>{{ perfil.descripcionperfil }}</p>
-            </div>
-            <div class="header-img">
-                {% if perfil.fotoperfil %}
-                    <img src="{{ perfil.fotoperfil.url }}" class="profile-img">
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div class="contact-info">
-        <strong>Email:</strong> {{ perfil.email_contacto }} <br>
-        <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }} <br>
-        <strong>Cédula:</strong> {{ perfil.numerocedula }} <br>
-        <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 70%; vertical-align: top;">
+                    <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+                    <p>{{ perfil.descripcionperfil }}</p>
+                    <div style="font-size: 12px; margin-top: 10px;">
+                        <strong>Email:</strong> {{ perfil.email_contacto }}<br>
+                        <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}<br>
+                        <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
+                    </div>
+                </td>
+                <td style="width: 30%; text-align: right; vertical-align: top;">
+                    {% if perfil.fotoperfil %}
+                        <img src="{{ perfil.fotoperfil.url }}" class="profile-img">
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
     </div>
 
     {% if experiencias %}
-    <h3 class="section-title">Experiencia Laboral</h3>
+    <h3>Experiencia Laboral</h3>
     {% for exp in experiencias %}
     <div class="item">
-        <div class="item-head">
-            {{ exp.cargodesempenado }}
-            <span class="item-date">
-                {{ exp.fechainiciogestion|date:"Y" }} - 
-                {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}
-            </span>
-        </div>
-        <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
+        <div class="item-head">{{ exp.cargodesempenado }}</div>
+        <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.fechainiciogestion|date:"Y" }}</div>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
     </div>
     {% endfor %}
     {% endif %}
 
     {% if cursos %}
-    <h3 class="section-title">Educación y Cursos</h3>
+    <h3>Educación y Cursos</h3>
     {% for curso in cursos %}
     <div class="item">
-        <div class="item-head">
-            {{ curso.nombrecurso }}
-            <span class="item-date">{{ curso.fechafin|date:"Y" }}</span>
-        </div>
-        <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
+        <div class="item-head">{{ curso.nombrecurso }}</div>
+        <div class="item-sub">{{ curso.entidadpatrocinadora }}</div>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
-        
         {% if curso.imagen %}
-            <br>
-            <img src="{{ curso.imagen.url }}" class="evidence-img">
+            <br><img src="{{ curso.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 
     {% if productos_acad %}
-    <h3 class="section-title">Productos Académicos</h3>
+    <h3>Productos Académicos</h3>
     {% for item in productos_acad %}
     <div class="item">
-        <div class="item-head">
-            {{ item.nombrerecurso }}
-            <span class="item-date" style="background:#eee; padding:2px;">{{ item.clasificador }}</span>
-        </div>
+        <div class="item-head">{{ item.nombrerecurso }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
-
         {% if item.imagen %}
-            <br>
-            <img src="{{ item.imagen.url }}" class="evidence-img">
+            <br><img src="{{ item.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 
     {% if productos_lab %}
-    <h3 class="section-title">Proyectos Laborales</h3>
+    <h3>Proyectos Laborales</h3>
     {% for prod in productos_lab %}
     <div class="item">
-        <div class="item-head">
-            {{ prod.nombreproducto }}
-            <span class="item-date">{{ prod.fechaproducto|date:"Y" }}</span>
-        </div>
+        <div class="item-head">{{ prod.nombreproducto }}</div>
         <div class="item-desc">{{ prod.descripcion }}</div>
-        
         {% if prod.imagen %}
-            <br>
-            <img src="{{ prod.imagen.url }}" class="evidence-img">
+            <br><img src="{{ prod.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 
     {% if garage %}
-    <h3 class="section-title">Venta de Garage</h3>
+    <h3>Venta de Garage</h3>
     {% for item in garage %}
     <div class="item">
-        <div class="item-head">
-            {{ item.nombreproducto }}
-            <span class="item-date">${{ item.valordelbien }}</span>
-        </div>
+        <div class="item-head">{{ item.nombreproducto }} - ${{ item.valordelbien }}</div>
         <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
-        
         {% if item.imagen %}
-            <br>
-            <img src="{{ item.imagen.url }}" class="evidence-img">
+            <br><img src="{{ item.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 
     {% if reconocimientos %}
-    <h3 class="section-title">Logros y Reconocimientos</h3>
+    <h3>Logros y Reconocimientos</h3>
     {% for reco in reconocimientos %}
     <div class="item">
-        <div class="item-head">
-            {{ reco.descripcionreconocimiento }}
-            <span class="item-date">{{ reco.fechareconocimiento|date:"Y" }}</span>
-        </div>
-        <div class="item-sub">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
-        
+        <div class="item-head">{{ reco.descripcionreconocimiento }}</div>
+        <div class="item-sub">{{ reco.entidadpatrocinadora }}</div>
         {% if reco.imagen %}
-            <br>
-            <img src="{{ reco.imagen.url }}" class="evidence-img">
+            <br><img src="{{ reco.imagen.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}

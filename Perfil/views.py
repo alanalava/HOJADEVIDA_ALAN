@@ -16,24 +16,31 @@ from .models import (
     ProductosLaborales
 )
 
-# --- 1. FUNCIÓN IMPORTANTE PARA QUE SE VEAN LAS IMÁGENES EN EL PDF ---
+# --- FUNCIÓN CORREGIDA PARA NUBE (CLOUDINARY/AZURE) Y LOCAL ---
 def link_callback(uri, rel):
     """
-    Convierte URLs de HTML (ej: /media/foto.jpg) a rutas absolutas del sistema 
-    de archivos (ej: /app/media/foto.jpg) para que xhtml2pdf las encuentre.
+    Ayuda a xhtml2pdf a encontrar las imágenes, ya sean locales o en la nube.
     """
+    # 1. Intentar buscar en STATIC (Archivos fijos como logos)
     result = finders.find(uri)
     if result:
         if isinstance(result, (list, tuple)):
             result = result[0]
         result = os.path.abspath(result)
-        return result
+        if os.path.isfile(result):
+            return result
 
-    sUrl = settings.STATIC_URL        # Típicamente /static/
-    sRoot = settings.STATIC_ROOT      # Ruta absoluta de static
-    mUrl = settings.MEDIA_URL         # Típicamente /media/
-    mRoot = settings.MEDIA_ROOT       # Ruta absoluta de media
+    # 2. Manejo de MEDIA (Tus fotos subidas)
+    sUrl = settings.STATIC_URL
+    sRoot = settings.STATIC_ROOT
+    mUrl = settings.MEDIA_URL
+    mRoot = settings.MEDIA_ROOT
 
+    # Si es una URL completa (http/https), devolvemos tal cual para que la descargue
+    if uri.startswith("http://") or uri.startswith("https://"):
+        return uri
+
+    # Si es ruta relativa local, intentamos construir el path
     if uri.startswith(mUrl):
         path = os.path.join(mRoot, uri.replace(mUrl, ""))
     elif uri.startswith(sUrl):
@@ -41,18 +48,17 @@ def link_callback(uri, rel):
     else:
         return uri
 
-    # Asegura que el archivo exista antes de pasarlo al PDF
-    if not os.path.isfile(path):
-        return None
-        
-    return path
-# -------------------------------------------------------------------
+    # Si el archivo existe localmente, lo devolvemos. Si no, devolvemos la URI original.
+    if os.path.isfile(path):
+        return path
+    
+    return uri
+# ----------------------------------------------------------
 
 def get_active_profile():
     return DatosPersonales.objects.filter(perfilactivo=1).first()
 
-# --- VISTAS NORMALES (WEB) ---
-
+# --- VISTAS NORMALES ---
 def home(request):
     perfil = get_active_profile()
     context = {
@@ -96,8 +102,7 @@ def garage(request):
     datos = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     return render(request, 'garage.html', {'perfil': perfil, 'datos': datos})
 
-
-# --- 2. VISTA PARA GENERAR EL PDF ---
+# --- VISTA PDF ---
 def cv_completo(request):
     perfil = get_active_profile()
     
@@ -111,17 +116,14 @@ def cv_completo(request):
         'garage': VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     }
     
-    # Renderizamos el HTML como string
     template_path = 'cv_completo.html'
+    # Usamos 'inline' para ver el PDF en el navegador primero
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="cv_completo.pdf"'
+
     template = get_template(template_path)
     html = template.render(context)
 
-    # Creamos la respuesta HTTP tipo PDF
-    response = HttpResponse(content_type='application/pdf')
-    # 'inline' para ver en navegador, 'attachment' para descargar directo
-    response['Content-Disposition'] = 'inline; filename="cv_completo.pdf"'
-
-    # Generamos el PDF usando el link_callback para resolver rutas de imágenes
     pisa_status = pisa.CreatePDF(
        html, dest=response, link_callback=link_callback
     )
