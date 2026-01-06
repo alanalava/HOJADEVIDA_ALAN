@@ -8,44 +8,45 @@
         /* --- CONFIGURACIÓN GENERAL --- */
         @page {
             size: A4;
-            margin: 1.5cm; /* Márgenes estándar */
+            margin: 1.5cm;
         }
         
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: #222;
+            color: #1a1a1a;
             line-height: 1.4;
-            font-size: 13px; /* Base un poco más grande para leer mejor */
+            font-size: 12px;
         }
         
-        /* --- CABECERA (ENGRANDECIDA) --- */
+        /* --- CABECERA (AUMENTADA) --- */
         .header {
-            border-bottom: 4px solid #2563eb; /* Línea más gruesa */
-            padding-bottom: 25px;
-            margin-bottom: 35px;
+            border-bottom: 4px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
         .header h1 {
             color: #2563eb;
             margin: 0;
             text-transform: uppercase;
-            font-size: 34px; /* NOMBRE MUCHO MÁS GRANDE */
+            font-size: 32px; /* Nombre mucho más grande */
             font-weight: 800;
             letter-spacing: 1px;
         }
         .header-role {
-            font-size: 18px; /* Rol más destacado */
+            font-size: 16px; /* Rol destacado */
             font-weight: bold;
             color: #444;
-            margin: 10px 0 20px;
+            margin: 8px 0 15px;
+            text-transform: uppercase;
         }
         .header-contact {
-            font-size: 14px; /* Contacto MUCHO más legible (antes 11px) */
-            color: #555;
-            line-height: 1.8; /* Más espacio entre líneas de contacto */
+            font-size: 13px; /* Contacto más legible */
+            color: #333;
+            line-height: 1.6;
         }
         .profile-img {
-            width: 150px; /* Foto más grande (antes 110px) */
-            height: 150px;
+            width: 140px; /* Foto más grande */
+            height: 140px;
             border-radius: 50%;
             border: 4px solid #2563eb;
             object-fit: cover;
@@ -53,17 +54,17 @@
         
         /* --- TÍTULOS DE SECCIÓN --- */
         h3 {
-            color: #1e293b;
-            background-color: #f8fafc;
-            padding: 8px 15px;
-            border-left: 7px solid #2563eb;
-            margin: 30px 0 20px;
+            color: #0f172a;
+            background-color: #f1f5f9;
+            padding: 8px 12px;
+            border-left: 6px solid #2563eb;
+            margin: 25px 0 15px;
             text-transform: uppercase;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
         }
         
-        /* --- ITEMS (LO DE ABAJO - MÁS COMPACTO) --- */
+        /* --- ITEMS --- */
         .item {
             margin-bottom: 20px;
             padding-bottom: 15px;
@@ -72,63 +73,58 @@
         }
         .item:last-child { border-bottom: none; }
         
-        /* Tablas de alineación */
-        .item-table { width: 100%; margin-bottom: 5px; border-collapse: collapse; }
+        .item-table { width: 100%; margin-bottom: 5px; }
         .td-left {
-            text-align: left; font-weight: bold;
-            font-size: 14px; /* Título del ítem un poco más grande */
+            text-align: left; font-weight: bold; font-size: 14px;
             color: #000; vertical-align: top;
         }
         .td-right {
-            text-align: right; font-weight: bold;
-            font-size: 13px; /* Fecha */
-            color: #666; vertical-align: top; width: 25%;
+            text-align: right; font-weight: bold; font-size: 12px;
+            color: #555; vertical-align: top; width: 25%;
         }
         
         .item-sub {
-            color: #2563eb; font-size: 13px; font-weight: 600; margin-bottom: 8px; display: block;
+            color: #2563eb; font-size: 12px; font-weight: bold;
+            margin-bottom: 6px; display: block;
         }
         .item-desc {
-            font-size: 12px; /* Descripción estándar */
-            color: #333; text-align: justify; margin-bottom: 10px;
-            line-height: 1.5;
+            font-size: 12px; text-align: justify; margin-bottom: 10px;
         }
         
-        /* --- IMÁGENES DE EVIDENCIA (REDUCIDAS DRÁSTICAMENTE) --- */
+        /* --- IMÁGENES (REDUCIDAS) --- */
         .evidence-container {
-            text-align: left; /* Alineadas a la izquierda para que no estorben */
+            text-align: left;
             margin-top: 10px;
             padding: 5px;
             border: 1px solid #eee;
-            display: inline-block; /* Para que se ajuste al tamaño de la imagen */
             background: #fff;
+            display: inline-block;
         }
         .evidence-img {
             display: block;
-            /* AQUÍ ESTÁ LA CLAVE: MUCHO MÁS PEQUEÑAS */
-            max-width: 200px;  /* Ancho máximo controlado */
-            max-height: 150px; /* Altura máxima REDUCIDA (antes 250px) */
-            width: auto;
-            height: auto;
+            /* TAMAÑO CONTROLADO PARA QUE NO SE VEA GIGANTE */
+            max-height: 140px; 
+            max-width: 250px;
+            width: auto; height: auto;
             object-fit: contain;
         }
         
-        /* Nota de PDF */
+        /* Nota PDF */
         .pdf-note {
             font-size: 11px; color: #1e40af;
             background-color: #dbeafe;
-            padding: 5px 10px; border-radius: 4px;
+            padding: 6px 10px; border-radius: 4px;
             border-left: 3px solid #2563eb;
-            margin-top: 10px; display: inline-block; font-weight: 600;
+            margin-top: 8px; display: inline-block; font-weight: 600;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <table style="width: 100%; border-collapse: collapse;">
+        <table style="width: 100%;">
             <tr>
-                <td style="width: 70%; vertical-align: top; padding-right: 30px;">
+                <td style="width: 70%; vertical-align: top; padding-right: 20px;">
                     <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
                     <div class="header-role">{{ perfil.descripcionperfil }}</div>
                     <div class="header-contact">
@@ -189,7 +185,7 @@
     <h3>Productos Académicos</h3>
     {% for item in productos_acad %}
     <div class="item">
-        <div class="td-left" style="margin-bottom: 5px;">{{ item.nombrerecurso }}</div>
+        <div class="td-left" style="margin-bottom:5px;">{{ item.nombrerecurso }}</div>
         <span class="item-sub">Tipo: {{ item.clasificador }}</span>
         <div class="item-desc">{{ item.descripcion }}</div>
     </div>

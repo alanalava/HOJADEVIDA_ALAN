@@ -9,13 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- REGLA DE ORO --- */
         * { box-sizing: border-box; }
 
-        /* --- VARIABLES --- */
         :root {
-            --sidebar-width-open: 260px;
-            --sidebar-width-closed: 80px;
+            --sidebar-width-open: 250px;
+            --sidebar-width-closed: 75px;
             --primary: #2563eb;     
             --sidebar-bg: #0f172a;   
             
@@ -23,6 +21,10 @@
             --bg-card: #ffffff;
             --text-main: #334155;    
             --text-muted: #64748b;
+            
+            /* Colores para las etiquetas (Tags) */
+            --tag-bg: #e2e8f0;
+            --tag-text: #475569;
         }
 
         body.dark-mode {
@@ -30,9 +32,12 @@
             --bg-card: #1e293b;       
             --text-main: #e2e8f0;     
             --text-muted: #94a3b8;
+            
+            /* Etiquetas en modo oscuro */
+            --tag-bg: #334155; 
+            --tag-text: #e2e8f0;
         }
 
-        /* --- BASE --- */
         body {
             font-family: 'Poppins', sans-serif; 
             background: var(--bg-main);
@@ -52,108 +57,122 @@
             background: var(--sidebar-bg);
             color: white;
             z-index: 1000;
-            display: flex;       
-            flex-direction: column; 
+            display: flex; flex-direction: column;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
         }
 
         aside:hover { width: var(--sidebar-width-open); }
 
-        /* HEADER */
-        .sidebar-header { flex: 0 0 auto; padding: 20px 10px 10px; text-align: center; }
+        .sidebar-header { flex: 0 0 auto; padding: 20px 10px; text-align: center; }
 
-        /* MENÚ */
-        .sidebar-menu { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 5px 10px; scrollbar-width: none; }
+        .sidebar-menu { 
+            flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 10px; scrollbar-width: none; 
+        }
         .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* FOOTER */
+        /* FOOTER HORIZONTAL */
         .sidebar-footer {
-            flex: 0 0 auto; padding: 15px 10px;
-            background: var(--sidebar-bg); border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: row; gap: 8px; justify-content: space-between;
+            flex: 0 0 auto; 
+            padding: 15px 10px;
+            background: var(--sidebar-bg); 
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; 
+            flex-direction: row; /* Uno al lado del otro */
+            justify-content: space-evenly; 
+            gap: 10px;
         }
 
-        /* --- ESTILOS COMPONENTES --- */
-        .profile-link { display: block; width: 45px; height: 45px; margin: 0 auto 10px; border-radius: 50%; transition: 0.3s; text-decoration: none; }
-        .avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid white; cursor: pointer; }
+        /* --- ELEMENTOS DE PERFIL --- */
+        .profile-link { display: block; width: 45px; height: 45px; margin: 0 auto 10px; }
+        .avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid white; cursor: pointer; transition: 0.3s;}
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        aside:hover .profile-link { width: 85px; height: 85px; } 
+        aside:hover .avatar-container { width: 80px; height: 80px; } 
         
-        .user-info { opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; }
-        aside:hover .user-info { opacity: 1; max-height: 120px; margin-bottom: 15px; }
-        .user-name { font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
+        .user-info { opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; margin-bottom: 10px; }
+        aside:hover .user-info { opacity: 1; max-height: 100px; }
+        .user-name { font-weight: 700; font-size: 1.1rem; white-space: nowrap; color: white;}
 
-        /* Typewriter */
-        .typewriter { font-size: 0.85rem; color: #94a3b8; display: block; min-height: 1.5em; margin-top: 4px; }
-        .typewriter::after { content: '|'; animation: blink 1s step-end infinite; color: var(--primary); }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* Botón PDF */
+        .typewriter { font-size: 0.8rem; color: #94a3b8; display: block; min-height: 1.5em; }
+        
+        /* BOTÓN PDF (Texto blanco forzado) */
         .btn-pdf {
-            background: var(--primary); color: white; border-radius: 10px;
+            background: var(--primary); 
+            color: white !important; 
+            border-radius: 10px;
             padding: 10px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; margin-bottom: 10px; transition: 0.2s; font-weight: 500; font-size: 0.9rem;
+            text-decoration: none; margin-bottom: 15px; transition: 0.2s;
+            white-space: nowrap; overflow: hidden;
         }
-        .btn-pdf:hover { transform: translateY(-2px); background: #3b82f6; }
-        .btn-text, .nav-text { display: none; margin-left: 12px; white-space: nowrap; }
+        .btn-pdf:hover { background: #3b82f6; transform: translateY(-2px); }
+        .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* Enlaces Menú */
+        /* MENU LINKS */
         nav a {
-            display: flex; align-items: center; padding: 11px 10px; color: var(--text-muted); text-decoration: none;
-            border-radius: 10px; margin-bottom: 4px; transition: 0.2s; justify-content: center;
+            display: flex; align-items: center; padding: 12px; color: #94a3b8; text-decoration: none;
+            border-radius: 10px; margin-bottom: 5px; transition: 0.2s; justify-content: center;
         }
         aside:hover nav a { justify-content: flex-start; padding-left: 15px; }
         nav a:hover, nav a.active { background: rgba(255,255,255,0.1); color: white; }
-        nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        nav a.active { background: var(--primary); }
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
-        /* Footer Buttons */
+        /* FOOTER BOTONES */
         .footer-btn {
-            background: transparent; border: none; color: #94a3b8; flex: 1; padding: 8px; border-radius: 10px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 1.1rem; text-decoration: none;
+            background: rgba(255,255,255,0.05); border: none; color: #94a3b8;
+            width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; 
+            transition: 0.2s; font-size: 1.1rem; text-decoration: none;
         }
-        .footer-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .footer-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: scale(1.1); }
 
         /* --- CONTENIDO PRINCIPAL --- */
-        main { margin-left: var(--sidebar-width-closed); padding: 2.5rem; transition: margin-left 0.3s ease; }
+        main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* --- ESTILOS DE TARJETAS (CORREGIDO) --- */
+        /* --- ESTILOS TARJETAS (Globales) --- */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
-            box-shadow: var(--shadow-card); margin-bottom: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            color: var(--text-main); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
+            color: var(--text-main);
+        }
+        .card h1, .card h2, .card h3, .card h4, .card p, .card strong { color: inherit; }
+
+        /* ETIQUETAS (TAGS) - ARREGLO DE "PALABRA FEA" */
+        .tag-category {
+            background-color: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 10px;
         }
 
-        /* 1. Forzar color del texto general */
-        .card h1, .card h2, .card h3, .card h4, .card h5, .card p, .card span, .card div, .card li {
-            color: var(--text-main) !important;
+        /* BOTÓN AZUL DENTRO DE TARJETAS (Arreglo botón vacío) */
+        .btn-card-action {
+            background-color: var(--primary);
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-weight: 500; transition: 0.2s;
+            border: none; cursor: pointer;
         }
-        
-        /* 2. Enlaces normales en azul */
-        .card a { color: var(--primary) !important; }
-
-        /* 3. ¡IMPORTANTE! BOTONES CON TEXTO BLANCO */
-        /* Esto arregla el botón invisible. Si tiene clase 'btn', fuerza texto blanco */
-        .card a[class*="btn"], .card button { 
-            color: white !important; 
-        }
-
-        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-        body.dark-mode .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .btn-card-action:hover { background-color: #1d4ed8; }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            aside { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; padding: 0; overflow: visible; }
+            aside { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; padding: 0; }
             aside:hover { width: 100%; }
-            .sidebar-header, .btn-text, .nav-text, .sidebar-footer { display: none; }
-            .sidebar-menu { display: flex; flex-direction: row; overflow-x: auto; width: 100%; padding: 0; justify-content: space-between; }
-            nav { display: flex; width: 100%; justify-content: space-around; padding: 0 5px;}
-            nav a { margin: 0; padding: 10px; border-radius: 50%; }
-            main { margin-left: 0; margin-bottom: 70px; padding: 1.5rem; }
+            .sidebar-header, .sidebar-footer { display: none; }
+            .sidebar-menu { display: flex; flex-direction: row; overflow-x: auto; width: 100%; padding: 0; justify-content: space-around; }
+            nav { display: flex; width: 100%; justify-content: space-around; }
+            nav a { padding: 10px; border-radius: 50%; }
+            main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
         }
     </style>
 </head>
@@ -166,7 +185,7 @@
                     {% if perfil.fotoperfil %}
                         <img src="{{ perfil.fotoperfil.url }}" class="avatar-img">
                     {% else %}
-                        <img src="https://via.placeholder.com/100" class="avatar-img">
+                        <div style="background:#333;width:100%;height:100%;"></div>
                     {% endif %}
                 </div>
             </a>
