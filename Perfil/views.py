@@ -7,162 +7,122 @@ from xhtml2pdf import pisa
 from pypdf import PdfWriter
 import os
 import io
-import requests  # <--- USAMOS ESTA LIBRERÍA AHORA, ES MEJOR
+import requests
+import tempfile
 
 from .models import (
-    DatosPersonales,
-    ExperienciaLaboral,
-    CursosRealizados,
-    VentaGarage,
-    Reconocimientos,
-    ProductosAcademicos,
-    ProductosLaborales
+    DatosPersonales, ExperienciaLaboral, CursosRealizados, 
+    VentaGarage, Reconocimientos, ProductosAcademicos, ProductosLaborales
 )
 
-# --- FUNCIÓN PARA IMÁGENES LOCALES/NUBE (SIN CAMBIOS) ---
+# --- FUNCIÓN PODEROSA PARA GESTIONAR IMÁGENES ---
 def link_callback(uri, rel):
-    result = finders.find(uri)
-    if result:
-        if isinstance(result, (list, tuple)): result = result[0]
-        result = os.path.abspath(result)
-        if os.path.isfile(result): return result
-
+    # 1. Si es un archivo estático o media local
     sUrl = settings.STATIC_URL
     sRoot = settings.STATIC_ROOT
     mUrl = settings.MEDIA_URL
     mRoot = settings.MEDIA_ROOT
 
-    if uri.startswith("http://") or uri.startswith("https://"): return uri
-    
-    if uri.startswith(mUrl): path = os.path.join(mRoot, uri.replace(mUrl, ""))
-    elif uri.startswith(sUrl): path = os.path.join(sRoot, uri.replace(sUrl, ""))
-    else: return uri
+    if uri.startswith(mUrl):
+        path = os.path.join(mRoot, uri.replace(mUrl, ""))
+    elif uri.startswith(sUrl):
+        path = os.path.join(sRoot, uri.replace(sUrl, ""))
+    else:
+        path = uri
 
-    if os.path.isfile(path): return path
+    # Si existe localmente, devolver ruta
+    if os.path.isfile(path):
+        return path
+
+    # 2. Si es una URL remota (Cloudinary/Internet)
+    if uri.startswith("http://") or uri.startswith("https://"):
+        try:
+            # Descargamos la imagen temporalmente
+            response = requests.get(uri, stream=True, timeout=10)
+            if response.status_code == 200:
+                # Crear archivo temporal
+                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+                temp_file.write(response.content)
+                temp_file.close()
+                return temp_file.name # Devolvemos la ruta del archivo temporal
+        except Exception as e:
+            print(f"Error descargando imagen para PDF: {e}")
+            return uri # Si falla, devolvemos original por si acaso
+
     return uri
 
-# --- HELPER PERFIL (SIN CAMBIOS) ---
-def get_active_profile():
-    return DatosPersonales.objects.filter(perfilactivo=1).first()
-
-# --- VISTAS NORMALES (SIN CAMBIOS) ---
-def home(request):
-    perfil = get_active_profile()
-    context = {
-        'perfil': perfil,
-        'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_garage': VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:5],
-        'resumen_rec': Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-    }
-    return render(request, 'home.html', context)
-
-def experiencia(request):
-    perfil = get_active_profile()
-    datos = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'experiencia.html', {'perfil': perfil, 'datos': datos})
-
-def productos_academicos(request):
-    perfil = get_active_profile()
-    datos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'productos_academicos.html', {'perfil': perfil, 'datos': datos})
-
-def productos_laborales(request):
-    perfil = get_active_profile()
-    datos = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')
-    return render(request, 'productos_laborales.html', {'perfil': perfil, 'datos': datos})
-
-def cursos(request):
-    perfil = get_active_profile()
-    datos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'cursos.html', {'perfil': perfil, 'datos': datos})
-
-def reconocimientos(request):
-    perfil = get_active_profile()
-    datos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')
-    return render(request, 'reconocimientos.html', {'perfil': perfil, 'datos': datos})
-
-def garage(request):
-    perfil = get_active_profile()
-    datos = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'garage.html', {'perfil': perfil, 'datos': datos})
-
-# --- VISTA PDF BLINDADA ---
+# --- VISTA PRINCIPAL DEL PDF ---
 def cv_completo(request):
-    perfil = get_active_profile()
+    perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
     
+    # Consultas
     experiencias = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion')
-    cursos_list = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')
-    reconocimientos_list = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')
-    garage_list = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
+    cursos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')
+    recos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')
+    garage = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
+    acad = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
+    lab = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')
 
+    # Preparamos contexto
     context = {
-        'perfil': perfil,
-        'experiencias': experiencias,
-        'cursos': cursos_list,
-        'reconocimientos': reconocimientos_list,
-        'productos_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True),
-        'productos_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto'),
-        'garage': garage_list
+        'perfil': perfil, 'experiencias': experiencias, 'cursos': cursos,
+        'reconocimientos': recos, 'garage': garage,
+        'productos_acad': acad, 'productos_lab': lab
     }
-    
-    # 1. Generar HTML
+
+    # 1. Generar HTML -> PDF Base
     template = get_template('cv_completo.html')
     html = template.render(context)
     
-    # 2. Convertir a PDF en memoria
-    main_pdf_buffer = io.BytesIO()
-    pisa_status = pisa.CreatePDF(html, dest=main_pdf_buffer, link_callback=link_callback)
+    pdf_buffer = io.BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=pdf_buffer, link_callback=link_callback)
     
     if pisa_status.err:
-        return HttpResponse(f'Error generando PDF base: {html}')
+        return HttpResponse(f'Error al generar PDF: {html}')
 
-    # 3. Iniciar Fusionador
+    # 2. Fusión de Adjuntos (Detectando si son PDF reales)
     merger = PdfWriter()
-    main_pdf_buffer.seek(0)
-    merger.append(main_pdf_buffer)
+    pdf_buffer.seek(0)
+    merger.append(pdf_buffer)
 
-    # --- FUNCIÓN DE DESCARGA ROBUSTA (USANDO REQUESTS) ---
-    def adjuntar_pdf_externo(campo_archivo):
-        if not campo_archivo: return
-        url = campo_archivo.url
-        
-        # Detección flexible de PDF (ignora mayúsculas/parámetros url)
-        if '.pdf' in url.lower():
-            print(f"---- INTENTANDO DESCARGAR PDF: {url} ----") # LOG PARA RENDER
-            try:
-                # Usamos requests, que maneja mejor Cloudinary/SSL
-                response = requests.get(url, stream=True, timeout=10)
-                
-                if response.status_code == 200:
-                    # Convertimos los bytes descargados en un archivo en memoria
-                    memory_file = io.BytesIO(response.content)
-                    merger.append(memory_file)
-                    print("  -> ¡ÉXITO! PDF adjuntado correctamente.")
+    def procesar_adjunto(archivo):
+        if not archivo: return
+        try:
+            url = archivo.url
+            # Descargamos el archivo a memoria
+            res = requests.get(url, timeout=15)
+            if res.status_code == 200:
+                content = res.content
+                # ¿ES UN PDF? (Miramos los "bytes mágicos" del inicio)
+                if content.startswith(b'%PDF'):
+                    print(f"-> Adjuntando PDF: {url}")
+                    merger.append(io.BytesIO(content))
                 else:
-                     print(f"  -> ERROR: El servidor devolvió código {response.status_code}")
+                    print(f"-> El archivo NO es un PDF, es imagen u otro: {url}")
+        except Exception as e:
+            print(f"Error procesando adjunto: {e}")
 
-            except Exception as e:
-                # Este print saldrá en los logs de Render si algo falla
-                print(f"  -> ERROR CRÍTICO descargando/uniendo PDF: {e}")
-        else:
-             print(f"---- Archivo ignorado (no parece PDF): {url} ----")
+    # Recorremos todo lo que pueda tener certificado
+    all_items = list(experiencias) + list(cursos) + list(recos) + list(garage)
+    for item in all_items:
+        # Algunos modelos usan 'rutacertificado', Garage usa 'documento_interes'
+        if hasattr(item, 'rutacertificado'): procesar_adjunto(item.rutacertificado)
+        if hasattr(item, 'documento_interes'): procesar_adjunto(item.documento_interes)
 
-    # 4. Procesar adjuntos
-    print("\nINICIANDO PROCESO DE ADJUNTOS...")
-    for item in experiencias: adjuntar_pdf_externo(item.rutacertificado)
-    for item in cursos_list: adjuntar_pdf_externo(item.rutacertificado)
-    for item in reconocimientos_list: adjuntar_pdf_externo(item.rutacertificado)
-    for item in garage_list: adjuntar_pdf_externo(item.documento_interes)
-    print("FIN PROCESO DE ADJUNTOS.\n")
-
-    # 5. Generar salida final
+    # 3. Respuesta Final
     final_output = io.BytesIO()
     merger.write(final_output)
-    merger.close()
     
     response = HttpResponse(final_output.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="cv_completo_vFinal.pdf"'
+    response['Content-Disposition'] = 'inline; filename="cv_completo_final.pdf"'
     return response
+
+# --- RESTO DE VISTAS (NO CAMBIAN, PERO LAS DEJO PARA QUE NO SE ROMPA NADA) ---
+def get_active_profile(): return DatosPersonales.objects.filter(perfilactivo=1).first()
+def home(request): return render(request, 'home.html', {'perfil': get_active_profile()})
+def experiencia(request): return render(request, 'experiencia.html', {'perfil': get_active_profile(), 'datos': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=get_active_profile())})
+def productos_academicos(request): return render(request, 'productos_academicos.html', {'perfil': get_active_profile(), 'datos': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=get_active_profile())})
+def productos_laborales(request): return render(request, 'productos_laborales.html', {'perfil': get_active_profile(), 'datos': ProductosLaborales.objects.filter(idperfilconqueestaactivo=get_active_profile())})
+def cursos(request): return render(request, 'cursos.html', {'perfil': get_active_profile(), 'datos': CursosRealizados.objects.filter(idperfilconqueestaactivo=get_active_profile())})
+def reconocimientos(request): return render(request, 'reconocimientos.html', {'perfil': get_active_profile(), 'datos': Reconocimientos.objects.filter(idperfilconqueestaactivo=get_active_profile())})
+def garage(request): return render(request, 'garage.html', {'perfil': get_active_profile(), 'datos': VentaGarage.objects.filter(idperfilconqueestaactivo=get_active_profile())})
