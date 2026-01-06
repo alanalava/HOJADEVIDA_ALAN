@@ -11,8 +11,8 @@
     <style>
         /* --- VARIABLES --- */
         :root {
-            --sidebar-width-open: 260px;   
-            --sidebar-width-closed: 80px;  
+            --sidebar-width-open: 240px;   /* Un poco más angosta */
+            --sidebar-width-closed: 70px;  /* Más compacta cerrada */
             --primary: #2563eb;     
             --sidebar-bg: #0f172a;   
             
@@ -40,100 +40,107 @@
             transition: background 0.3s ease;
         }
 
-        /* --- SIDEBAR FLEXIBLE (LA CLAVE) --- */
+        /* --- SIDEBAR ESTRUCTURA --- */
         aside {
             position: fixed;
             top: 0; left: 0;
-            height: 100vh; /* Altura completa de la pantalla */
+            height: 100vh;
             width: var(--sidebar-width-closed);
             background: var(--sidebar-bg);
             color: white;
             z-index: 1000;
             display: flex;
-            flex-direction: column; /* Organiza elementos de arriba a abajo */
+            flex-direction: column;
             transition: width 0.3s ease;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-            overflow: hidden; /* Oculta scroll feo general */
+            overflow: hidden;
         }
 
         aside:hover {
             width: var(--sidebar-width-open);
         }
 
-        /* 1. SECCIÓN SUPERIOR (PERFIL) - FIJA */
+        /* 1. SECCIÓN SUPERIOR (PERFIL) - COMPACTA */
         .sidebar-header {
-            padding: 20px 10px;
-            flex-shrink: 0; /* No se encoge nunca */
+            padding: 15px 5px; /* Menos padding */
+            flex-shrink: 0;
             text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* 2. SECCIÓN MEDIA (MENÚ) - SCROLLABLE */
-        /* Esto hace que si hay muchos items (Garage, etc), puedas bajar sin tapar la luna */
+        /* 2. SECCIÓN MEDIA (MENÚ) - SCROLL ASEGURADO */
         .sidebar-menu {
-            flex-grow: 1; /* Ocupa todo el espacio disponible en medio */
-            overflow-y: auto; /* Permite scroll vertical SOLO en el menú */
-            padding: 0 10px;
-            scrollbar-width: none; /* Firefox: oculta barra */
+            flex-grow: 1;
+            overflow-y: auto; /* Scroll si no cabe */
+            padding: 10px 5px;
+            scrollbar-width: none; /* Ocultar barra visualmente */
         }
-        .sidebar-menu::-webkit-scrollbar { display: none; } /* Chrome: oculta barra */
+        .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* 3. SECCIÓN INFERIOR (ADMIN Y LUNA) - FIJA ABAJO */
+        /* 3. SECCIÓN INFERIOR (FIJA ABAJO) - COMPACTA */
         .sidebar-footer {
-            padding: 15px 10px;
-            flex-shrink: 0; /* No se encoge nunca */
+            padding: 10px 5px; /* Menos padding */
+            flex-shrink: 0;
             border-top: 1px solid rgba(255,255,255,0.1);
-            background: var(--sidebar-bg); /* Mismo fondo para tapar el scroll */
+            background: var(--sidebar-bg);
         }
 
-        /* --- ESTILOS COMPONENTES --- */
+        /* --- ESTILOS COMPONENTES (MÁS PEQUEÑOS) --- */
         
         /* Foto y Nombre */
         .avatar-container {
-            width: 45px; height: 45px; margin: 0 auto 10px; 
+            width: 40px; height: 40px; margin: 0 auto 8px; /* Más pequeña */
             border-radius: 50%; overflow: hidden; border: 2px solid white;
             transition: 0.3s;
         }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        aside:hover .avatar-container { width: 90px; height: 90px; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;}
+        /* Animación foto perfil al abrir sidebar */
+        aside:hover .avatar-img { transform: scale(1.1); }
+        aside:hover .avatar-container { width: 80px; height: 80px; }
         
         .user-info { opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; }
-        aside:hover .user-info { opacity: 1; max-height: 100px; margin-bottom: 15px; }
-        .user-name { font-weight: bold; font-size: 1.1rem; white-space: nowrap; }
+        aside:hover .user-info { opacity: 1; max-height: 100px; margin-bottom: 10px; }
+        .user-name { font-weight: bold; font-size: 1rem; white-space: nowrap; }
 
         /* Botón PDF */
         .btn-pdf {
             background: var(--primary); color: white; border-radius: 8px;
-            padding: 10px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; margin-bottom: 20px; transition: 0.2s;
+            padding: 8px; /* Más pequeño */
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; margin-bottom: 10px; transition: 0.2s;
+            font-size: 0.9rem;
         }
-        .btn-pdf:hover { transform: scale(1.05); }
-        .btn-text, .nav-text { display: none; margin-left: 10px; white-space: nowrap; }
+        .btn-pdf:hover { transform: scale(1.05); background: var(--primary-dark);}
+        .btn-text, .nav-text { display: none; margin-left: 10px; white-space: nowrap; font-size: 0.9rem;}
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* Enlaces del Menú */
+        /* Enlaces del Menú (Más compactos) */
         nav a {
-            display: flex; align-items: center; padding: 12px;
+            display: flex; align-items: center; 
+            padding: 10px 8px; /* Menos padding vertical */
             color: var(--text-muted); text-decoration: none;
-            border-radius: 8px; margin-bottom: 5px; transition: 0.2s;
-            justify-content: center; /* Centrado cuando está cerrado */
+            border-radius: 8px; 
+            margin-bottom: 2px; /* Menos espacio entre botones */
+            transition: 0.2s;
+            justify-content: center;
         }
-        aside:hover nav a { justify-content: flex-start; padding-left: 15px; }
+        aside:hover nav a { justify-content: flex-start; padding-left: 12px; }
         
         nav a:hover, nav a.active { background: rgba(255,255,255,0.1); color: white; }
         nav a.active { background: var(--primary); }
-        .nav-icon { font-size: 1.2rem; min-width: 25px; text-align: center; }
+        .nav-icon { font-size: 1.1rem; min-width: 24px; text-align: center; } /* Iconos un poco más chicos */
 
-        /* Botones Footer */
+        /* Botones Footer (Compactos) */
         .footer-btn {
             background: transparent; border: none; color: #94a3b8;
-            width: 100%; padding: 10px; border-radius: 8px; cursor: pointer;
+            width: 100%; padding: 8px; border-radius: 8px; cursor: pointer;
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
-            font-size: 1rem; text-decoration: none;
+            font-size: 0.9rem; text-decoration: none;
         }
         .footer-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        aside:hover .footer-btn { justify-content: flex-start; padding-left: 15px; }
+        aside:hover .footer-btn { justify-content: flex-start; padding-left: 12px; }
 
-        /* --- CONTENIDO PRINCIPAL --- */
+        /* --- CONTENIDO PRINCIPAL Y ANIMACIONES --- */
         main { 
             margin-left: var(--sidebar-width-closed); 
             padding: 2rem; 
@@ -141,37 +148,54 @@
         }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* --- RESPONSIVE (MÓVIL) --- */
-        @media (max-width: 768px) {
-            aside {
-                width: 100%; height: 60px; bottom: 0; top: auto; /* Barra abajo en móvil */
-                flex-direction: row; justify-content: space-around; align-items: center;
-                padding: 0; overflow: visible;
-            }
-            aside:hover { width: 100%; } /* No expandir en móvil */
-            
-            /* Ocultar cosas innecesarias en móvil */
-            .sidebar-header, .btn-text, .nav-text, .sidebar-footer { display: none; }
-            
-            /* Menú horizontal */
-            .sidebar-menu { 
-                display: flex; flex-direction: row; overflow-x: auto; 
-                width: 100%; padding: 0; align-items: center; justify-content: space-around;
-            }
-            
-            nav { display: flex; width: 100%; justify-content: space-around; }
-            nav a { margin: 0; padding: 10px; border-radius: 50%; }
-            nav a.active { background: transparent; color: var(--primary); }
-            
-            main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
-            
-            /* Botón flotante para menú completo en móvil (Opcional, simple por ahora) */
-        }
+        /* --- ANIMACIONES TARJETAS Y FOTOS --- */
         
-        /* CARD ESTILO */
+        /* Animación para las Tarjetas (Cards) */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: var(--shadow-card); margin-bottom: 20px;
+            /* La magia ocurre aquí: */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        /* Al pasar el mouse por la tarjeta */
+        .card:hover {
+            transform: translateY(-7px); /* Se levanta */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1); /* Sombra más profunda */
+        }
+        
+        /* Sombra más oscura en modo oscuro */
+        body.dark-mode .card:hover {
+             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Clase genérica para animar fotos dentro del contenido */
+        /* Úsala en tus plantillas así: <img class="zoom-on-hover" ...> */
+        .zoom-on-hover {
+            transition: transform 0.3s ease;
+        }
+        .zoom-on-hover:hover {
+            transform: scale(1.05); /* Zoom suave */
+        }
+
+
+        /* --- RESPONSIVE (MÓVIL) --- */
+        @media (max-width: 768px) {
+            aside {
+                width: 100%; height: 55px; bottom: 0; top: auto; 
+                flex-direction: row; justify-content: space-around; align-items: center;
+                padding: 0; overflow: visible; border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            aside:hover { width: 100%; }
+            .sidebar-header, .btn-text, .nav-text, .sidebar-footer { display: none; }
+            .sidebar-menu { 
+                display: flex; flex-direction: row; overflow-x: auto; 
+                width: 100%; padding: 0; align-items: center; justify-content: space-between;
+            }
+            nav { display: flex; width: 100%; justify-content: space-around; padding: 0 10px;}
+            nav a { margin: 0; padding: 8px; border-radius: 50%; }
+            .nav-icon { font-size: 1.2rem; }
+            main { margin-left: 0; margin-bottom: 60px; padding: 1rem; }
         }
     </style>
 </head>
