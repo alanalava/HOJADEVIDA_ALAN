@@ -22,15 +22,8 @@
         .item-sub { color: #2563eb; font-size: 12px; font-weight: bold; }
         .item-desc { font-size: 12px; margin-top: 5px; }
         
-        /* IMAGENES */
-        .evidence-img { margin-top: 8px; width: 120px; height: 100px; object-fit: contain; border: 1px solid #ddd; }
-        
-        /* ENLACES A DOCUMENTOS (PDFs) */
-        .doc-link {
-            text-decoration: none; color: #2563eb; font-size: 11px; font-weight: bold;
-            border: 1px solid #2563eb; padding: 4px 8px; border-radius: 10px;
-            display: inline-block; margin-top: 5px;
-        }
+        /* IMAGENES CERTIFICADOS (Tamaño controlado para que no rompa el PDF) */
+        .evidence-img { margin-top: 10px; width: 200px; max-height: 150px; object-fit: contain; border: 1px solid #ddd; display: block; }
     </style>
 </head>
 <body>
@@ -65,11 +58,7 @@
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
         
         {% if exp.rutacertificado %}
-            {% if ".pdf" in exp.rutacertificado.url %}
-                <br><a href="{{ exp.rutacertificado.url }}" target="_blank" class="doc-link">📄 Ver Certificado Laboral (PDF)</a>
-            {% else %}
-                <br><img src="{{ exp.rutacertificado.url }}" class="evidence-img">
-            {% endif %}
+            <img src="{{ exp.rutacertificado.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -84,11 +73,7 @@
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
         
         {% if curso.rutacertificado %}
-            {% if ".pdf" in curso.rutacertificado.url %}
-                <br><a href="{{ curso.rutacertificado.url }}" target="_blank" class="doc-link">📄 Ver Certificado (PDF)</a>
-            {% else %}
-                <br><img src="{{ curso.rutacertificado.url }}" class="evidence-img">
-            {% endif %}
+            <img src="{{ curso.rutacertificado.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -123,11 +108,7 @@
         <div class="item-desc">{{ item.descripcion }}</div>
         
         {% if item.documento_interes %}
-            {% if ".pdf" in item.documento_interes.url %}
-                <br><a href="{{ item.documento_interes.url }}" target="_blank" class="doc-link">📄 Ver Documento (PDF)</a>
-            {% else %}
-                <br><img src="{{ item.documento_interes.url }}" class="evidence-img">
-            {% endif %}
+            <img src="{{ item.documento_interes.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -141,11 +122,7 @@
         <div class="item-sub">{{ reco.entidadpatrocinadora }}</div>
         
         {% if reco.rutacertificado %}
-            {% if ".pdf" in reco.rutacertificado.url %}
-                <br><a href="{{ reco.rutacertificado.url }}" target="_blank" class="doc-link">📄 Ver Reconocimiento (PDF)</a>
-            {% else %}
-                <br><img src="{{ reco.rutacertificado.url }}" class="evidence-img">
-            {% endif %}
+            <img src="{{ reco.rutacertificado.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
