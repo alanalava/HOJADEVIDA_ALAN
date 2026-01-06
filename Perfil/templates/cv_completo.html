@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>CV Completo | {{ perfil.nombres }}</title>
     <style>
-        /* CONFIGURACIÓN DE PÁGINA (SIN BUG) */
+        /* CONFIGURACIÓN DE PÁGINA */
         @page {
             size: A4;
             margin: 1.5cm;
@@ -13,19 +13,19 @@
         
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: #000000; /* NEGRO PURO PARA MEJOR CONTRASTE */
+            color: #000000;
             line-height: 1.4;
-            font-size: 13px; /* Tamaño legible */
+            font-size: 13px;
         }
         
         /* --- CABECERA --- */
         .header {
-            border-bottom: 4px solid #000000; /* Línea negra gruesa */
+            border-bottom: 4px solid #000000;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
         .header h1 {
-            color: #2563eb; /* Solo el nombre en azul para destacar */
+            color: #2563eb;
             margin: 0;
             text-transform: uppercase;
             font-size: 28px;
@@ -46,23 +46,23 @@
             object-fit: cover;
         }
         
-        /* CONTACTO: CADA COSA EN SU LÍNEA */
+        /* CONTACTO */
         .contact-info {
             font-size: 12px;
             color: #000000;
             margin-top: 10px;
         }
         .contact-row {
-            margin-bottom: 5px; /* Espacio entre líneas de contacto */
+            margin-bottom: 5px;
             display: block;
         }
         
         /* --- SECCIONES --- */
         h3 {
-            color: #000000; /* Títulos en NEGRO */
-            background-color: #f0f0f0; /* Fondo gris claro para resaltar la sección */
+            color: #000000;
+            background-color: #f0f0f0;
             padding: 5px 10px;
-            border-left: 5px solid #2563eb; /* Borde azul decorativo */
+            border-left: 5px solid #2563eb;
             margin-top: 30px;
             margin-bottom: 15px;
             text-transform: uppercase;
@@ -74,28 +74,34 @@
         .item {
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #ddd; /* Línea separadora suave */
+            border-bottom: 1px solid #ddd;
             page-break-inside: avoid;
         }
         .item:last-child { border-bottom: none; }
         
-        .item-head {
+        /* TABLA INVISIBLE PARA SEPARAR NOMBRE Y FECHA/PRECIO */
+        .item-table {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        .td-left {
+            text-align: left;
             font-weight: bold;
             font-size: 14px;
             color: #000000;
-            margin-bottom: 4px;
+            vertical-align: top;
         }
-        
-        /* FECHA EN SU PROPIA LÍNEA O A LA DERECHA PERO NEGRA */
-        .item-date {
+        .td-right {
+            text-align: right;
             font-weight: bold;
+            font-size: 13px;
             color: #000000;
-            font-size: 12px;
-            float: right;
+            vertical-align: top;
+            width: 30%; /* Espacio reservado para la fecha/precio */
         }
         
         .item-sub {
-            color: #000000; /* Subtítulos en negro */
+            color: #000000;
             font-size: 13px;
             font-style: italic;
             margin-bottom: 6px;
@@ -109,12 +115,12 @@
             line-height: 1.5;
         }
         
-        /* --- FOTOS GRANDES Y CLARAS --- */
+        /* --- FOTOS --- */
         .evidence-container {
             text-align: center;
             margin-top: 15px;
             padding: 10px;
-            border: 1px dashed #000; /* Borde punteado negro para enmarcar */
+            border: 1px dashed #000;
         }
         .evidence-img {
             display: block;
@@ -136,19 +142,11 @@
                     <p class="role">{{ perfil.descripcionperfil }}</p>
                     
                     <div class="contact-info">
-                        <div class="contact-row">
-                            <strong>Email:</strong> {{ perfil.email_contacto }}
-                        </div>
-                        <div class="contact-row">
-                            <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}
-                        </div>
-                        <div class="contact-row">
-                            <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
-                        </div>
+                        <div class="contact-row"><strong>Email:</strong> {{ perfil.email_contacto }}</div>
+                        <div class="contact-row"><strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}</div>
+                        <div class="contact-row"><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</div>
                         {% if perfil.sitioweb %}
-                        <div class="contact-row">
-                            <strong>Web:</strong> {{ perfil.sitioweb }}
-                        </div>
+                        <div class="contact-row"><strong>Web:</strong> {{ perfil.sitioweb }}</div>
                         {% endif %}
                     </div>
                 </td>
@@ -165,10 +163,13 @@
     <h3>Experiencia Laboral</h3>
     {% for exp in experiencias %}
     <div class="item">
-        <div class="item-head">
-            {{ exp.cargodesempenado }}
-            <span class="item-date">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</span>
-        </div>
+        <table class="item-table">
+            <tr>
+                <td class="td-left">{{ exp.cargodesempenado }}</td>
+                <td class="td-right">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</td>
+            </tr>
+        </table>
+        
         <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
         
@@ -185,10 +186,13 @@
     <h3>Educación y Cursos</h3>
     {% for curso in cursos %}
     <div class="item">
-        <div class="item-head">
-            {{ curso.nombrecurso }}
-            <span class="item-date">{{ curso.fechafin|date:"Y" }}</span>
-        </div>
+        <table class="item-table">
+            <tr>
+                <td class="td-left">{{ curso.nombrecurso }}</td>
+                <td class="td-right">{{ curso.fechafin|date:"Y" }}</td>
+            </tr>
+        </table>
+        
         <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
         
@@ -205,9 +209,7 @@
     <h3>Productos Académicos</h3>
     {% for item in productos_acad %}
     <div class="item">
-        <div class="item-head">
-            {{ item.nombrerecurso }}
-        </div>
+        <div class="item-head">{{ item.nombrerecurso }}</div>
         <div class="item-sub">Tipo: {{ item.clasificador }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
     </div>
@@ -218,10 +220,12 @@
     <h3>Proyectos Laborales</h3>
     {% for prod in productos_lab %}
     <div class="item">
-        <div class="item-head">
-            {{ prod.nombreproducto }}
-            <span class="item-date">{{ prod.fechaproducto|date:"Y" }}</span>
-        </div>
+        <table class="item-table">
+            <tr>
+                <td class="td-left">{{ prod.nombreproducto }}</td>
+                <td class="td-right">{{ prod.fechaproducto|date:"Y" }}</td>
+            </tr>
+        </table>
         <div class="item-desc">{{ prod.descripcion }}</div>
     </div>
     {% endfor %}
@@ -231,10 +235,13 @@
     <h3>Venta de Garage</h3>
     {% for item in garage %}
     <div class="item">
-        <div class="item-head">
-            {{ item.nombreproducto }}
-            <span class="item-date">${{ item.valordelbien }}</span>
-        </div>
+        <table class="item-table">
+            <tr>
+                <td class="td-left">{{ item.nombreproducto }}</td>
+                <td class="td-right">${{ item.valordelbien }}</td>
+            </tr>
+        </table>
+        
         <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
         
@@ -251,10 +258,13 @@
     <h3>Logros y Reconocimientos</h3>
     {% for reco in reconocimientos %}
     <div class="item">
-        <div class="item-head">
-            {{ reco.descripcionreconocimiento }}
-            <span class="item-date">{{ reco.fechareconocimiento|date:"Y" }}</span>
-        </div>
+        <table class="item-table">
+            <tr>
+                <td class="td-left">{{ reco.descripcionreconocimiento }}</td>
+                <td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td>
+            </tr>
+        </table>
+        
         <div class="item-sub">Entidad: {{ reco.entidadpatrocinadora }}</div>
         
         {% if reco.rutacertificado %}
