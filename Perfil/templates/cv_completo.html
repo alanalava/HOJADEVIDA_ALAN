@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>CV Completo | {{ perfil.nombres }}</title>
     <style>
-        /* CONFIGURACIÓN SEGURA (Sin números de página para evitar error) */
+        /* CONFIGURACIÓN DE PÁGINA (SIN BUG) */
         @page {
             size: A4;
             margin: 1.5cm;
@@ -13,58 +13,68 @@
         
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: #333;
-            line-height: 1.5;
+            color: #000000; /* NEGRO PURO PARA MEJOR CONTRASTE */
+            line-height: 1.4;
+            font-size: 13px; /* Tamaño legible */
         }
         
         /* --- CABECERA --- */
         .header {
-            border-bottom: 3px solid #2563eb;
+            border-bottom: 4px solid #000000; /* Línea negra gruesa */
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
         .header h1 {
-            color: #2563eb;
+            color: #2563eb; /* Solo el nombre en azul para destacar */
             margin: 0;
             text-transform: uppercase;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: bold;
         }
         .header p.role {
             font-size: 16px;
-            color: #666;
+            color: #000000;
+            font-weight: bold;
             margin-top: 5px;
             margin-bottom: 15px;
         }
         .profile-img {
-            width: 110px;
-            height: 110px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            border: 4px solid #2563eb;
+            border: 3px solid #000000;
             object-fit: cover;
         }
+        
+        /* CONTACTO: CADA COSA EN SU LÍNEA */
         .contact-info {
-            font-size: 11px;
-            color: #555;
-            line-height: 1.6;
+            font-size: 12px;
+            color: #000000;
+            margin-top: 10px;
+        }
+        .contact-row {
+            margin-bottom: 5px; /* Espacio entre líneas de contacto */
+            display: block;
         }
         
         /* --- SECCIONES --- */
         h3 {
-            color: #1f2937;
-            border-bottom: 2px solid #e5e7eb;
-            margin-top: 35px;
-            margin-bottom: 20px;
+            color: #000000; /* Títulos en NEGRO */
+            background-color: #f0f0f0; /* Fondo gris claro para resaltar la sección */
+            padding: 5px 10px;
+            border-left: 5px solid #2563eb; /* Borde azul decorativo */
+            margin-top: 30px;
+            margin-bottom: 15px;
             text-transform: uppercase;
             font-size: 16px;
-            padding-bottom: 5px;
+            font-weight: bold;
         }
         
         /* --- ITEMS --- */
         .item {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px dotted #ccc;
+            border-bottom: 1px solid #ddd; /* Línea separadora suave */
             page-break-inside: avoid;
         }
         .item:last-child { border-bottom: none; }
@@ -72,42 +82,47 @@
         .item-head {
             font-weight: bold;
             font-size: 14px;
-            color: #000;
+            color: #000000;
+            margin-bottom: 4px;
         }
+        
+        /* FECHA EN SU PROPIA LÍNEA O A LA DERECHA PERO NEGRA */
         .item-date {
-            font-weight: normal;
-            color: #666;
+            font-weight: bold;
+            color: #000000;
             font-size: 12px;
             float: right;
         }
+        
         .item-sub {
-            color: #2563eb;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 2px;
-        }
-        .item-desc {
-            font-size: 12px;
-            margin-top: 8px;
-            text-align: justify;
+            color: #000000; /* Subtítulos en negro */
+            font-size: 13px;
+            font-style: italic;
+            margin-bottom: 6px;
+            display: block;
         }
         
-        /* --- ESTILO DE FOTOS (GRANDES Y CENTRADAS) --- */
+        .item-desc {
+            font-size: 12px;
+            color: #000000;
+            text-align: justify;
+            line-height: 1.5;
+        }
+        
+        /* --- FOTOS GRANDES Y CLARAS --- */
         .evidence-container {
             text-align: center;
             margin-top: 15px;
-            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px dashed #000; /* Borde punteado negro para enmarcar */
         }
         .evidence-img {
             display: block;
             margin: 0 auto;
-            width: 90%;      /* Ocupa casi todo el ancho */
+            width: 95%;
             height: auto;
-            max-height: 700px; /* Alto máximo para que no se corte */
+            max-height: 600px;
             object-fit: contain;
-            border: 1px solid #999;
-            padding: 5px;
-            background-color: #fff;
         }
     </style>
 </head>
@@ -116,17 +131,28 @@
     <div class="header">
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
-                <td style="width: 75%; vertical-align: top; padding-right: 20px;">
+                <td style="width: 70%; vertical-align: top; padding-right: 20px;">
                     <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
                     <p class="role">{{ perfil.descripcionperfil }}</p>
+                    
                     <div class="contact-info">
-                        <strong>Email:</strong> {{ perfil.email_contacto }} &nbsp;|&nbsp;
-                        <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}<br>
-                        <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
-                        {% if perfil.sitioweb %} | <strong>Web:</strong> {{ perfil.sitioweb }}{% endif %}
+                        <div class="contact-row">
+                            <strong>Email:</strong> {{ perfil.email_contacto }}
+                        </div>
+                        <div class="contact-row">
+                            <strong>Teléfono:</strong> {{ perfil.telefonofijo|default:perfil.telefonoconvencional }}
+                        </div>
+                        <div class="contact-row">
+                            <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
+                        </div>
+                        {% if perfil.sitioweb %}
+                        <div class="contact-row">
+                            <strong>Web:</strong> {{ perfil.sitioweb }}
+                        </div>
+                        {% endif %}
                     </div>
                 </td>
-                <td style="width: 25%; text-align: right; vertical-align: top;">
+                <td style="width: 30%; text-align: right; vertical-align: top;">
                     {% if perfil.fotoperfil %}
                         <img src="{{ perfil.fotoperfil.url }}" class="profile-img">
                     {% endif %}
@@ -182,7 +208,7 @@
         <div class="item-head">
             {{ item.nombrerecurso }}
         </div>
-        <div class="item-sub">{{ item.clasificador }}</div>
+        <div class="item-sub">Tipo: {{ item.clasificador }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
     </div>
     {% endfor %}
@@ -229,7 +255,7 @@
             {{ reco.descripcionreconocimiento }}
             <span class="item-date">{{ reco.fechareconocimiento|date:"Y" }}</span>
         </div>
-        <div class="item-sub">{{ reco.entidadpatrocinadora }}</div>
+        <div class="item-sub">Entidad: {{ reco.entidadpatrocinadora }}</div>
         
         {% if reco.rutacertificado %}
         <div class="evidence-container">
