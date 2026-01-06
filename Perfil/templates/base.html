@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* --- REGLA DE ORO PARA EVITAR DESBORDES --- */
+        * { box-sizing: border-box; }
+
         /* --- VARIABLES --- */
         :root {
             --sidebar-width-open: 260px;
@@ -25,7 +28,7 @@
         body.dark-mode {
             --bg-main: #0b1120;       
             --bg-card: #1e293b;       
-            --text-main: #e2e8f0;     /* Texto claro en modo oscuro */
+            --text-main: #e2e8f0;     /* Texto blanco/claro */
             --text-muted: #94a3b8;
         }
 
@@ -76,23 +79,23 @@
         }
         .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* 3. SECCIÓN INFERIOR (BOTONES AL MISMO NIVEL) */
+        /* 3. SECCIÓN INFERIOR (FOOTER) */
         .sidebar-footer {
             flex: 0 0 auto; 
             padding: 15px 10px;
             background: var(--sidebar-bg); 
             border-top: 1px solid rgba(255,255,255,0.1);
             
-            /* AQUÍ ESTÁ EL CAMBIO PARA PONERLOS HORIZONTALES */
+            /* ALINEACIÓN PERFECTA */
             display: flex;
             flex-direction: row; 
-            gap: 10px; /* Espacio entre botones */
+            gap: 8px; /* Espacio justo para que no desborde */
             justify-content: space-between;
         }
 
         /* --- ESTILOS ELEMENTOS --- */
         
-        /* Foto con Link */
+        /* Foto de Perfil */
         .profile-link {
             display: block; width: 45px; height: 45px; margin: 0 auto 10px;
             border-radius: 50%; transition: 0.3s; text-decoration: none;
@@ -138,19 +141,16 @@
         nav a.active { background: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
-        /* BOTONES FOOTER (Horizontal) */
+        /* BOTONES FOOTER (Horizontal y Ajustados) */
         .footer-btn {
             background: transparent; border: none; color: #94a3b8;
-            flex: 1; /* Ocupan el mismo espacio */
-            padding: 10px; border-radius: 10px; cursor: pointer;
+            flex: 1; /* Ocupan espacio igual */
+            padding: 8px; /* Padding seguro */
+            border-radius: 10px; cursor: pointer;
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
-            font-size: 1.1rem; text-decoration: none; /* Icono un poco más grande */
+            font-size: 1.1rem; text-decoration: none;
         }
         .footer-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        
-        /* Solo mostramos texto en el footer si el menú está abierto */
-        .footer-text { display: none; font-size: 0.8rem; margin-left: 5px;}
-        aside:hover .footer-text { display: inline-block; }
 
         /* --- CONTENIDO PRINCIPAL --- */
         main { 
@@ -160,25 +160,23 @@
         }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* --- ARREGLO DEL TEXTO INVISIBLE EN MODO OSCURO --- */
+        /* --- ARREGLO VISUAL PARA MODO OSCURO (TEXTOS) --- */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: var(--shadow-card); margin-bottom: 20px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            
-            /* ESTO ASEGURA QUE EL TEXTO SE VEA */
-            color: var(--text-main); 
+            color: var(--text-main); /* Define color base */
         }
-        /* Forzar color a todos los elementos dentro de la tarjeta */
-        .card p, .card h1, .card h2, .card h3, .card h4, .card span, .card div {
-            color: inherit; 
+        
+        /* FUERZA EL COLOR DEL TEXTO PARA QUE "SOBRE MÍ" SE VEA */
+        .card h1, .card h2, .card h3, .card h4, .card h5, .card p, .card span, .card div, .card li {
+            color: var(--text-main) !important;
         }
+        /* Excepción: enlaces o botones dentro de cards pueden tener su propio color */
+        .card a { color: var(--primary) !important; }
 
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
         body.dark-mode .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
-
-        .zoom-img { transition: transform 0.3s ease; }
-        .zoom-img:hover { transform: scale(1.05); }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -270,7 +268,6 @@
         const body = document.body;
         const icon = toggleBtn.querySelector('i');
         
-        // Función para aplicar tema
         function applyTheme(theme) {
             if(theme === 'dark'){
                 body.classList.add('dark-mode');
@@ -280,8 +277,6 @@
                 icon.className = 'fas fa-moon';
             }
         }
-
-        // Cargar al inicio
         applyTheme(localStorage.getItem('theme'));
 
         toggleBtn.addEventListener('click', () => {
@@ -296,7 +291,6 @@
             "Seguridad Informática",
             "{{ perfil.descripcionperfil|default:'Desarrollador Web'|escapejs }}"
         ];
-        
         let roleIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
