@@ -56,6 +56,9 @@
         <div class="item-head">{{ exp.cargodesempenado }}</div>
         <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.fechainiciogestion|date:"Y" }}</div>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
+        {% if exp.rutacertificado %}
+            <br><img src="{{ exp.rutacertificado.url }}" class="evidence-img">
+        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
@@ -67,8 +70,8 @@
         <div class="item-head">{{ curso.nombrecurso }}</div>
         <div class="item-sub">{{ curso.entidadpatrocinadora }}</div>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
-        {% if curso.imagen %}
-            <br><img src="{{ curso.imagen.url }}" class="evidence-img">
+        {% if curso.rutacertificado %}
+            <br><img src="{{ curso.rutacertificado.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -80,9 +83,6 @@
     <div class="item">
         <div class="item-head">{{ item.nombrerecurso }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
-        {% if item.imagen %}
-            <br><img src="{{ item.imagen.url }}" class="evidence-img">
-        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
@@ -93,9 +93,6 @@
     <div class="item">
         <div class="item-head">{{ prod.nombreproducto }}</div>
         <div class="item-desc">{{ prod.descripcion }}</div>
-        {% if prod.imagen %}
-            <br><img src="{{ prod.imagen.url }}" class="evidence-img">
-        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
@@ -107,8 +104,9 @@
         <div class="item-head">{{ item.nombreproducto }} - ${{ item.valordelbien }}</div>
         <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
-        {% if item.imagen %}
-            <br><img src="{{ item.imagen.url }}" class="evidence-img">
+        
+        {% if item.documento_interes %}
+            <br><img src="{{ item.documento_interes.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
@@ -120,8 +118,8 @@
     <div class="item">
         <div class="item-head">{{ reco.descripcionreconocimiento }}</div>
         <div class="item-sub">{{ reco.entidadpatrocinadora }}</div>
-        {% if reco.imagen %}
-            <br><img src="{{ reco.imagen.url }}" class="evidence-img">
+        {% if reco.rutacertificado %}
+            <br><img src="{{ reco.rutacertificado.url }}" class="evidence-img">
         {% endif %}
     </div>
     {% endfor %}
