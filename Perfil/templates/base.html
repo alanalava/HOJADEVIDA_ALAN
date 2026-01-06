@@ -12,8 +12,8 @@
         * { box-sizing: border-box; }
 
         :root {
-            --sidebar-width-open: 250px;
-            --sidebar-width-closed: 75px;
+            --sidebar-width-open: 260px;
+            --sidebar-width-closed: 80px;
             --primary: #2563eb;     
             --sidebar-bg: #0f172a;   
             
@@ -21,8 +21,6 @@
             --bg-card: #ffffff;
             --text-main: #334155;    
             --text-muted: #64748b;
-            
-            /* Colores para las etiquetas (Tags) */
             --tag-bg: #e2e8f0;
             --tag-text: #475569;
         }
@@ -30,10 +28,8 @@
         body.dark-mode {
             --bg-main: #0b1120;       
             --bg-card: #1e293b;       
-            --text-main: #e2e8f0;     
-            --text-muted: #94a3b8;
-            
-            /* Etiquetas en modo oscuro */
+            --text-main: #f8fafc; /* Blanco casi puro */    
+            --text-muted: #cbd5e1;
             --tag-bg: #334155; 
             --tag-text: #e2e8f0;
         }
@@ -64,51 +60,100 @@
 
         aside:hover { width: var(--sidebar-width-open); }
 
-        .sidebar-header { flex: 0 0 auto; padding: 20px 10px; text-align: center; }
+        /* HEADER: Aquí arreglamos que el nombre se monte en la foto */
+        .sidebar-header { 
+            flex: 0 0 auto; 
+            padding: 25px 10px; 
+            display: flex;
+            flex-direction: column; /* Elementos verticales */
+            align-items: center;    /* Centrados */
+            gap: 15px;              /* ESPACIO OBLIGATORIO ENTRE FOTO Y NOMBRE */
+        }
 
+        /* MENÚ */
         .sidebar-menu { 
-            flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 10px; scrollbar-width: none; 
+            flex: 1 1 auto; 
+            min-height: 0; 
+            overflow-y: auto; 
+            padding: 0 10px; 
+            scrollbar-width: none; 
         }
         .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* FOOTER HORIZONTAL */
+        /* FOOTER */
         .sidebar-footer {
             flex: 0 0 auto; 
             padding: 15px 10px;
             background: var(--sidebar-bg); 
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; 
-            flex-direction: row; /* Uno al lado del otro */
+            flex-direction: row; 
             justify-content: space-evenly; 
             gap: 10px;
         }
 
-        /* --- ELEMENTOS DE PERFIL --- */
-        .profile-link { display: block; width: 45px; height: 45px; margin: 0 auto 10px; }
-        .avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid white; cursor: pointer; transition: 0.3s;}
+        /* --- FOTO DE PERFIL --- */
+        .profile-link { 
+            display: block; 
+            flex-shrink: 0; /* No encoger */
+            margin: 0;      /* El margen lo maneja el gap del padre */
+        }
+        
+        .avatar-container { 
+            width: 50px; height: 50px; /* Tamaño cerrado */
+            border-radius: 50%; overflow: hidden; 
+            border: 2px solid white; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        aside:hover .avatar-container { width: 80px; height: 80px; } 
         
-        .user-info { opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; margin-bottom: 10px; }
-        aside:hover .user-info { opacity: 1; max-height: 100px; }
-        .user-name { font-weight: 700; font-size: 1.1rem; white-space: nowrap; color: white;}
+        /* Al abrir sidebar, la foto crece */
+        aside:hover .avatar-container { width: 90px; height: 90px; } 
+        
+        /* --- NOMBRE Y ROLES --- */
+        .user-info { 
+            text-align: center;
+            opacity: 0; 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: 0.3s ease; 
+            width: 100%;
+        }
+        /* Al abrir sidebar, aparece el nombre */
+        aside:hover .user-info { 
+            opacity: 1; 
+            max-height: 150px; /* Espacio suficiente */
+        }
+        
+        .user-name { 
+            font-weight: 700; 
+            font-size: 1.2rem; 
+            color: white;
+            margin-bottom: 5px;
+            display: block;
+        }
 
-        .typewriter { font-size: 0.8rem; color: #94a3b8; display: block; min-height: 1.5em; }
+        .typewriter { font-size: 0.85rem; color: #94a3b8; display: block; min-height: 1.2em; }
         
-        /* BOTÓN PDF (Texto blanco forzado) */
+        /* BOTÓN PDF */
         .btn-pdf {
             background: var(--primary); 
             color: white !important; 
             border-radius: 10px;
-            padding: 10px; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; margin-bottom: 15px; transition: 0.2s;
+            padding: 12px; 
+            width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: 0.2s;
             white-space: nowrap; overflow: hidden;
+            font-weight: 500;
         }
         .btn-pdf:hover { background: #3b82f6; transform: translateY(-2px); }
         .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* MENU LINKS */
+        /* NAVEGACIÓN */
         nav a {
             display: flex; align-items: center; padding: 12px; color: #94a3b8; text-decoration: none;
             border-radius: 10px; margin-bottom: 5px; transition: 0.2s; justify-content: center;
@@ -118,49 +163,62 @@
         nav a.active { background: var(--primary); }
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
-        /* FOOTER BOTONES */
+        /* BOTONES FOOTER */
         .footer-btn {
             background: rgba(255,255,255,0.05); border: none; color: #94a3b8;
-            width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
+            width: 45px; height: 45px; border-radius: 10px; cursor: pointer;
             display: flex; align-items: center; justify-content: center; 
-            transition: 0.2s; font-size: 1.1rem; text-decoration: none;
+            transition: 0.2s; font-size: 1.2rem;
         }
         .footer-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: scale(1.1); }
 
-        /* --- CONTENIDO PRINCIPAL --- */
+        /* --- MAIN --- */
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* --- ESTILOS TARJETAS (Globales) --- */
+        /* --- TARJETAS Y ARREGLO DE TEXTO INVISIBLE --- */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
             color: var(--text-main);
         }
-        .card h1, .card h2, .card h3, .card h4, .card p, .card strong { color: inherit; }
 
-        /* ETIQUETAS (TAGS) - ARREGLO DE "PALABRA FEA" */
+        /* REGLA MAESTRA PARA MODO OSCURO:
+           Fuerza a TODOS los textos a ser blancos si el fondo es oscuro.
+           Esto arregla el "Sobre mí" invisible. */
+        body.dark-mode .card h1, 
+        body.dark-mode .card h2, 
+        body.dark-mode .card h3, 
+        body.dark-mode .card h4, 
+        body.dark-mode .card p, 
+        body.dark-mode .card span, 
+        body.dark-mode .card div,
+        body.dark-mode .card li,
+        body.dark-mode .card label,
+        body.dark-mode .card strong {
+            color: #ffffff !important;
+        }
+
+        /* ETIQUETAS */
         .tag-category {
             background-color: var(--tag-bg);
             color: var(--tag-text);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            display: inline-block;
-            margin-bottom: 10px;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 500;
+            display: inline-block; margin-bottom: 10px;
+        }
+        /* Arreglo etiqueta en oscuro */
+        body.dark-mode .tag-category {
+            background-color: #334155 !important;
+            color: #ffffff !important;
         }
 
-        /* BOTÓN AZUL DENTRO DE TARJETAS (Arreglo botón vacío) */
+        /* BOTÓN AZUL (VER) */
         .btn-card-action {
             background-color: var(--primary);
-            color: white !important;
-            padding: 8px 15px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px;
-            font-weight: 500; transition: 0.2s;
-            border: none; cursor: pointer;
+            color: white !important; /* Siempre blanco */
+            padding: 8px 15px; border-radius: 8px; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; font-weight: 500;
+            transition: 0.2s; border: none; cursor: pointer;
         }
         .btn-card-action:hover { background-color: #1d4ed8; }
 
@@ -189,10 +247,12 @@
                     {% endif %}
                 </div>
             </a>
+
             <div class="user-info">
-                <div class="user-name">{{ perfil.nombres }}</div>
+                <span class="user-name">{{ perfil.nombres }}</span>
                 <span class="typewriter" id="typewriter-text"></span>
             </div>
+            
             <a href="{% url 'cv_completo' %}" target="_blank" class="btn-pdf">
                 <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar CV</span>
             </a>
@@ -255,6 +315,7 @@
             applyTheme(newTheme); localStorage.setItem('theme', newTheme);
         });
 
+        // SOLO ROLES ESPECÍFICOS
         const roles = ["Seguridad Informática", "{{ perfil.descripcionperfil|default:'Desarrollador Web'|escapejs }}"];
         let roleIndex = 0, charIndex = 0, isDeleting = false;
         const typeElement = document.getElementById('typewriter-text');
