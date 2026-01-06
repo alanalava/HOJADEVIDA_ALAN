@@ -5,15 +5,10 @@
     <meta charset="UTF-8">
     <title>CV Completo | {{ perfil.nombres }}</title>
     <style>
-        /* Configuración de página A4 con márgenes */
+        /* CONFIGURACIÓN DE PÁGINA SIMPLE (PARA QUE NO FALLE) */
         @page {
             size: A4;
-            margin: 1.5cm; /* Un poco más de margen para que respire */
-            @bottom-center {
-                content: "Página " counter(page);
-                font-size: 10px;
-                color: #999;
-            }
+            margin: 1.5cm;
         }
         
         body {
@@ -65,12 +60,12 @@
             padding-bottom: 5px;
         }
         
-        /* --- ITEMS (Cada experiencia/curso) --- */
+        /* --- ITEMS --- */
         .item {
             margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 1px dotted #ccc;
-            page-break-inside: avoid; /* Intenta no cortar un item a la mitad */
+            page-break-inside: avoid;
         }
         .item:last-child { border-bottom: none; }
         
@@ -78,13 +73,12 @@
             font-weight: bold;
             font-size: 14px;
             color: #000;
-            display: flex; justify-content: space-between; /* Intento de flex para fecha a la derecha */
         }
         .item-date {
             font-weight: normal;
             color: #666;
             font-size: 12px;
-            float: right; /* Fallback para xhtml2pdf */
+            float: right;
         }
         .item-sub {
             color: #2563eb;
@@ -98,23 +92,22 @@
             text-align: justify;
         }
         
-        /* --- IMAGENES DE CERTIFICADOS (MEJORADAS) --- */
+        /* --- ESTILO DE FOTOS DE CERTIFICADOS (MEJORADO) --- */
         .evidence-container {
-            text-align: center; /* Centra el contenedor */
+            text-align: center;
             margin-top: 15px;
             margin-bottom: 10px;
         }
         .evidence-img {
-            display: block; /* Comportamiento de bloque */
-            margin: 0 auto; /* Centrado horizontal */
-            width: 90%;     /* Ocupa el 90% del ancho disponible, mucho más grande */
-            height: auto;   /* Mantiene proporciones */
-            max-height: 800px; /* Permite que sea alto, casi una página entera */
+            display: block;
+            margin: 0 auto;
+            width: 90%;      /* Ocupa casi todo el ancho */
+            height: auto;
+            max-height: 700px; /* Alto máximo para que no se corte */
             object-fit: contain;
-            border: 1px solid #ddd; /* Marco gris suave */
-            padding: 5px;   /* Espacio blanco entre la imagen y el marco */
+            border: 1px solid #999;
+            padding: 5px;
             background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave (si el generador la soporta) */
         }
     </style>
 </head>
@@ -147,7 +140,7 @@
     {% for exp in experiencias %}
     <div class="item">
         <div class="item-head">
-            <span>{{ exp.cargodesempenado }}</span>
+            {{ exp.cargodesempenado }}
             <span class="item-date">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</span>
         </div>
         <div class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</div>
@@ -155,7 +148,7 @@
         
         {% if exp.rutacertificado %}
         <div class="evidence-container">
-            <img src="{{ exp.rutacertificado.url }}" class="evidence-img" alt="Certificado Laboral">
+            <img src="{{ exp.rutacertificado.url }}" class="evidence-img">
         </div>
         {% endif %}
     </div>
@@ -167,7 +160,7 @@
     {% for curso in cursos %}
     <div class="item">
         <div class="item-head">
-            <span>{{ curso.nombrecurso }}</span>
+            {{ curso.nombrecurso }}
             <span class="item-date">{{ curso.fechafin|date:"Y" }}</span>
         </div>
         <div class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</div>
@@ -175,7 +168,7 @@
         
         {% if curso.rutacertificado %}
         <div class="evidence-container">
-            <img src="{{ curso.rutacertificado.url }}" class="evidence-img" alt="Certificado Curso">
+            <img src="{{ curso.rutacertificado.url }}" class="evidence-img">
         </div>
         {% endif %}
     </div>
@@ -187,7 +180,7 @@
     {% for item in productos_acad %}
     <div class="item">
         <div class="item-head">
-            <span>{{ item.nombrerecurso }}</span>
+            {{ item.nombrerecurso }}
         </div>
         <div class="item-sub">{{ item.clasificador }}</div>
         <div class="item-desc">{{ item.descripcion }}</div>
@@ -200,7 +193,7 @@
     {% for prod in productos_lab %}
     <div class="item">
         <div class="item-head">
-            <span>{{ prod.nombreproducto }}</span>
+            {{ prod.nombreproducto }}
             <span class="item-date">{{ prod.fechaproducto|date:"Y" }}</span>
         </div>
         <div class="item-desc">{{ prod.descripcion }}</div>
@@ -213,7 +206,7 @@
     {% for item in garage %}
     <div class="item">
         <div class="item-head">
-            <span>{{ item.nombreproducto }}</span>
+            {{ item.nombreproducto }}
             <span class="item-date">${{ item.valordelbien }}</span>
         </div>
         <div class="item-sub">Estado: {{ item.estadoproducto }}</div>
@@ -221,7 +214,7 @@
         
         {% if item.documento_interes %}
         <div class="evidence-container">
-            <img src="{{ item.documento_interes.url }}" class="evidence-img" alt="Foto Producto">
+            <img src="{{ item.documento_interes.url }}" class="evidence-img">
         </div>
         {% endif %}
     </div>
@@ -233,14 +226,14 @@
     {% for reco in reconocimientos %}
     <div class="item">
         <div class="item-head">
-            <span>{{ reco.descripcionreconocimiento }}</span>
+            {{ reco.descripcionreconocimiento }}
             <span class="item-date">{{ reco.fechareconocimiento|date:"Y" }}</span>
         </div>
-        <div class="item-sub">{{ reco.entidadpatrocinadora }} ({{ reco.tiporeconocimiento }})</div>
+        <div class="item-sub">{{ reco.entidadpatrocinadora }}</div>
         
         {% if reco.rutacertificado %}
         <div class="evidence-container">
-            <img src="{{ reco.rutacertificado.url }}" class="evidence-img" alt="Diploma Reconocimiento">
+            <img src="{{ reco.rutacertificado.url }}" class="evidence-img">
         </div>
         {% endif %}
     </div>
