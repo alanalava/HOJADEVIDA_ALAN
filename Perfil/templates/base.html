@@ -11,19 +11,15 @@
     <style>
         /* --- VARIABLES --- */
         :root {
-            --sidebar-width-open: 280px;   
-            --sidebar-width-closed: 90px;  
+            --sidebar-width-open: 260px;   
+            --sidebar-width-closed: 80px;  
             --primary: #2563eb;     
-            --primary-dark: #1d4ed8; 
             --sidebar-bg: #0f172a;   
             
-            /* Variables Dinámicas */
             --bg-main: #f8fafc;      
             --bg-card: #ffffff;
             --text-main: #334155;    
             --text-muted: #64748b;
-            --border-color: rgba(0,0,0,0.05);
-            --shadow-card: 0 10px 30px -5px rgba(0,0,0,0.05);
         }
 
         body.dark-mode {
@@ -31,11 +27,9 @@
             --bg-card: #1e293b;       
             --text-main: #e2e8f0;     
             --text-muted: #94a3b8;
-            --border-color: rgba(255,255,255,0.05);
-            --shadow-card: 0 10px 30px -5px rgba(0,0,0,0.3);
         }
 
-        /* --- CONFIGURACIÓN BASE --- */
+        /* --- BASE --- */
         body {
             font-family: 'Poppins', sans-serif; 
             background: var(--bg-main);
@@ -46,20 +40,20 @@
             transition: background 0.3s ease;
         }
 
-        /* --- SIDEBAR (ARREGLADO: ESTRUCTURA FLEX) --- */
+        /* --- SIDEBAR FLEXIBLE (LA CLAVE) --- */
         aside {
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh; /* Altura completa de la pantalla */
             width: var(--sidebar-width-closed);
             background: var(--sidebar-bg);
             color: white;
-            position: fixed;
-            top: 0; left: 0;
-            height: 100vh; /* Altura completa */
-            display: flex;
-            flex-direction: column; /* Organizar verticalmente */
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
             z-index: 1000;
-            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow: hidden; /* Evitar scroll general feo */
+            display: flex;
+            flex-direction: column; /* Organiza elementos de arriba a abajo */
+            transition: width 0.3s ease;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            overflow: hidden; /* Oculta scroll feo general */
         }
 
         aside:hover {
@@ -68,109 +62,113 @@
 
         /* 1. SECCIÓN SUPERIOR (PERFIL) - FIJA */
         .sidebar-header {
-            padding: 1.5rem 1rem 0;
-            flex-shrink: 0; /* No se encoge */
+            padding: 20px 10px;
+            flex-shrink: 0; /* No se encoge nunca */
+            text-align: center;
         }
 
         /* 2. SECCIÓN MEDIA (MENÚ) - SCROLLABLE */
+        /* Esto hace que si hay muchos items (Garage, etc), puedas bajar sin tapar la luna */
         .sidebar-menu {
-            flex-grow: 1; /* Ocupa todo el espacio disponible */
-            overflow-y: auto; /* Solo esta parte hace scroll si es necesario */
-            padding: 1rem;
-            scrollbar-width: none; /* Ocultar barra scroll Firefox */
+            flex-grow: 1; /* Ocupa todo el espacio disponible en medio */
+            overflow-y: auto; /* Permite scroll vertical SOLO en el menú */
+            padding: 0 10px;
+            scrollbar-width: none; /* Firefox: oculta barra */
         }
-        .sidebar-menu::-webkit-scrollbar { display: none; } /* Ocultar barra scroll Chrome */
+        .sidebar-menu::-webkit-scrollbar { display: none; } /* Chrome: oculta barra */
 
-        /* 3. SECCIÓN INFERIOR (ADMIN Y TEMA) - FIJA ABAJO */
+        /* 3. SECCIÓN INFERIOR (ADMIN Y LUNA) - FIJA ABAJO */
         .sidebar-footer {
-            padding: 1rem;
-            background: rgba(0,0,0,0.2); /* Un poco más oscuro para separar */
-            flex-shrink: 0; /* No se encoge */
+            padding: 15px 10px;
+            flex-shrink: 0; /* No se encoge nunca */
             border-top: 1px solid rgba(255,255,255,0.1);
+            background: var(--sidebar-bg); /* Mismo fondo para tapar el scroll */
         }
 
-        /* --- ESTILOS DE ELEMENTOS --- */
+        /* --- ESTILOS COMPONENTES --- */
         
-        /* Perfil */
-        .identity-box { 
-            text-align: center; margin-bottom: 1rem; 
-            display: flex; flex-direction: column; align-items: center;
-        }
+        /* Foto y Nombre */
         .avatar-container {
-            width: 50px; height: 50px; margin: 0 auto 10px; transition: 0.4s;
+            width: 45px; height: 45px; margin: 0 auto 10px; 
+            border-radius: 50%; overflow: hidden; border: 2px solid white;
+            transition: 0.3s;
         }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
         aside:hover .avatar-container { width: 90px; height: 90px; }
         
-        .avatar-img, .avatar {
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-            background: var(--primary); display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: white; border: 2px solid rgba(255,255,255,0.2);
-        }
-
-        .user-info-wrapper {
-            max-height: 0; opacity: 0; overflow: hidden; transition: 0.3s;
-        }
-        aside:hover .user-info-wrapper { max-height: 200px; opacity: 1; }
-        
-        .user-name { font-weight: 700; font-size: 1.1rem; color: white; white-space: normal; line-height: 1.2;}
-        .typewriter { font-size: 0.8rem; color: #94a3b8; display: block; margin-top: 5px;}
+        .user-info { opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; }
+        aside:hover .user-info { opacity: 1; max-height: 100px; margin-bottom: 15px; }
+        .user-name { font-weight: bold; font-size: 1.1rem; white-space: nowrap; }
 
         /* Botón PDF */
         .btn-pdf {
-            background: var(--primary); color: white; text-decoration: none;
-            width: 100%; padding: 10px 0; border-radius: 10px;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            margin-bottom: 1rem; font-weight: 600;
+            background: var(--primary); color: white; border-radius: 8px;
+            padding: 10px; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; margin-bottom: 20px; transition: 0.2s;
         }
-        .btn-text { display: none; white-space: nowrap; }
-        aside:hover .btn-text { display: inline-block; }
+        .btn-pdf:hover { transform: scale(1.05); }
+        .btn-text, .nav-text { display: none; margin-left: 10px; white-space: nowrap; }
+        aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* Links del Menú */
+        /* Enlaces del Menú */
         nav a {
             display: flex; align-items: center; padding: 12px;
             color: var(--text-muted); text-decoration: none;
-            border-radius: 10px; margin-bottom: 5px; transition: 0.3s;
-            justify-content: center;
+            border-radius: 8px; margin-bottom: 5px; transition: 0.2s;
+            justify-content: center; /* Centrado cuando está cerrado */
         }
-        aside:hover nav a { justify-content: flex-start; padding: 12px 15px; }
+        aside:hover nav a { justify-content: flex-start; padding-left: 15px; }
         
-        .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
-        .nav-text { display: none; margin-left: 10px; }
-        aside:hover .nav-text { display: block; }
-
         nav a:hover, nav a.active { background: rgba(255,255,255,0.1); color: white; }
         nav a.active { background: var(--primary); }
+        .nav-icon { font-size: 1.2rem; min-width: 25px; text-align: center; }
 
-        /* Botones Footer (Admin y Luna) */
+        /* Botones Footer */
         .footer-btn {
-            display: flex; align-items: center; justify-content: center;
-            padding: 10px; color: #94a3b8; text-decoration: none;
-            border-radius: 10px; transition: 0.3s; cursor: pointer; border: none; background: transparent; width: 100%;
-            font-size: 1rem;
+            background: transparent; border: none; color: #94a3b8;
+            width: 100%; padding: 10px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            font-size: 1rem; text-decoration: none;
         }
-        aside:hover .footer-btn { justify-content: flex-start; padding: 10px 15px; }
         .footer-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        aside:hover .footer-btn { justify-content: flex-start; padding-left: 15px; }
 
-        /* CONTENIDO PRINCIPAL */
+        /* --- CONTENIDO PRINCIPAL --- */
         main { 
             margin-left: var(--sidebar-width-closed); 
-            padding: 3rem 4rem; 
-            transition: margin-left 0.4s;
+            padding: 2rem; 
+            transition: margin-left 0.3s ease;
         }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* RESPONSIVE */
+        /* --- RESPONSIVE (MÓVIL) --- */
         @media (max-width: 768px) {
-            aside { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; padding: 10px; justify-content: space-between; overflow: visible;}
-            aside:hover { width: 100%; }
-            .sidebar-menu, .sidebar-footer { display: none; } /* Simplificar en móvil */
-            .sidebar-header { padding: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; }
-            .identity-box { margin: 0; flex-direction: row; gap: 10px; text-align: left; }
-            .user-info-wrapper { max-height: none; opacity: 1; }
-            main { margin-left: 0; padding: 1rem; }
+            aside {
+                width: 100%; height: 60px; bottom: 0; top: auto; /* Barra abajo en móvil */
+                flex-direction: row; justify-content: space-around; align-items: center;
+                padding: 0; overflow: visible;
+            }
+            aside:hover { width: 100%; } /* No expandir en móvil */
+            
+            /* Ocultar cosas innecesarias en móvil */
+            .sidebar-header, .btn-text, .nav-text, .sidebar-footer { display: none; }
+            
+            /* Menú horizontal */
+            .sidebar-menu { 
+                display: flex; flex-direction: row; overflow-x: auto; 
+                width: 100%; padding: 0; align-items: center; justify-content: space-around;
+            }
+            
+            nav { display: flex; width: 100%; justify-content: space-around; }
+            nav a { margin: 0; padding: 10px; border-radius: 50%; }
+            nav a.active { background: transparent; color: var(--primary); }
+            
+            main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
+            
+            /* Botón flotante para menú completo en móvil (Opcional, simple por ahora) */
         }
         
-        /* CARD */
+        /* CARD ESTILO */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: var(--shadow-card); margin-bottom: 20px;
@@ -181,31 +179,26 @@
 
     <aside>
         <div class="sidebar-header">
-            <div class="identity-box">
-                <a href="/" style="text-decoration: none;">
-                    <div class="avatar-container">
-                        {% if perfil.fotoperfil %}
-                            <img src="{{ perfil.fotoperfil.url }}" class="avatar-img">
-                        {% else %}
-                            <div class="avatar">{{ perfil.nombres|slice:":1"|upper }}</div>
-                        {% endif %}
-                    </div>
-                </a>
-                <div class="user-info-wrapper">
-                    <div class="user-name">{% if perfil %}{{ perfil.nombres }} {{ perfil.apellidos }}{% else %}Bienvenido{% endif %}</div>
-                    <span class="typewriter">{% if perfil %}{{ perfil.descripcionperfil|default:'Desarrollador' }}{% endif %}</span>
-                </div>
+            <div class="avatar-container">
+                {% if perfil.fotoperfil %}
+                    <img src="{{ perfil.fotoperfil.url }}" class="avatar-img">
+                {% else %}
+                    <img src="https://via.placeholder.com/100" class="avatar-img">
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <div class="user-name">{{ perfil.nombres }}</div>
             </div>
             
             <a href="{% url 'cv_completo' %}" target="_blank" class="btn-pdf">
-                <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar CV</span>
+                <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar</span>
             </a>
         </div>
 
         <div class="sidebar-menu">
             <nav>
                 <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                    <i class="fas fa-user-circle nav-icon"></i> <span class="nav-text">Perfil</span>
+                    <i class="fas fa-user nav-icon"></i> <span class="nav-text">Perfil</span>
                 </a>
                 <a href="{% url 'experiencia' %}" class="{% if 'experiencia' in request.path %}active{% endif %}">
                     <i class="fas fa-briefcase nav-icon"></i> <span class="nav-text">Experiencia</span>
@@ -229,12 +222,11 @@
         </div>
 
         <div class="sidebar-footer">
-            <a href="/admin/" target="_blank" class="footer-btn">
-                <i class="fas fa-cogs nav-icon"></i> <span class="nav-text">Admin Panel</span>
+            <a href="/admin/" target="_blank" class="footer-btn" title="Ir al Admin">
+                <i class="fas fa-cog nav-icon"></i> <span class="nav-text">Admin</span>
             </a>
-            
-            <button id="theme-toggle" class="footer-btn">
-                <i class="fas fa-moon nav-icon"></i> <span class="nav-text">Modo Oscuro</span>
+            <button id="theme-toggle" class="footer-btn" title="Cambiar Tema">
+                <i class="fas fa-moon nav-icon"></i> <span class="nav-text">Oscuro/Claro</span>
             </button>
         </div>
     </aside>
@@ -245,33 +237,21 @@
     </main>
 
     <script>
-        // LÓGICA MODO OSCURO
+        // MODO OSCURO
         const toggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         const icon = toggleBtn.querySelector('i');
-        const textSpan = toggleBtn.querySelector('span');
 
-        // Cargar tema guardado
         if(localStorage.getItem('theme') === 'dark'){
             body.classList.add('dark-mode');
             icon.classList.replace('fa-moon', 'fa-sun');
-            textSpan.textContent = "Modo Claro";
         }
 
         toggleBtn.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             const isDark = body.classList.contains('dark-mode');
-            
-            // Cambiar Icono
-            if(isDark) {
-                icon.classList.replace('fa-moon', 'fa-sun');
-                textSpan.textContent = "Modo Claro";
-                localStorage.setItem('theme', 'dark');
-            } else {
-                icon.classList.replace('fa-sun', 'fa-moon');
-                textSpan.textContent = "Modo Oscuro";
-                localStorage.setItem('theme', 'light');
-            }
+            icon.className = isDark ? 'fas fa-sun nav-icon' : 'fas fa-moon nav-icon';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
     </script>
 
