@@ -12,29 +12,36 @@
         * { box-sizing: border-box; }
 
         :root {
+            /* Dimensiones Sidebar */
             --sidebar-width-open: 260px;
             --sidebar-width-closed: 80px;
+            
+            /* Colores Base (Modo Claro) */
             --primary: #2563eb;     
             --sidebar-bg: #0f172a;   
-            
             --bg-main: #f8fafc;      
             --bg-card: #ffffff;
             --text-main: #334155;    
             --text-muted: #64748b;
             
+            /* ETIQUETAS (Modo Claro): Gris suave */
             --tag-bg: #e2e8f0;
-            --tag-text: #334155; /* Texto oscuro para etiquetas */
+            --tag-text: #475569;
+            --tag-border: transparent;
         }
 
         body.dark-mode {
+            /* Colores Base (Modo Oscuro) */
             --bg-main: #0b1120;       
             --bg-card: #1e293b;       
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
             
-            /* En modo oscuro, la etiqueta sigue siendo legible */
-            --tag-bg: #cbd5e1; 
-            --tag-text: #0f172a; 
+            /* ETIQUETAS (Modo Oscuro - CORREGIDO) */
+            /* Ahora será oscuro con borde sutil, no un parche blanco */
+            --tag-bg: #0f172a;  /* Fondo muy oscuro */
+            --tag-text: #94a3b8; /* Texto gris claro */
+            --tag-border: #334155; /* Borde sutil */
         }
 
         body {
@@ -59,44 +66,40 @@
             display: flex; flex-direction: column;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-            overflow: hidden; /* Mantiene todo contenido */
+            overflow: hidden; 
         }
 
         aside:hover { width: var(--sidebar-width-open); }
 
-        /* HEADER */
         .sidebar-header { 
-            flex: 0 0 auto; 
-            padding: 20px 10px; 
+            flex: 0 0 auto; padding: 20px 10px; 
             display: flex; flex-direction: column; align-items: center; gap: 15px;
         }
 
-        /* MENÚ (SCROLL ACTIVADO AQUÍ) */
+        /* MENU SCROLLABLE */
         .sidebar-menu { 
-            flex: 1 1 auto; /* Ocupa todo el espacio disponible */
-            overflow-y: auto; /* Scroll vertical si no cabe */
+            flex: 1 1 auto; 
+            overflow-y: auto; 
             padding: 0 10px; 
-            scrollbar-width: none; /* Ocultar barra visualmente */
+            min-height: 0; /* Clave para el scroll */
+            scrollbar-width: none; 
         }
         .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* FOOTER */
         .sidebar-footer {
-            flex: 0 0 auto; 
-            padding: 15px 10px;
+            flex: 0 0 auto; padding: 15px 10px;
             background: var(--sidebar-bg); 
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; justify-content: space-evenly; gap: 10px;
         }
 
-        /* --- PERFIL --- */
+        /* PERFIL */
         .profile-link { display: block; flex-shrink: 0; }
         .avatar-container { 
             width: 50px; height: 50px; border-radius: 50%; overflow: hidden; 
             border: 2px solid white; transition: 0.3s;
         }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        
         aside:hover .avatar-container { width: 90px; height: 90px; } 
 
         .user-info { text-align: center; opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; width: 100%;}
@@ -115,7 +118,7 @@
         .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* NAV LINKS */
+        /* NAV */
         nav a {
             display: flex; align-items: center; padding: 12px; color: #94a3b8; text-decoration: none;
             border-radius: 10px; margin-bottom: 5px; transition: 0.2s; justify-content: center;
@@ -137,33 +140,38 @@
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* --- TARJETAS CON ANIMACIÓN RESTAURADA --- */
+        /* --- TARJETAS CON ANIMACIÓN --- */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
             color: var(--text-main);
-            /* ANIMACIÓN RESTAURADA */
+            /* Animación suave al pasar mouse */
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
         }
         
         .card:hover {
-            transform: translateY(-5px); /* Se levanta al pasar mouse */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
 
-        /* TEXTOS VISIBLES EN MODO OSCURO */
+        /* TEXTOS VISIBLES EN OSCURO */
         body.dark-mode .card h1, body.dark-mode .card h2, body.dark-mode .card h3, 
         body.dark-mode .card p, body.dark-mode .card span, body.dark-mode .card div, 
-        body.dark-mode .card strong {
-            color: #ffffff !important;
-        }
+        body.dark-mode .card strong { color: #ffffff !important; }
         
-        /* ETIQUETA ARREGLADA (TAG) */
+        /* --- ESTILO DE ETIQUETA (TAG) ARREGLADO --- */
+        /* Esta es la clase que usa "Académico | 2026" */
         .tag-category {
             background-color: var(--tag-bg);
-            color: var(--tag-text) !important; /* Fuerza color oscuro/legible */
-            padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;
-            display: inline-block; margin-bottom: 10px;
+            color: var(--tag-text) !important;
+            border: 1px solid var(--tag-border); /* Borde sutil solo en oscuro */
+            padding: 5px 12px; 
+            border-radius: 8px; 
+            font-size: 0.85rem; 
+            font-weight: 600;
+            display: inline-block; 
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
         
         /* BOTÓN AZUL */
