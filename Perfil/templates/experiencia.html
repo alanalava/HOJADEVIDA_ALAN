@@ -1,38 +1,46 @@
 {% extends 'base.html' %}
+
 {% block content %}
-    <h2 class="header-title"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
+    <h2 style="margin-bottom: 25px;"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
     
+    <div style="display: flex; flex-direction: column; gap: 20px;">
     {% for exp in perfil.experiencialaboral_set.all %}
         {% if exp.activarparaqueseveaenfront %}
-        <div class="card" style="margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
-                <h3 style="margin-top: 0; color: #1e293b;">{{ exp.cargodesempenado }}</h3>
-                <span style="background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: 600;">
-                    {{ exp.fechainiciogestion|date:"M Y" }} - 
-                    {% if exp.fechafingestion %}
-                        {{ exp.fechafingestion|date:"M Y" }}
-                    {% else %}
-                        Actualidad
-                    {% endif %}
-                </span>
-            </div>
-            
-            <h4 style="margin: 5px 0 15px 0; font-weight: 500; color: #64748b; font-size: 1rem;">
-                <i class="far fa-building"></i> {{ exp.nombrempresa }} | <i class="fas fa-map-marker-alt"></i> {{ exp.lugarempresa }}
-            </h4>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
+                
+                <div style="flex: 1; min-width: 250px;">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">{{ exp.cargodesempenado }}</h3>
+                    
+                    <span class="tag-category">
+                        {{ exp.fechainiciogestion|date:"M Y" }} - 
+                        {% if exp.fechafingestion %}
+                            {{ exp.fechafingestion|date:"M Y" }}
+                        {% else %}
+                            Actualidad
+                        {% endif %}
+                    </span>
+                    
+                    <h4 style="margin: 5px 0 15px 0; font-weight: 500; opacity: 0.9; font-size: 1rem;">
+                        <i class="far fa-building"></i> {{ exp.nombrempresa }} | <i class="fas fa-map-marker-alt"></i> {{ exp.lugarempresa }}
+                    </h4>
 
-            <p style="color: #475569; line-height: 1.6;">{{ exp.descripcionfunciones }}</p>
+                    <p style="line-height: 1.6;">{{ exp.descripcionfunciones }}</p>
+                </div>
 
-            {% if exp.rutacertificado %}
-            <div style="margin-top: 15px;">
-                <a href="{{ exp.rutacertificado.url }}" target="_blank" class="btn-link" style="color: #2563eb; text-decoration: none; font-weight: 500;">
-                    <i class="fas fa-file-contract"></i> Ver Certificado Laboral
-                </a>
+                {% if exp.rutacertificado %}
+                <div>
+                    <a href="{{ exp.rutacertificado.url }}" target="_blank" class="btn-card-action">
+                        <i class="fas fa-file-contract"></i> Ver Contrato/Certificado
+                    </a>
+                </div>
+                {% endif %}
+
             </div>
-            {% endif %}
         </div>
         {% endif %}
     {% empty %}
         <div class="card"><p>No hay experiencia registrada aún.</p></div>
     {% endfor %}
+    </div>
 {% endblock %}

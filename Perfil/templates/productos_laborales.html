@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2 class="header-title"><i class="fas fa-tools"></i> Productos Laborales</h2>
+    <h2 style="margin-bottom: 25px;"><i class="fas fa-tools"></i> Productos Laborales</h2>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
         
         {% for item in datos %}
             {% if item.activarparaqueseveaenfront %}
             <div class="card">
-                <h3 style="margin-top: 0; color: #1f2937;">{{ item.nombreproducto }}</h3>
+                <h3 style="margin-top: 0;">{{ item.nombreproducto }}</h3>
                 
-                <div style="margin-bottom: 10px; color: #2563eb; font-weight: 500; font-size: 0.9rem;">
+                <div class="tag-category">
                     <i class="far fa-calendar-alt"></i> {{ item.fechaproducto|date:"d M, Y" }}
                 </div>
                 
-                <p style="color: #4b5563;">{{ item.descripcion }}</p>
+                <p style="opacity: 0.9;">{{ item.descripcion }}</p>
             </div>
             {% endif %}
         {% empty %}

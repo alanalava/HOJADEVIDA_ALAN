@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2 class="header-title"><i class="fas fa-graduation-cap"></i> Educación y Formación</h2>
+    <h2 style="margin-bottom: 25px;"><i class="fas fa-graduation-cap"></i> Educación y Formación</h2>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
 
@@ -10,29 +10,28 @@
 
         <div class="card" style="display: flex; flex-direction: column;">
             
-            <h3 style="margin-top: 0; color: #1f2937; font-size: 1.2rem; margin-bottom: 10px;">
+            <h3 style="margin-top: 0; font-size: 1.2rem; margin-bottom: 10px;">
                 {{ curso.nombrecurso }}
             </h3>
 
-            <div style="color: #6b7280; font-weight: 500; margin-bottom: 15px; font-size: 0.9rem;">
-                <i class="fas fa-university" style="color: #2563eb;"></i> {{ curso.entidadpatrocinadora }}
-                <div style="margin-top: 5px;">
-                    <i class="far fa-calendar-alt"></i> Fin: {{ curso.fechafin|date:"d M, Y" }}
-                </div>
+            <div>
+                <span class="tag-category">
+                    <i class="fas fa-university"></i> {{ curso.entidadpatrocinadora }}
+                </span>
             </div>
 
-            <p style="color: #4b5563; line-height: 1.5; flex-grow: 1; font-size: 0.95rem;">
+            <p style="line-height: 1.5; flex-grow: 1; font-size: 0.95rem; margin-bottom: 15px;">
                 {{ curso.descripcioncurso }}
             </p>
             
-            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">
-                    <i class="far fa-clock"></i> {{ curso.totalhoras }} Horas
+            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <span style="font-size: 0.85rem; font-weight: 600; opacity: 0.8;">
+                    <i class="far fa-clock"></i> {{ curso.totalhoras }} Horas | {{ curso.fechafin|date:"M Y" }}
                 </span>
 
                 {% if curso.rutacertificado %}
-                    <a href="{{ curso.rutacertificado.url }}" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
-                        <i class="fas fa-external-link-alt"></i> Certificado
+                    <a href="{{ curso.rutacertificado.url }}" target="_blank" class="btn-card-action">
+                        <i class="fas fa-eye"></i> Ver Certificado
                     </a>
                 {% endif %}
             </div>
@@ -40,8 +39,8 @@
         </div>
         {% endif %}
     {% empty %}
-        <div class="card" style="grid-column: 1 / -1;">
-            <p style="color: #6b7280;">No hay cursos registrados.</p>
+        <div class="card">
+            <p>No hay cursos registrados.</p>
         </div>
     {% endfor %}
 
