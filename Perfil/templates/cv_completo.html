@@ -5,117 +5,31 @@
     <meta charset="UTF-8">
     <title>CV Completo</title>
     <style>
-        /* --- CONFIGURACIÓN GENERAL --- */
-        @page {
-            size: A4;
-            margin: 1.5cm;
-        }
+        @page { size: A4; margin: 1.5cm; }
+        body { font-family: Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.4; font-size: 12px; }
         
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-            color: #1a1a1a;
-            line-height: 1.4;
-            font-size: 12px;
-        }
+        .header { border-bottom: 4px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: #2563eb; margin: 0; text-transform: uppercase; font-size: 32px; font-weight: 800; }
+        .header-role { font-size: 16px; font-weight: bold; color: #444; margin: 8px 0; text-transform: uppercase; }
+        .header-contact { font-size: 13px; color: #333; line-height: 1.6; }
+        .profile-img { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #2563eb; object-fit: cover; }
         
-        /* --- CABECERA (AUMENTADA) --- */
-        .header {
-            border-bottom: 4px solid #2563eb;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            color: #2563eb;
-            margin: 0;
-            text-transform: uppercase;
-            font-size: 32px; /* Nombre mucho más grande */
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-        .header-role {
-            font-size: 16px; /* Rol destacado */
-            font-weight: bold;
-            color: #444;
-            margin: 8px 0 15px;
-            text-transform: uppercase;
-        }
-        .header-contact {
-            font-size: 13px; /* Contacto más legible */
-            color: #333;
-            line-height: 1.6;
-        }
-        .profile-img {
-            width: 140px; /* Foto más grande */
-            height: 140px;
-            border-radius: 50%;
-            border: 4px solid #2563eb;
-            object-fit: cover;
-        }
+        h3 { color: #0f172a; background-color: #f1f5f9; padding: 8px 12px; border-left: 6px solid #2563eb; margin: 25px 0 15px; text-transform: uppercase; font-size: 15px; font-weight: bold; }
         
-        /* --- TÍTULOS DE SECCIÓN --- */
-        h3 {
-            color: #0f172a;
-            background-color: #f1f5f9;
-            padding: 8px 12px;
-            border-left: 6px solid #2563eb;
-            margin: 25px 0 15px;
-            text-transform: uppercase;
-            font-size: 15px;
-            font-weight: bold;
-        }
-        
-        /* --- ITEMS --- */
-        .item {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e2e8f0;
-            page-break-inside: avoid;
-        }
+        .item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; page-break-inside: avoid; }
         .item:last-child { border-bottom: none; }
         
         .item-table { width: 100%; margin-bottom: 5px; }
-        .td-left {
-            text-align: left; font-weight: bold; font-size: 14px;
-            color: #000; vertical-align: top;
-        }
-        .td-right {
-            text-align: right; font-weight: bold; font-size: 12px;
-            color: #555; vertical-align: top; width: 25%;
-        }
+        .td-left { text-align: left; font-weight: bold; font-size: 14px; color: #000; vertical-align: top; }
+        .td-right { text-align: right; font-weight: bold; font-size: 12px; color: #555; vertical-align: top; width: 25%; }
         
-        .item-sub {
-            color: #2563eb; font-size: 12px; font-weight: bold;
-            margin-bottom: 6px; display: block;
-        }
-        .item-desc {
-            font-size: 12px; text-align: justify; margin-bottom: 10px;
-        }
+        .item-sub { color: #2563eb; font-size: 12px; font-weight: bold; margin-bottom: 6px; display: block; }
+        .item-desc { font-size: 12px; text-align: justify; margin-bottom: 5px; }
         
-        /* --- IMÁGENES (REDUCIDAS) --- */
-        .evidence-container {
-            text-align: left;
-            margin-top: 10px;
-            padding: 5px;
-            border: 1px solid #eee;
-            background: #fff;
-            display: inline-block;
-        }
-        .evidence-img {
-            display: block;
-            /* TAMAÑO CONTROLADO PARA QUE NO SE VEA GIGANTE */
-            max-height: 140px; 
-            max-width: 250px;
-            width: auto; height: auto;
-            object-fit: contain;
-        }
-        
-        /* Nota PDF */
-        .pdf-note {
-            font-size: 11px; color: #1e40af;
-            background-color: #dbeafe;
-            padding: 6px 10px; border-radius: 4px;
-            border-left: 3px solid #2563eb;
-            margin-top: 8px; display: inline-block; font-weight: 600;
+        /* Etiqueta pequeña para indicar que hay anexo */
+        .anexo-label {
+            color: #666; font-size: 10px; font-style: italic; background: #eee;
+            padding: 2px 5px; border-radius: 4px; margin-left: 10px; font-weight: normal;
         }
     </style>
 </head>
@@ -148,16 +62,11 @@
     {% for exp in experiencias %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ exp.cargodesempenado }}</td><td class="td-right">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</td></tr></table>
-        <span class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</span>
+        <span class="item-sub">
+            {{ exp.nombrempresa }} | {{ exp.lugarempresa }}
+            {% if exp.rutacertificado %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
+        </span>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
-        
-        {% if exp.rutacertificado %}
-            {% if '.pdf' in exp.rutacertificado.url|lower %}
-                <div class="pdf-note">📄 Certificado completo (PDF) adjunto al final.</div>
-            {% else %}
-                <div class="evidence-container"><img src="{{ exp.rutacertificado.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
@@ -167,23 +76,18 @@
     {% for curso in cursos %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ curso.nombrecurso }}</td><td class="td-right">{{ curso.fechafin|date:"Y" }}</td></tr></table>
-        <span class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</span>
+        <span class="item-sub">
+            {{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)
+            {% if curso.rutacertificado %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
+        </span>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
-        
-        {% if curso.rutacertificado %}
-            {% if '.pdf' in curso.rutacertificado.url|lower %}
-                <div class="pdf-note">📄 Certificado completo (PDF) adjunto al final.</div>
-            {% else %}
-                <div class="evidence-container"><img src="{{ curso.rutacertificado.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 
-    {% if productos_acad %}
+    {% if acad %}
     <h3>Productos Académicos</h3>
-    {% for item in productos_acad %}
+    {% for item in acad %}
     <div class="item">
         <div class="td-left" style="margin-bottom:5px;">{{ item.nombrerecurso }}</div>
         <span class="item-sub">Tipo: {{ item.clasificador }}</span>
@@ -192,9 +96,9 @@
     {% endfor %}
     {% endif %}
 
-    {% if productos_lab %}
+    {% if lab %}
     <h3>Proyectos Laborales</h3>
-    {% for prod in productos_lab %}
+    {% for prod in lab %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ prod.nombreproducto }}</td><td class="td-right">{{ prod.fechaproducto|date:"Y" }}</td></tr></table>
         <div class="item-desc">{{ prod.descripcion }}</div>
@@ -207,34 +111,24 @@
     {% for item in garage %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ item.nombreproducto }}</td><td class="td-right">${{ item.valordelbien }}</td></tr></table>
-        <span class="item-sub">Estado: {{ item.estadoproducto }}</span>
+        <span class="item-sub">
+            Estado: {{ item.estadoproducto }}
+            {% if item.documento_interes %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
+        </span>
         <div class="item-desc">{{ item.descripcion }}</div>
-        
-        {% if item.documento_interes %}
-            {% if '.pdf' in item.documento_interes.url|lower %}
-                <div class="pdf-note">📄 Documentación (PDF) adjunta al final.</div>
-            {% else %}
-                <div class="evidence-container"><img src="{{ item.documento_interes.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 
-    {% if reconocimientos %}
+    {% if recos %}
     <h3>Logros y Reconocimientos</h3>
-    {% for reco in reconocimientos %}
+    {% for reco in recos %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ reco.descripcionreconocimiento }}</td><td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td></tr></table>
-        <span class="item-sub">Entidad: {{ reco.entidadpatrocinadora }}</span>
-        
-        {% if reco.rutacertificado %}
-            {% if '.pdf' in reco.rutacertificado.url|lower %}
-                <div class="pdf-note">📄 Certificado completo (PDF) adjunto al final.</div>
-            {% else %}
-                <div class="evidence-container"><img src="{{ reco.rutacertificado.url }}" class="evidence-img"></div>
-            {% endif %}
-        {% endif %}
+        <span class="item-sub">
+            Entidad: {{ reco.entidadpatrocinadora }}
+            {% if reco.rutacertificado %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
+        </span>
     </div>
     {% endfor %}
     {% endif %}
