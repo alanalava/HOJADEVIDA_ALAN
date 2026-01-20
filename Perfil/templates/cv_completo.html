@@ -25,12 +25,6 @@
         
         .item-sub { color: #2563eb; font-size: 12px; font-weight: bold; margin-bottom: 6px; display: block; }
         .item-desc { font-size: 12px; text-align: justify; margin-bottom: 5px; }
-        
-        /* Etiqueta pequeña para indicar que hay anexo */
-        .anexo-label {
-            color: #666; font-size: 10px; font-style: italic; background: #eee;
-            padding: 2px 5px; border-radius: 4px; margin-left: 10px; font-weight: normal;
-        }
     </style>
 </head>
 <body>
@@ -62,10 +56,7 @@
     {% for exp in experiencias %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ exp.cargodesempenado }}</td><td class="td-right">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</td></tr></table>
-        <span class="item-sub">
-            {{ exp.nombrempresa }} | {{ exp.lugarempresa }}
-            {% if exp.rutacertificado %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
-        </span>
+        <span class="item-sub">{{ exp.nombrempresa }} | {{ exp.lugarempresa }}</span>
         <div class="item-desc">{{ exp.descripcionfunciones }}</div>
     </div>
     {% endfor %}
@@ -76,10 +67,7 @@
     {% for curso in cursos %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ curso.nombrecurso }}</td><td class="td-right">{{ curso.fechafin|date:"Y" }}</td></tr></table>
-        <span class="item-sub">
-            {{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)
-            {% if curso.rutacertificado %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
-        </span>
+        <span class="item-sub">{{ curso.entidadpatrocinadora }} ({{ curso.totalhoras }} hrs)</span>
         <div class="item-desc">{{ curso.descripcioncurso }}</div>
     </div>
     {% endfor %}
@@ -111,10 +99,7 @@
     {% for item in garage %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ item.nombreproducto }}</td><td class="td-right">${{ item.valordelbien }}</td></tr></table>
-        <span class="item-sub">
-            Estado: {{ item.estadoproducto }}
-            {% if item.documento_interes %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
-        </span>
+        <span class="item-sub">Estado: {{ item.estadoproducto }}</span>
         <div class="item-desc">{{ item.descripcion }}</div>
     </div>
     {% endfor %}
@@ -125,10 +110,7 @@
     {% for reco in recos %}
     <div class="item">
         <table class="item-table"><tr><td class="td-left">{{ reco.descripcionreconocimiento }}</td><td class="td-right">{{ reco.fechareconocimiento|date:"Y" }}</td></tr></table>
-        <span class="item-sub">
-            Entidad: {{ reco.entidadpatrocinadora }}
-            {% if reco.rutacertificado %}<span class="anexo-label">📎 Ver Anexos</span>{% endif %}
-        </span>
+        <span class="item-sub">Entidad: {{ reco.entidadpatrocinadora }}</span>
     </div>
     {% endfor %}
     {% endif %}

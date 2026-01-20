@@ -8,15 +8,15 @@ from pypdf import PdfWriter
 import os
 import io
 import requests
-import tempfile
 
 from .models import (
     DatosPersonales, ExperienciaLaboral, CursosRealizados, 
     VentaGarage, Reconocimientos, ProductosAcademicos, ProductosLaborales
 )
 
-# --- HELPER PARA IMÁGENES ---
+# --- TU LINK_CALLBACK ORIGINAL (El que funcionaba) ---
 def link_callback(uri, rel):
+    # Gestiona archivos estáticos y media locales
     sUrl = settings.STATIC_URL
     sRoot = settings.STATIC_ROOT
     mUrl = settings.MEDIA_URL
@@ -29,32 +29,26 @@ def link_callback(uri, rel):
     else:
         path = uri
 
-    if os.path.isfile(path): return path
+    # Si es local, devuelve la ruta
+    if os.path.isfile(path):
+        return path
+    
+    # Si es remoto (Cloudinary), xhtml2pdf lo manejará directamente
+    return uri 
 
-    # Para imágenes de internet (Cloudinary)
-    if uri.startswith("http://") or uri.startswith("https://"):
-        try:
-            response = requests.get(uri, stream=True, timeout=10)
-            if response.status_code == 200:
-                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
-                temp_file.write(response.content)
-                temp_file.close()
-                return temp_file.name
-        except: return uri
-    return uri
-
-# --- HELPER PARA CREAR PDFS PEQUEÑOS EN MEMORIA ---
-def generar_hoja_html(html_string):
+# --- HELPER SIMPLE ---
+def generar_pdf_desde_html(html_string):
     buffer = io.BytesIO()
+    # Aquí usamos tu callback original para que descargue las imágenes como antes
     pisa.CreatePDF(html_string, dest=buffer, link_callback=link_callback)
     buffer.seek(0)
     return buffer
 
-# --- VISTA PRINCIPAL DEL PDF (CON ANEXOS) ---
+# --- VISTA PRINCIPAL ---
 def cv_completo(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
     
-    # 1. GENERAR EL CV PRINCIPAL (SOLO TEXTO)
+    # 1. PREPARAR DATOS
     context = {
         'perfil': perfil,
         'experiencias': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion'),
@@ -65,17 +59,16 @@ def cv_completo(request):
         'lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')
     }
 
+    # 2. GENERAR CV BASE (Solo texto, limpio)
     template = get_template('cv_completo.html')
     html_cv = template.render(context)
     
     merger = PdfWriter()
-    # Agregamos el CV base
-    merger.append(generar_hoja_html(html_cv))
+    merger.append(generar_pdf_desde_html(html_cv))
 
-    # 2. RECOLECTAR TODOS LOS ADJUNTOS
-    # Formato: (Título del anexo, URL del archivo)
+    # 3. IDENTIFICAR ANEXOS
     adjuntos = []
-    
+    # Recolectamos todo lo que tenga certificado/documento
     for x in context['experiencias']: 
         if x.rutacertificado: adjuntos.append((f"Experiencia: {x.cargodesempenado}", x.rutacertificado.url))
     for x in context['cursos']: 
@@ -85,111 +78,72 @@ def cv_completo(request):
     for x in context['garage']: 
         if x.documento_interes: adjuntos.append((f"Garage: {x.nombreproducto}", x.documento_interes.url))
 
-    # 3. PROCESAR ANEXOS SI EXISTEN
+    # 4. PROCESAR ANEXOS
     if adjuntos:
-        # A) Crear Hoja Separadora "ANEXOS"
+        # A) Hoja Separadora "ANEXOS"
         html_separador = """
         <html><body style="font-family: Helvetica; text-align: center;">
             <div style="padding-top: 40%;">
-                <h1 style="font-size: 60px; color: #2563eb; margin: 0;">ANEXOS</h1>
-                <hr style="width: 100px; border: 2px solid #333; margin: 20px auto;">
-                <p style="font-size: 18px; color: #666;">Documentación de Soporte</p>
+                <h1 style="font-size: 50px; color: #2563eb;">ANEXOS</h1>
+                <hr style="width: 100px; margin: 20px auto;">
+                <p style="color: #666;">Soportes y Certificados</p>
             </div>
         </body></html>
         """
-        merger.append(generar_hoja_html(html_separador))
+        merger.append(generar_pdf_desde_html(html_separador))
 
-        # B) Recorrer cada adjunto
+        # B) Recorrer cada archivo
         for titulo, url in adjuntos:
             es_pdf = '.pdf' in url.lower()
-            
+
             if es_pdf:
-                # SI ES PDF: Ponemos una hoja de título antes
+                # CASO 1: ES PDF (Ponemos título en una hoja y luego pegamos el PDF)
                 html_titulo = f"""
-                <html><body style="font-family: Helvetica; padding: 40px;">
-                    <h2 style="color: #2563eb; border-bottom: 2px solid #ddd; padding-bottom: 10px;">ANEXO</h2>
-                    <h3 style="font-size: 24px; color: #333;">{titulo}</h3>
-                    <p style="margin-top: 50px; color: #666; font-style: italic;">
-                        (El documento PDF se encuentra en la página siguiente)
-                    </p>
+                <html><body style="font-family: Helvetica; padding: 30px;">
+                    <h2 style="color: #2563eb; border-bottom: 1px solid #ddd;">ANEXO</h2>
+                    <h3>{titulo}</h3>
+                    <p style="color:#666; font-style:italic; margin-top:20px;">(Documento PDF a continuación)</p>
                 </body></html>
                 """
-                merger.append(generar_hoja_html(html_titulo))
+                merger.append(generar_pdf_desde_html(html_titulo))
                 
-                # Descargar y pegar el PDF real
+                # Descargar PDF real y adjuntar
                 try:
                     res = requests.get(url, timeout=15)
                     if res.status_code == 200:
                         merger.append(io.BytesIO(res.content))
                 except: pass
-                
+
             else:
-                # SI ES IMAGEN: La ponemos en la misma hoja con el título
+                # CASO 2: ES IMAGEN (Usamos el método que te funcionaba antes)
+                # Creamos un HTML simple con la etiqueta <img> y dejamos que tu link_callback haga la magia
                 html_imagen = f"""
-                <html><body style="font-family: Helvetica; padding: 40px;">
-                    <h2 style="color: #2563eb; border-bottom: 2px solid #ddd; padding-bottom: 10px;">ANEXO</h2>
-                    <h3 style="font-size: 20px; color: #333; margin-bottom: 30px;">{titulo}</h3>
-                    
-                    <div style="text-align: center; border: 1px solid #eee; padding: 10px; background: #fafafa;">
-                        <img src="{url}" style="max-width: 100%; max-height: 800px;">
+                <html><body style="font-family: Helvetica; padding: 30px;">
+                    <h2 style="color: #2563eb; border-bottom: 1px solid #ddd;">ANEXO</h2>
+                    <h3 style="margin-bottom: 20px;">{titulo}</h3>
+                    <div style="text-align: center; border: 1px solid #eee; padding: 10px;">
+                        <img src="{url}" style="max-width: 100%; max-height: 850px;">
                     </div>
                 </body></html>
                 """
-                merger.append(generar_hoja_html(html_imagen))
+                # Al llamar a esta función, xhtml2pdf usará tu callback original para traer la imagen
+                merger.append(generar_pdf_desde_html(html_imagen))
 
-    # 4. FINALIZAR
+    # 5. FINALIZAR
     output = io.BytesIO()
     merger.write(output)
     merger.close()
     
     response = HttpResponse(output.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="CV_Completo_Anexos.pdf"'
+    response['Content-Disposition'] = 'inline; filename="CV_Final.pdf"'
     return response
 
-# --- VISTAS NORMALES (ESTAS ERAN LAS QUE FALTABAN) ---
-
-def get_active_profile():
-    return DatosPersonales.objects.filter(perfilactivo=1).first()
-
-def home(request):
-    perfil = get_active_profile()
-    context = {
-        'perfil': perfil,
-        'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_garage': VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:5],
-        'resumen_rec': Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-        'resumen_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:3],
-    }
-    return render(request, 'home.html', context)
-
-def experiencia(request):
-    perfil = get_active_profile()
-    datos = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'experiencia.html', {'perfil': perfil, 'datos': datos})
-
-def productos_academicos(request):
-    perfil = get_active_profile()
-    datos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'productos_academicos.html', {'perfil': perfil, 'datos': datos})
-
-def productos_laborales(request):
-    perfil = get_active_profile()
-    datos = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')
-    return render(request, 'productos_laborales.html', {'perfil': perfil, 'datos': datos})
-
-def cursos(request):
-    perfil = get_active_profile()
-    datos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'cursos.html', {'perfil': perfil, 'datos': datos})
-
-def reconocimientos(request):
-    perfil = get_active_profile()
-    datos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')
-    return render(request, 'reconocimientos.html', {'perfil': perfil, 'datos': datos})
-
-def garage(request):
-    perfil = get_active_profile()
-    datos = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
-    return render(request, 'garage.html', {'perfil': perfil, 'datos': datos})
+# --- VISTAS NORMALES (Mantenlas para que no se rompa la web) ---
+def get_active_profile(): return DatosPersonales.objects.filter(perfilactivo=1).first()
+def home(request): return render(request, 'home.html', {'perfil': get_active_profile(), 'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_garage': VentaGarage.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:5], 'resumen_rec': Reconocimientos.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3]})
+def experiencia(request): return render(request, 'experiencia.html', {'perfil': get_active_profile(), 'datos': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
+def productos_academicos(request): return render(request, 'productos_academicos.html', {'perfil': get_active_profile(), 'datos': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
+def productos_laborales(request): return render(request, 'productos_laborales.html', {'perfil': get_active_profile(), 'datos': ProductosLaborales.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
+def cursos(request): return render(request, 'cursos.html', {'perfil': get_active_profile(), 'datos': CursosRealizados.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
+def reconocimientos(request): return render(request, 'reconocimientos.html', {'perfil': get_active_profile(), 'datos': Reconocimientos.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
+def garage(request): return render(request, 'garage.html', {'perfil': get_active_profile(), 'datos': VentaGarage.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
