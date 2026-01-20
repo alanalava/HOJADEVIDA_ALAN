@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from django.conf import settings
 from xhtml2pdf import pisa
-from pypdf import PdfWriter, PdfReader
+from pypdf import PdfWriter
 import os
 import io
 import requests
@@ -13,7 +13,7 @@ from .models import (
     VentaGarage, Reconocimientos, ProductosAcademicos, ProductosLaborales
 )
 
-# --- TU FUNCIÓN ORIGINAL PARA QUE XHTML2PDF LEA IMÁGENES ---
+# --- CALLBACK PARA QUE LA LIBRERÍA ENCUENTRE LAS IMÁGENES ---
 def link_callback(uri, rel):
     sUrl = settings.STATIC_URL
     sRoot = settings.STATIC_ROOT
@@ -30,7 +30,7 @@ def link_callback(uri, rel):
     if os.path.isfile(path): return path
     return uri 
 
-# --- FUNCIÓN SIMPLE: CONVIERTE CUALQUIER HTML A PDF EN MEMORIA ---
+# --- CONVERTIR HTML A PDF ---
 def html_a_pdf(html_string):
     buffer = io.BytesIO()
     pisa.CreatePDF(html_string, dest=buffer, link_callback=link_callback)
@@ -40,7 +40,7 @@ def html_a_pdf(html_string):
 def cv_completo(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
     
-    # 1. GENERAMOS EL CV DE TEXTO (PRIMERAS PÁGINAS)
+    # 1. GENERAR CV DE TEXTO
     context = {
         'perfil': perfil,
         'experiencias': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion'),
@@ -55,66 +55,58 @@ def cv_completo(request):
     html_cv = template.render(context)
     
     merger = PdfWriter()
-    # Agregamos el CV al PDF final
     merger.append(html_a_pdf(html_cv))
 
-    # 2. LISTA DE COSAS PARA ADJUNTAR
-    adjuntos = []
-    # Recorremos para guardar (Titulo, URL)
+    # 2. RECOLECTAR URLs DE LOS CERTIFICADOS
+    urls_adjuntos = []
+    
     for x in context['experiencias']: 
-        if x.rutacertificado: adjuntos.append((f"Experiencia: {x.cargodesempenado}", x.rutacertificado.url))
+        if x.rutacertificado: urls_adjuntos.append(x.rutacertificado.url)
     for x in context['cursos']: 
-        if x.rutacertificado: adjuntos.append((f"Curso: {x.nombrecurso}", x.rutacertificado.url))
+        if x.rutacertificado: urls_adjuntos.append(x.rutacertificado.url)
     for x in context['recos']: 
-        if x.rutacertificado: adjuntos.append((f"Logro: {x.descripcionreconocimiento}", x.rutacertificado.url))
+        if x.rutacertificado: urls_adjuntos.append(x.rutacertificado.url)
     for x in context['garage']: 
-        if x.documento_interes: adjuntos.append((f"Garage: {x.nombreproducto}", x.documento_interes.url))
+        if x.documento_interes: urls_adjuntos.append(x.documento_interes.url)
 
-    # 3. SI HAY ADJUNTOS, PONEMOS LA HOJA "ANEXOS"
-    if adjuntos:
+    # 3. PROCESAR ANEXOS
+    if urls_adjuntos:
+        # A) HOJA SEPARADORA "ANEXOS" (Solo una vez)
         html_separador = """
         <html><body style="font-family: Helvetica; text-align: center;">
-            <br><br><br><br><br><br><br><br>
-            <h1 style="font-size: 50px; color: #2563eb;">ANEXOS</h1>
+            <br><br><br><br><br><br><br><br><br><br>
+            <h1 style="font-size: 60px; color: #2563eb;">ANEXOS</h1>
             <p style="font-size: 20px; color: #666;">Documentos de Soporte</p>
         </body></html>
         """
         merger.append(html_a_pdf(html_separador))
 
-        # 4. AGREGAMOS UNO POR UNO
-        for titulo, url in adjuntos:
+        # B) PEGAR LOS ARCHIVOS DIRECTAMENTE
+        for url in urls_adjuntos:
             try:
-                # Descargamos el archivo para ver qué es
+                # Descargamos el archivo
                 response = requests.get(url, timeout=15)
                 if response.status_code == 200:
                     archivo_bytes = io.BytesIO(response.content)
                     
-                    # SI ES PDF: Lo pegamos directo
+                    # SI ES PDF: Lo pegamos directo (sin hoja de título)
                     if url.lower().endswith('.pdf') or response.content.startswith(b'%PDF'):
-                        # Primero una hoja con el título
-                        html_titulo = f"<html><body><h2 style='color:#2563eb;'>{titulo}</h2><p>(Documento PDF a continuación)</p></body></html>"
-                        merger.append(html_a_pdf(html_titulo))
                         merger.append(archivo_bytes)
                     
-                    # SI ES IMAGEN: Creamos un HTML con la imagen y lo convertimos a PDF
-                    # (Esto funcionaba antes, así que lo usamos igual)
+                    # SI ES IMAGEN: Creamos una hoja PDF que SOLO contenga la imagen
                     else:
                         html_imagen = f"""
                         <html>
-                            <body style="font-family: Helvetica; padding: 20px;">
-                                <h2 style="color: #2563eb; border-bottom: 1px solid #ccc;">{titulo}</h2>
-                                <br>
-                                <div style="text-align: center;">
-                                    <img src="{url}" style="max-width: 100%; max-height: 900px;">
-                                </div>
+                            <body style="margin: 0; padding: 0; text-align: center;">
+                                <img src="{url}" style="width: 100%; max-height: 1000px; object-fit: contain;">
                             </body>
                         </html>
                         """
                         merger.append(html_a_pdf(html_imagen))
             except Exception as e:
-                print(f"Error adjuntando {titulo}: {e}")
+                print(f"Error adjuntando {url}: {e}")
 
-    # 5. GENERAR EL PDF FINAL
+    # 4. SALIDA FINAL
     output = io.BytesIO()
     merger.write(output)
     merger.close()
@@ -123,7 +115,7 @@ def cv_completo(request):
     response['Content-Disposition'] = 'inline; filename="CV_Final.pdf"'
     return response
 
-# --- TUS VISTAS NORMALES (NO TOCAR) ---
+# --- VISTAS NORMALES (MANTENER SIEMPRE) ---
 def get_active_profile(): return DatosPersonales.objects.filter(perfilactivo=1).first()
 def home(request): return render(request, 'home.html', {'perfil': get_active_profile(), 'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_garage': VentaGarage.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:5], 'resumen_rec': Reconocimientos.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3], 'resumen_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)[:3]})
 def experiencia(request): return render(request, 'experiencia.html', {'perfil': get_active_profile(), 'datos': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=get_active_profile(), activarparaqueseveaenfront=True)})
