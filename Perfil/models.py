@@ -1,5 +1,7 @@
 from django.db import models
-from django.core.exceptions import ValidationError  # <--- Agregado para la restricción
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, RegexValidator # <--- Importado
+from datetime import date # <--- Importado
 
 class DatosPersonales(models.Model):
     idperfil = models.IntegerField(primary_key=True)
@@ -13,7 +15,21 @@ class DatosPersonales(models.Model):
     nacionalidad = models.CharField(max_length=20)
     lugarnacimiento = models.CharField(max_length=60)
     fechanacimiento = models.DateField()
-    numerocedula = models.CharField(max_length=10, unique=True)
+    
+    # --- RESTRICCIÓN: Solo 10 números ---
+    numerocedula = models.CharField(
+        max_length=10, 
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{10}$', 
+                message='La cédula debe tener 10 dígitos numéricos.', 
+                code='invalid_cedula'
+            )
+        ]
+    )
+    # ------------------------------------
+
     sexo_choices = [('H', 'Hombre'), ('M', 'Mujer')]
     sexo = models.CharField(max_length=1, choices=sexo_choices)
     estadocivil = models.CharField(max_length=50)
@@ -23,6 +39,12 @@ class DatosPersonales(models.Model):
     direcciontrabajo = models.CharField(max_length=50, blank=True, null=True)
     direcciondomiciliaria = models.CharField(max_length=50)
     sitioweb = models.CharField(max_length=60, blank=True, null=True)
+
+    # --- RESTRICCIÓN: Nacer en el pasado ---
+    def clean(self):
+        if self.fechanacimiento and self.fechanacimiento >= date.today():
+            raise ValidationError({'fechanacimiento': "La fecha de nacimiento no puede ser hoy ni en el futuro."})
+    # ---------------------------------------
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
@@ -47,12 +69,10 @@ class ExperienciaLaboral(models.Model):
     activarparaqueseveaenfront = models.BooleanField(default=True)
     rutacertificado = models.FileField(upload_to='certificados/experiencia/', blank=True, null=True)
 
-    # --- INICIO RESTRICCIÓN ---
     def clean(self):
         if self.fechainiciogestion and self.fechafingestion:
             if self.fechafingestion < self.fechainiciogestion:
                 raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
-    # --- FIN RESTRICCIÓN ---
 
     def __str__(self):
         return f"{self.cargodesempenado} en {self.nombrempresa}"
@@ -83,7 +103,9 @@ class CursosRealizados(models.Model):
     nombrecurso = models.CharField(max_length=100)
     fechainicio = models.DateField()
     fechafin = models.DateField()
-    totalhoras = models.IntegerField()
+    # --- RESTRICCIÓN: Horas positivas ---
+    totalhoras = models.IntegerField(validators=[MinValueValidator(1)])
+    # ------------------------------------
     descripcioncurso = models.CharField(max_length=100)
     entidadpatrocinadora = models.CharField(max_length=100)
     nombrecontactoauspicia = models.CharField(max_length=100)
@@ -94,7 +116,9 @@ class CursosRealizados(models.Model):
     nombrecurso = models.CharField(max_length=100)
     fechainicio = models.DateField()
     fechafin = models.DateField()
-    totalhoras = models.IntegerField()
+    # --- RESTRICCIÓN: Horas positivas (en el duplicado también) ---
+    totalhoras = models.IntegerField(validators=[MinValueValidator(1)])
+    # --------------------------------------------------------------
     descripcioncurso = models.CharField(max_length=100)
     entidadpatrocinadora = models.CharField(max_length=100)
     nombrecontactoauspicia = models.CharField(max_length=100)
@@ -104,12 +128,10 @@ class CursosRealizados(models.Model):
     rutacertificado = models.FileField(upload_to='certificados/cursos/', blank=True, null=True)
     archivo_extra = models.FileField(upload_to='extras_reconocimientos/', null=True, blank=True)
 
-    # --- INICIO RESTRICCIÓN ---
     def clean(self):
         if self.fechainicio and self.fechafin:
             if self.fechafin < self.fechainicio:
                 raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
-    # --- FIN RESTRICCIÓN ---
 
     def __str__(self):
         return self.nombrecurso
@@ -143,7 +165,15 @@ class VentaGarage(models.Model):
     nombreproducto = models.CharField(max_length=100)
     estadoproducto = models.CharField(max_length=40, choices=ESTADO_CHOICES)
     descripcion = models.CharField(max_length=100)
-    valordelbien = models.DecimalField(max_digits=5, decimal_places=2)
+    
+    # --- RESTRICCIÓN: Precio positivo ---
+    valordelbien = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2,
+        validators=[MinValueValidator(0.01)]
+    )
+    # ------------------------------------
+
     activarparaqueseveaenfront = models.BooleanField(default=True)
     documento_interes = models.FileField(upload_to='garage/documentos/', null=True, blank=True,
     verbose_name="Documento Adicional (PDF/Foto)"
