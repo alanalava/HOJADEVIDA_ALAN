@@ -1,6 +1,5 @@
 from django.db import models
-
-from django.db import models
+from django.core.exceptions import ValidationError  # <--- Agregado para la restricción
 
 class DatosPersonales(models.Model):
     idperfil = models.IntegerField(primary_key=True)
@@ -47,6 +46,13 @@ class ExperienciaLaboral(models.Model):
     descripcionfunciones = models.TextField(max_length=500)
     activarparaqueseveaenfront = models.BooleanField(default=True)
     rutacertificado = models.FileField(upload_to='certificados/experiencia/', blank=True, null=True)
+
+    # --- INICIO RESTRICCIÓN ---
+    def clean(self):
+        if self.fechainiciogestion and self.fechafingestion:
+            if self.fechafingestion < self.fechainiciogestion:
+                raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
+    # --- FIN RESTRICCIÓN ---
 
     def __str__(self):
         return f"{self.cargodesempenado} en {self.nombrempresa}"
@@ -97,6 +103,13 @@ class CursosRealizados(models.Model):
     activarparaqueseveaenfront = models.BooleanField(default=True)
     rutacertificado = models.FileField(upload_to='certificados/cursos/', blank=True, null=True)
     archivo_extra = models.FileField(upload_to='extras_reconocimientos/', null=True, blank=True)
+
+    # --- INICIO RESTRICCIÓN ---
+    def clean(self):
+        if self.fechainicio and self.fechafin:
+            if self.fechafin < self.fechainicio:
+                raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
+    # --- FIN RESTRICCIÓN ---
 
     def __str__(self):
         return self.nombrecurso
