@@ -10,13 +10,11 @@
         </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
-
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px;">
         <div class="card">
             <h4 style="margin-top: 0; color: #2563eb; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 15px;">
                 <i class="fas fa-id-card"></i> Datos Personales
             </h4>
-            
             <p><strong>Cédula:</strong> {{ perfil.numerocedula }}</p>
             <p><strong>Nacionalidad:</strong> {{ perfil.nacionalidad }}</p>
             <p><strong>Estado Civil:</strong> {{ perfil.estadocivil }}</p>
@@ -28,22 +26,10 @@
             <h4 style="margin-top: 0; color: #2563eb; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 15px;">
                 <i class="fas fa-address-book"></i> Contacto
             </h4>
-
-            {% if perfil.telefonoconvencional %}
-            <p><strong>Tel. Móvil:</strong> {{ perfil.telefonoconvencional }}</p>
-            {% endif %}
-            
-            {% if perfil.telefonofijo %}
-            <p><strong>Tel. Fijo:</strong> {{ perfil.telefonofijo }}</p>
-            {% endif %}
-
-            {% if perfil.email_contacto %}
-            <p><strong>Email:</strong> <a href="mailto:{{ perfil.email_contacto }}">{{ perfil.email_contacto }}</a></p>
-            {% endif %}
-
-            {% if perfil.sitioweb %}
-            <p><strong>Web:</strong> <a href="{{ perfil.sitioweb }}" target="_blank">Visitar sitio</a></p>
-            {% endif %}
+            {% if perfil.telefonoconvencional %} <p><strong>Tel. Móvil:</strong> {{ perfil.telefonoconvencional }}</p> {% endif %}
+            {% if perfil.telefonofijo %} <p><strong>Tel. Fijo:</strong> {{ perfil.telefonofijo }}</p> {% endif %}
+            {% if perfil.email_contacto %} <p><strong>Email:</strong> <a href="mailto:{{ perfil.email_contacto }}">{{ perfil.email_contacto }}</a></p> {% endif %}
+            {% if perfil.sitioweb %} <p><strong>Web:</strong> <a href="{{ perfil.sitioweb }}" target="_blank">Visitar sitio</a></p> {% endif %}
         </div>
 
         <div class="card">
@@ -52,10 +38,90 @@
             </h4>
             <p><strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}</p>
             <p><strong>Lugar Nacimiento:</strong> {{ perfil.lugarnacimiento }}</p>
-            {% if perfil.direcciontrabajo %}
-            <p><strong>Trabajo:</strong> {{ perfil.direcciontrabajo }}</p>
-            {% endif %}
+            {% if perfil.direcciontrabajo %} <p><strong>Trabajo:</strong> {{ perfil.direcciontrabajo }}</p> {% endif %}
+        </div>
+    </div>
+
+    <div class="sec-experiencia" style="margin-bottom: 40px;">
+        <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
+            <i class="fas fa-briefcase"></i> Última Experiencia
+        </h3>
+        <div style="display: grid; gap: 20px;">
+            {% for exp in resumen_exp %}
+            <div class="card" style="padding: 1.5rem;">
+                <h4 style="margin: 0;">{{ exp.cargodesempenado }}</h4>
+                <p style="color: #64748b; margin: 5px 0;">{{ exp.nombrempresa }} | {{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Presente{% endif %}</p>
+            </div>
+            {% empty %}
+            <p class="text-muted">No hay experiencia registrada.</p>
+            {% endfor %}
+            <a href="{% url 'experiencia' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Ver todo ></a>
+        </div>
+    </div>
+
+    <div class="sec-cursos" style="margin-bottom: 40px;">
+        <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
+            <i class="fas fa-graduation-cap"></i> Educación Reciente
+        </h3>
+        <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            {% for curso in resumen_cursos %}
+            <div class="card">
+                <h4 style="margin: 0 0 10px 0;">{{ curso.nombrecurso }}</h4>
+                <span class="tag-category">{{ curso.totalhoras }} Horas</span>
+                <p style="font-size: 0.9rem;">{{ curso.entidadpatrocinadora }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="sec-garage" style="margin-bottom: 40px;">
+        <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
+            <i class="fas fa-store"></i> En Venta (Garage)
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            {% for venta in resumen_garage %}
+            <div class="card" style="border-left: 4px solid {% if venta.estadoproducto == 'Bueno' %}#10b981{% else %}#f59e0b{% endif %};">
+                <h5 style="margin: 0 0 10px 0;">{{ venta.nombreproducto }}</h5>
+                <p style="font-weight: bold; color: {% if venta.estadoproducto == 'Bueno' %}#10b981{% else %}#f59e0b{% endif %};">${{ venta.valordelbien }}</p>
+                <small>{{ venta.estadoproducto }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="sec-reconocimientos" style="margin-bottom: 40px;">
+        <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
+            <i class="fas fa-trophy"></i> Logros Destacados
+        </h3>
+        <div style="display: grid; gap: 15px;">
+            {% for rec in resumen_rec %}
+            <div class="card">
+                <p><strong>{{ rec.descripcionreconocimiento }}</strong> - {{ rec.entidadpatrocinadora }} ({{ rec.fechareconocimiento|date:"Y" }})</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <div class="sec-proyectos">
+            <h3 style="color: #2563eb;"><i class="fas fa-tools"></i> Proyectos</h3>
+            {% for proy in resumen_lab %}
+            <div class="card" style="margin-bottom: 10px;">
+                <p><strong>{{ proy.nombreproducto }}</strong></p>
+                <small>{{ proy.descripcion|truncatechars:50 }}</small>
+            </div>
+            {% endfor %}
         </div>
 
+        <div class="sec-academicos">
+            <h3 style="color: #2563eb;"><i class="fas fa-book"></i> Académico</h3>
+            {% for acad in resumen_acad %}
+            <div class="card" style="margin-bottom: 10px;">
+                <p><strong>{{ acad.nombrerecurso }}</strong></p>
+                <small>{{ acad.clasificador }}</small>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+
 {% endblock %}

@@ -24,7 +24,7 @@
             --text-main: #334155;    
             --text-muted: #64748b;
             
-            /* ETIQUETAS (Modo Claro): Gris suave */
+            /* ETIQUETAS */
             --tag-bg: #e2e8f0;
             --tag-text: #475569;
             --tag-border: transparent;
@@ -37,10 +37,10 @@
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
             
-            /* ETIQUETAS (Modo Oscuro - CORREGIDO) */
-            --tag-bg: #0f172a;  /* Fondo muy oscuro */
-            --tag-text: #94a3b8; /* Texto gris claro */
-            --tag-border: #334155; /* Borde sutil */
+            /* ETIQUETAS (Modo Oscuro) */
+            --tag-bg: #0f172a; 
+            --tag-text: #94a3b8;
+            --tag-border: #334155; 
         }
 
         body {
@@ -80,7 +80,7 @@
             flex: 1 1 auto; 
             overflow-y: auto; 
             padding: 0 10px; 
-            min-height: 0; /* Clave para el scroll */
+            min-height: 0; 
             scrollbar-width: none; 
         }
         .sidebar-menu::-webkit-scrollbar { display: none; }
@@ -106,13 +106,12 @@
         .user-name { font-weight: 700; font-size: 1.1rem; color: white; display: block; margin-bottom: 5px;}
         .typewriter { font-size: 0.8rem; color: #94a3b8; display: block; min-height: 1.2em; }
 
-        /* BOTÓN PDF (MODIFICADO PARA SOPORTAR <BUTTON>) */
+        /* BOTÓN PDF */
         .btn-pdf {
             background: var(--primary); color: white !important; 
             border-radius: 10px; padding: 12px; width: 100%;
             display: flex; align-items: center; justify-content: center;
             text-decoration: none; transition: 0.2s; white-space: nowrap; font-weight: 500;
-            /* Agregados para que funcione como botón */
             border: none; cursor: pointer; font-size: 1rem; font-family: inherit;
         }
         .btn-pdf:hover { background: #3b82f6; transform: translateY(-2px); }
@@ -141,38 +140,27 @@
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
 
-        /* --- TARJETAS CON ANIMACIÓN --- */
+        /* --- CARDS --- */
         .card {
             background: var(--bg-card); padding: 2rem; border-radius: 15px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
             color: var(--text-main);
-            /* Animación suave al pasar mouse */
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
         }
-        
-        .card:hover {
-            transform: translateY(-5px); 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
 
-        /* TEXTOS VISIBLES EN OSCURO */
+        /* TEXTOS EN MODO OSCURO */
         body.dark-mode .card h1, body.dark-mode .card h2, body.dark-mode .card h3, 
         body.dark-mode .card p, body.dark-mode .card span, body.dark-mode .card div, 
         body.dark-mode .card strong { color: #ffffff !important; }
         
-        /* --- ESTILO DE ETIQUETA (TAG) ARREGLADO --- */
-        /* Esta es la clase que usa "Académico | 2026" */
+        /* TAG CATEGORY */
         .tag-category {
             background-color: var(--tag-bg);
             color: var(--tag-text) !important;
-            border: 1px solid var(--tag-border); /* Borde sutil solo en oscuro */
-            padding: 5px 12px; 
-            border-radius: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600;
-            display: inline-block; 
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
+            border: 1px solid var(--tag-border);
+            padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+            display: inline-block; margin-bottom: 12px; letter-spacing: 0.5px;
         }
         
         /* BOTÓN AZUL */
@@ -195,7 +183,7 @@
             main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
         }
 
-        /* --- ESTILOS DEL MODAL (NUEVO) --- */
+        /* --- ESTILOS DE LOS MODALES --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 2000;
@@ -232,7 +220,7 @@
                 <span class="typewriter" id="typewriter-text"></span>
             </div>
             
-            <button onclick="openModal()" class="btn-pdf">
+            <button onclick="openModal('pdfModal')" class="btn-pdf">
                 <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar CV</span>
             </button>
         </div>
@@ -268,6 +256,11 @@
             <a href="/admin/" target="_blank" class="footer-btn" title="Admin">
                 <i class="fas fa-cog"></i> 
             </a>
+            
+            <button onclick="openModal('viewModal')" class="footer-btn" title="Configurar Vista">
+                <i class="fas fa-eye"></i>
+            </button>
+
             <button id="theme-toggle" class="footer-btn" title="Tema">
                 <i class="fas fa-moon"></i>
             </button>
@@ -281,7 +274,7 @@
 
     <div id="pdfModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="modal-title">Configurar Impresión</h3>
+            <h3 class="modal-title">Seleccionar PDF</h3>
             <form action="{% url 'cv_completo' %}" method="GET" target="_blank">
                 <div class="modal-options">
                     <label><input type="checkbox" name="inc_exp" checked> Incluir Experiencia</label>
@@ -292,19 +285,49 @@
                     <label><input type="checkbox" name="inc_gar"> Incluir Venta Garage</label>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-close" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-print" onclick="closeModal()">Generar PDF</button>
+                    <button type="button" class="btn-close" onclick="closeModal('pdfModal')">Cancelar</button>
+                    <button type="submit" class="btn-print" onclick="closeModal('pdfModal')">Generar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script>
-        // LOGICA DEL MODAL (NUEVO)
-        function openModal() { document.getElementById('pdfModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('pdfModal').style.display = 'none'; }
+    <div id="viewModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Mostrar/Ocultar Secciones</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 15px;">Selecciona qué secciones deseas ver en la pantalla:</p>
+            <div class="modal-options">
+                <label><input type="checkbox" checked onchange="toggleSection('sec-experiencia', this)"> Experiencia</label>
+                <label><input type="checkbox" checked onchange="toggleSection('sec-cursos', this)"> Cursos y Títulos</label>
+                <label><input type="checkbox" checked onchange="toggleSection('sec-reconocimientos', this)"> Logros</label>
+                <label><input type="checkbox" checked onchange="toggleSection('sec-academicos', this)"> Prod. Académicos</label>
+                <label><input type="checkbox" checked onchange="toggleSection('sec-proyectos', this)"> Proyectos</label>
+                <label><input type="checkbox" checked onchange="toggleSection('sec-garage', this)"> Venta Garage</label>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-print" onclick="closeModal('viewModal')">Listo</button>
+            </div>
+        </div>
+    </div>
 
-        // LOGICA DE TEMA (ORIGINAL)
+    <script>
+        // LOGICA DE MODALES (ID DINÁMICO)
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // LOGICA PARA OCULTAR SECCIONES
+        function toggleSection(className, checkbox) {
+            const elements = document.getElementsByClassName(className);
+            for(let i=0; i < elements.length; i++) {
+                if(checkbox.checked) {
+                    elements[i].style.display = 'block'; 
+                } else {
+                    elements[i].style.display = 'none';
+                }
+            }
+        }
+
+        // TEMA OSCURO
         const toggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         const icon = toggleBtn.querySelector('i');
