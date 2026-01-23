@@ -54,18 +54,37 @@
         .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* MENU ITEMS & SWITCHES */
-        .menu-item-container { display: flex; align-items: center; margin-bottom: 5px; border-radius: 10px; transition: 0.2s; padding: 5px; }
+        /* --- MENU ITEMS --- */
+        .menu-item-container { 
+            display: flex; align-items: center; margin-bottom: 5px; border-radius: 10px; transition: 0.2s; padding: 5px; 
+        }
         .menu-item-container:hover { background: rgba(255,255,255,0.05); }
 
-        /* SWITCH OCULTO POR DEFECTO */
+        /* LOGICA PARA OCULTAR FILAS COMPLETAS SIN DEJAR ESPACIO */
+        .menu-item-container.hidden-row {
+            display: none !important; /* Desaparece por completo */
+        }
+
+        /* PERO: Si estamos en MODO EDICIÓN, las mostramos aunque estén 'ocultas' */
+        aside.edit-mode .menu-item-container.hidden-row {
+            display: flex !important;
+            opacity: 0.4; /* Se ven un poco transparentes para indicar que están apagadas */
+        }
+
+        /* SWITCH STYLES */
         .toggle-switch {
             position: relative; width: 34px; height: 18px; flex-shrink: 0; margin-right: 10px;
-            display: none; /* Se oculta normalmente */
-            opacity: 0; transition: opacity 0.3s ease;
+            display: none; opacity: 0; transition: opacity 0.3s ease;
         }
-        /* CLASE MÁGICA: Cuando el sidebar tiene 'edit-mode', mostramos los switches */
-        aside.edit-mode .toggle-switch { display: inline-block; opacity: 1; }
+        
+        /* ESPACIADOR FIJO PARA EL PERFIL (Mismo ancho que el switch) */
+        .toggle-spacer {
+            width: 34px; margin-right: 10px; flex-shrink: 0; display: none;
+        }
+
+        /* Cuando activamos el Ojito, mostramos switches y el espaciador del perfil */
+        aside.edit-mode .toggle-switch,
+        aside.edit-mode .toggle-spacer { display: inline-block; opacity: 1; }
 
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; }
@@ -73,12 +92,8 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        .nav-link { flex-grow: 1; display: flex; align-items: center; padding: 8px; color: #94a3b8; text-decoration: none; border-radius: 5px; transition: opacity 0.3s; }
+        .nav-link { flex-grow: 1; display: flex; align-items: center; padding: 8px; color: #94a3b8; text-decoration: none; border-radius: 5px; }
         .nav-link:hover, .nav-link.active { color: white; }
-        
-        /* CLASE PARA OCULTAR EL LINK CUANDO EL CHECK ESTÁ OFF */
-        .nav-link.hidden-link { display: none !important; }
-        
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
         .footer-btn { background: rgba(255,255,255,0.05); border: none; color: #94a3b8; width: 45px; height: 45px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 1.2rem; }
@@ -99,7 +114,7 @@
             .sidebar-header, .sidebar-footer { display: none; }
             .sidebar-menu { display: flex; flex-direction: row; overflow-x: auto; width: 100%; padding: 0; justify-content: space-around; }
             .menu-item-container { flex-direction: column; padding: 0; margin: 0; }
-            .toggle-switch { display: none !important; } 
+            .toggle-switch, .toggle-spacer { display: none !important; } 
             .nav-link { padding: 10px; border-radius: 50%; justify-content: center; }
             .btn-text, .nav-text { display: none !important; }
             main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
@@ -132,7 +147,7 @@
 
             <div class="sidebar-menu">
                 <div class="menu-item-container">
-                    <div style="width: 44px;"></div> 
+                    <div class="toggle-spacer"></div> 
                     <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                         <i class="fas fa-user nav-icon"></i> <span class="nav-text">Perfil</span>
                     </a>
@@ -140,7 +155,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_exp" checked onchange="toggleMenuLink(this)">
+                        <input type="checkbox" name="inc_exp" checked onchange="toggleMenuRow(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'experiencia' %}" class="nav-link {% if 'experiencia' in request.path %}active{% endif %}">
@@ -150,7 +165,7 @@
                 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_acad" checked onchange="toggleMenuLink(this)">
+                        <input type="checkbox" name="inc_acad" checked onchange="toggleMenuRow(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'productos_academicos' %}" class="nav-link {% if 'productos_academicos' in request.path %}active{% endif %}">
@@ -160,7 +175,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_lab" checked onchange="toggleMenuLink(this)">
+                        <input type="checkbox" name="inc_lab" checked onchange="toggleMenuRow(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'productos_laborales' %}" class="nav-link {% if 'productos_laborales' in request.path %}active{% endif %}">
@@ -170,7 +185,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_cur" checked onchange="toggleMenuLink(this)">
+                        <input type="checkbox" name="inc_cur" checked onchange="toggleMenuRow(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'cursos' %}" class="nav-link {% if 'cursos' in request.path %}active{% endif %}">
@@ -180,7 +195,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_rec" checked onchange="toggleMenuLink(this)">
+                        <input type="checkbox" name="inc_rec" checked onchange="toggleMenuRow(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'reconocimientos' %}" class="nav-link {% if 'reconocimientos' in request.path %}active{% endif %}">
@@ -190,7 +205,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_gar" onchange="toggleMenuLink(this)">
+                        <input type="checkbox" name="inc_gar" onchange="toggleMenuRow(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'garage' %}" class="nav-link {% if 'garage' in request.path %}active{% endif %}">
@@ -231,22 +246,20 @@
             eyeBtn.classList.toggle('active');
         });
 
-        // 2. LOGICA PARA OCULTAR EL ENLACE DEL MENÚ
-        function toggleMenuLink(checkbox) {
-            // Buscamos el hermano 'a' (el enlace) que está al lado del label
+        // 2. LOGICA PARA OCULTAR LA FILA COMPLETA
+        function toggleMenuRow(checkbox) {
             const container = checkbox.closest('.menu-item-container');
-            const link = container.querySelector('a.nav-link');
             
-            if(link) {
+            if(container) {
                 if(checkbox.checked) {
-                    link.classList.remove('hidden-link'); // Mostrar
+                    container.classList.remove('hidden-row'); // Mostrar
                 } else {
-                    link.classList.add('hidden-link'); // Ocultar
+                    container.classList.add('hidden-row'); // Ocultar
                 }
             }
         }
 
-        // 3. PERSISTENCIA Y CARGA INICIAL
+        // 3. PERSISTENCIA
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         
         document.addEventListener('DOMContentLoaded', () => {
@@ -256,11 +269,10 @@
                     chk.checked = (saved === 'true');
                 }
                 // Aplicar visibilidad inicial
-                toggleMenuLink(chk);
+                toggleMenuRow(chk);
             });
         });
 
-        // Guardar cambios en memoria
         checkboxes.forEach(chk => {
             chk.addEventListener('change', () => {
                 localStorage.setItem('chk_' + chk.name, chk.checked);
