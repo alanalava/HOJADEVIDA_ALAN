@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, RegexValidator # <--- Importado
-from datetime import date # <--- Importado
+from django.core.validators import MinValueValidator, RegexValidator
+from datetime import date
 
 class DatosPersonales(models.Model):
     idperfil = models.IntegerField(primary_key=True)
@@ -94,10 +94,20 @@ class Reconocimientos(models.Model):
     rutacertificado = models.FileField(upload_to='reconocimientos/', null=True, blank=True)
     archivo_recurso = models.FileField(upload_to='recursos_cursos/', null=True, blank=True)
 
+    # --- NUEVO: Validar fecha futura ---
+    def clean(self):
+        if self.fechareconocimiento and self.fechareconocimiento > date.today():
+             raise ValidationError({'fechareconocimiento': "La fecha del reconocimiento no puede estar en el futuro."})
+    
+    # --- NUEVO: Ordenar por fecha ---
+    class Meta:
+        ordering = ['-fechareconocimiento']
+
     def __str__(self):
         return self.descripcionreconocimiento
 
 class CursosRealizados(models.Model):
+    # NOTA: Eliminé los campos duplicados que tenías aquí para que no de error
     idcursorealizado = models.IntegerField(primary_key=True)
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
     nombrecurso = models.CharField(max_length=100)
@@ -111,19 +121,6 @@ class CursosRealizados(models.Model):
     nombrecontactoauspicia = models.CharField(max_length=100)
     telefonocontactoauspicia = models.CharField(max_length=60)
     emailempresapatrocinadora = models.EmailField(max_length=60)
-    idcursorealizado = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    nombrecurso = models.CharField(max_length=100)
-    fechainicio = models.DateField()
-    fechafin = models.DateField()
-    # --- RESTRICCIÓN: Horas positivas (en el duplicado también) ---
-    totalhoras = models.IntegerField(validators=[MinValueValidator(1)])
-    # --------------------------------------------------------------
-    descripcioncurso = models.CharField(max_length=100)
-    entidadpatrocinadora = models.CharField(max_length=100)
-    nombrecontactoauspicia = models.CharField(max_length=100)
-    telefonocontactoauspicia = models.CharField(max_length=60)
-    emailempresapatrocinadora = models.EmailField(max_length=60)
     activarparaqueseveaenfront = models.BooleanField(default=True)
     rutacertificado = models.FileField(upload_to='certificados/cursos/', blank=True, null=True)
     archivo_extra = models.FileField(upload_to='extras_reconocimientos/', null=True, blank=True)
@@ -132,6 +129,10 @@ class CursosRealizados(models.Model):
         if self.fechainicio and self.fechafin:
             if self.fechafin < self.fechainicio:
                 raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
+
+    # --- NUEVO: Ordenar por fecha ---
+    class Meta:
+        ordering = ['-fechainicio']
 
     def __str__(self):
         return self.nombrecurso
@@ -174,10 +175,18 @@ class VentaGarage(models.Model):
     )
     # ------------------------------------
 
+    # --- NUEVO: Fecha de publicación ---
+    fecha_publicacion = models.DateField(auto_now_add=True, verbose_name="Fecha de publicación")
+    # -----------------------------------
+
     activarparaqueseveaenfront = models.BooleanField(default=True)
     documento_interes = models.FileField(upload_to='garage/documentos/', null=True, blank=True,
     verbose_name="Documento Adicional (PDF/Foto)"
     )
+
+    # --- NUEVO: Ordenar por fecha publicación ---
+    class Meta:
+        ordering = ['-fecha_publicacion']
 
     def __str__(self):
         return f"{self.nombreproducto} - ${self.valordelbien}"
