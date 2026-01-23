@@ -16,7 +16,6 @@ class DatosPersonales(models.Model):
     lugarnacimiento = models.CharField(max_length=60)
     fechanacimiento = models.DateField()
     
-    # --- RESTRICCIÓN: Solo 10 números ---
     numerocedula = models.CharField(
         max_length=10, 
         unique=True,
@@ -28,7 +27,6 @@ class DatosPersonales(models.Model):
             )
         ]
     )
-    # ------------------------------------
 
     sexo_choices = [('H', 'Hombre'), ('M', 'Mujer')]
     sexo = models.CharField(max_length=1, choices=sexo_choices)
@@ -40,11 +38,9 @@ class DatosPersonales(models.Model):
     direcciondomiciliaria = models.CharField(max_length=50)
     sitioweb = models.CharField(max_length=60, blank=True, null=True)
 
-    # --- RESTRICCIÓN: Nacer en el pasado ---
     def clean(self):
         if self.fechanacimiento and self.fechanacimiento >= date.today():
             raise ValidationError({'fechanacimiento': "La fecha de nacimiento no puede ser hoy ni en el futuro."})
-    # ---------------------------------------
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
@@ -70,6 +66,15 @@ class ExperienciaLaboral(models.Model):
     rutacertificado = models.FileField(upload_to='certificados/experiencia/', blank=True, null=True)
 
     def clean(self):
+        # 1. Validar que inicio no sea futuro
+        if self.fechainiciogestion and self.fechainiciogestion > date.today():
+            raise ValidationError({'fechainiciogestion': "La fecha de inicio no puede estar en el futuro."})
+        
+        # 2. Validar que fin no sea futuro
+        if self.fechafingestion and self.fechafingestion > date.today():
+            raise ValidationError({'fechafingestion': "La fecha de fin no puede estar en el futuro."})
+
+        # 3. Validar coherencia (Fin mayor que Inicio)
         if self.fechainiciogestion and self.fechafingestion:
             if self.fechafingestion < self.fechainiciogestion:
                 raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
@@ -94,12 +99,10 @@ class Reconocimientos(models.Model):
     rutacertificado = models.FileField(upload_to='reconocimientos/', null=True, blank=True)
     archivo_recurso = models.FileField(upload_to='recursos_cursos/', null=True, blank=True)
 
-    # --- NUEVO: Validar fecha futura ---
     def clean(self):
         if self.fechareconocimiento and self.fechareconocimiento > date.today():
              raise ValidationError({'fechareconocimiento': "La fecha del reconocimiento no puede estar en el futuro."})
     
-    # --- NUEVO: Ordenar por fecha ---
     class Meta:
         ordering = ['-fechareconocimiento']
 
@@ -107,15 +110,12 @@ class Reconocimientos(models.Model):
         return self.descripcionreconocimiento
 
 class CursosRealizados(models.Model):
-    # NOTA: Eliminé los campos duplicados que tenías aquí para que no de error
     idcursorealizado = models.IntegerField(primary_key=True)
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
     nombrecurso = models.CharField(max_length=100)
     fechainicio = models.DateField()
     fechafin = models.DateField()
-    # --- RESTRICCIÓN: Horas positivas ---
     totalhoras = models.IntegerField(validators=[MinValueValidator(1)])
-    # ------------------------------------
     descripcioncurso = models.CharField(max_length=100)
     entidadpatrocinadora = models.CharField(max_length=100)
     nombrecontactoauspicia = models.CharField(max_length=100)
@@ -126,11 +126,19 @@ class CursosRealizados(models.Model):
     archivo_extra = models.FileField(upload_to='extras_reconocimientos/', null=True, blank=True)
 
     def clean(self):
+        # 1. Validar que inicio no sea futuro
+        if self.fechainicio and self.fechainicio > date.today():
+            raise ValidationError({'fechainicio': "La fecha de inicio no puede estar en el futuro."})
+        
+        # 2. Validar que fin no sea futuro
+        if self.fechafin and self.fechafin > date.today():
+            raise ValidationError({'fechafin': "La fecha de fin no puede estar en el futuro."})
+
+        # 3. Validar coherencia
         if self.fechainicio and self.fechafin:
             if self.fechafin < self.fechainicio:
                 raise ValidationError("La fecha fin no puede ser menor a la fecha de inicio.")
 
-    # --- NUEVO: Ordenar por fecha ---
     class Meta:
         ordering = ['-fechainicio']
 
@@ -156,6 +164,11 @@ class ProductosLaborales(models.Model):
     descripcion = models.CharField(max_length=100)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
+    def clean(self):
+        # Validar fecha futura
+        if self.fechaproducto and self.fechaproducto > date.today():
+            raise ValidationError({'fechaproducto': "La fecha del producto no puede estar en el futuro."})
+
     def __str__(self):
         return self.nombreproducto
 
@@ -167,24 +180,18 @@ class VentaGarage(models.Model):
     estadoproducto = models.CharField(max_length=40, choices=ESTADO_CHOICES)
     descripcion = models.CharField(max_length=100)
     
-    # --- RESTRICCIÓN: Precio positivo ---
     valordelbien = models.DecimalField(
         max_digits=5, 
         decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
-    # ------------------------------------
 
-    # --- NUEVO: Fecha de publicación ---
     fecha_publicacion = models.DateField(auto_now_add=True, verbose_name="Fecha de publicación")
-    # -----------------------------------
-
     activarparaqueseveaenfront = models.BooleanField(default=True)
     documento_interes = models.FileField(upload_to='garage/documentos/', null=True, blank=True,
     verbose_name="Documento Adicional (PDF/Foto)"
     )
 
-    # --- NUEVO: Ordenar por fecha publicación ---
     class Meta:
         ordering = ['-fecha_publicacion']
 
