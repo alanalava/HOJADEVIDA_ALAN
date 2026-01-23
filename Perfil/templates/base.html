@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* TUS ESTILOS SE MANTIENEN IGUALES */
         * { box-sizing: border-box; }
         :root {
             --sidebar-width-open: 280px; 
@@ -26,23 +27,17 @@
         aside {
             position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-width-closed);
             background: var(--sidebar-bg); color: white; z-index: 1000; 
-            /* Quitamos flex aquí porque ahora lo tendrá el form hijo */
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 10px rgba(0,0,0,0.1); overflow: hidden; 
         }
         aside:hover { width: var(--sidebar-width-open); }
 
-        /* ESTILO PARA EL FORMULARIO INTERNO QUE ACTÚA COMO CONTENEDOR FLEX */
-        .sidebar-inner-form {
-            height: 100%; width: 100%;
-            display: flex; flex-direction: column;
-        }
-
+        .sidebar-inner-form { height: 100%; width: 100%; display: flex; flex-direction: column; }
         .sidebar-header { flex: 0 0 auto; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .sidebar-menu { flex: 1 1 auto; overflow-y: auto; padding: 0 10px; scrollbar-width: none; }
         .sidebar-menu::-webkit-scrollbar { display: none; }
         .sidebar-footer { flex: 0 0 auto; padding: 15px 10px; background: var(--sidebar-bg); border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-evenly; gap: 10px; }
 
-        /* PERFIL */
+        /* PERFIL & TEXTOS */
         .profile-link { display: block; flex-shrink: 0; }
         .avatar-container { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid white; transition: 0.3s; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
@@ -52,7 +47,7 @@
         .user-name { font-weight: 700; font-size: 1.1rem; color: white; display: block; margin-bottom: 5px;}
         .typewriter { font-size: 0.8rem; color: #94a3b8; display: block; min-height: 1.2em; }
 
-        /* BOTÓN PDF */
+        /* BOTONES & MENU ITEMS */
         .btn-pdf {
             background: var(--primary); color: white !important; border-radius: 10px; padding: 12px; width: 100%;
             display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s; white-space: nowrap; font-weight: 500;
@@ -62,13 +57,11 @@
         .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* MENU ITEMS */
         .menu-item-container { display: flex; align-items: center; margin-bottom: 5px; border-radius: 10px; transition: 0.2s; padding: 5px; }
         .menu-item-container:hover { background: rgba(255,255,255,0.05); }
-
-        /* OCULTAR FILA COMPLETA SI SE APAGA EL SWITCH */
+        
+        /* LÓGICA DE VISIBILIDAD DE FILAS */
         .menu-item-container.hidden-row { display: none !important; }
-        /* MOSTRARLA SI ESTAMOS EN MODO EDICIÓN (OJITO ACTIVO) */
         aside.edit-mode .menu-item-container.hidden-row { display: flex !important; opacity: 0.4; }
 
         /* SWITCHES */
@@ -77,8 +70,6 @@
             display: none; opacity: 0; transition: opacity 0.3s ease;
         }
         .toggle-spacer { width: 34px; margin-right: 10px; flex-shrink: 0; display: none; }
-
-        /* MOSTRAR SWITCHES AL ACTIVAR OJITO */
         aside.edit-mode .toggle-switch, aside.edit-mode .toggle-spacer { display: inline-block; opacity: 1; }
 
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -95,13 +86,10 @@
         .footer-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: scale(1.1); }
         .footer-btn.active { background: var(--primary); color: white; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
-        /* --- MAIN (AQUÍ ESTÁ LA CORRECCIÓN DEL DESPLAZAMIENTO) --- */
+        /* MAIN & CARDS (LAYOUT CORREGIDO) */
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
-        
-        /* AHORA SÍ FUNCIONA PORQUE ASIDE ES HERMANO DE MAIN */
         aside:hover + main { margin-left: var(--sidebar-width-open); }
         
-        /* CARDS */
         .card { background: var(--bg-card); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px; color: var(--text-main); transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
         body.dark-mode .card h1, body.dark-mode .card h2, body.dark-mode .card h3, body.dark-mode .card p, body.dark-mode .card span, body.dark-mode .card div, body.dark-mode .card strong { color: #ffffff !important; }
@@ -126,6 +114,8 @@
     <aside id="main-sidebar">
         <form id="sidebarForm" action="{% url 'cv_completo' %}" method="GET" target="_blank" class="sidebar-inner-form">
             
+            <input type="hidden" name="generar_pdf" value="true"> 
+
             <div class="sidebar-header">
                 <a href="{% url 'home' %}" class="profile-link">
                     <div class="avatar-container">
