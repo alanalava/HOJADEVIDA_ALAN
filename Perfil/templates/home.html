@@ -42,26 +42,26 @@
         </div>
     </div>
 
-    <div class="sec-experiencia" style="margin-bottom: 40px;">
+    <div id="sec-experiencia" style="margin-bottom: 40px;">
         <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
-            <i class="fas fa-briefcase"></i> Última Experiencia
+            <i class="fas fa-briefcase"></i> Experiencia Laboral
         </h3>
         <div style="display: grid; gap: 20px;">
             {% for exp in resumen_exp %}
             <div class="card" style="padding: 1.5rem;">
                 <h4 style="margin: 0;">{{ exp.cargodesempenado }}</h4>
                 <p style="color: #64748b; margin: 5px 0;">{{ exp.nombrempresa }} | {{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Presente{% endif %}</p>
+                <p>{{ exp.descripcionfunciones|truncatechars:150 }}</p>
             </div>
             {% empty %}
             <p class="text-muted">No hay experiencia registrada.</p>
             {% endfor %}
-            <a href="{% url 'experiencia' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Ver todo ></a>
         </div>
     </div>
 
-    <div class="sec-cursos" style="margin-bottom: 40px;">
+    <div id="sec-cursos" style="margin-bottom: 40px;">
         <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
-            <i class="fas fa-graduation-cap"></i> Educación Reciente
+            <i class="fas fa-graduation-cap"></i> Educación Continua
         </h3>
         <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
             {% for curso in resumen_cursos %}
@@ -74,9 +74,9 @@
         </div>
     </div>
 
-    <div class="sec-garage" style="margin-bottom: 40px;">
+    <div id="sec-garage" style="margin-bottom: 40px;">
         <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
-            <i class="fas fa-store"></i> En Venta (Garage)
+            <i class="fas fa-store"></i> Venta de Garage
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
             {% for venta in resumen_garage %}
@@ -89,9 +89,9 @@
         </div>
     </div>
 
-    <div class="sec-reconocimientos" style="margin-bottom: 40px;">
+    <div id="sec-reconocimientos" style="margin-bottom: 40px;">
         <h3 style="color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
-            <i class="fas fa-trophy"></i> Logros Destacados
+            <i class="fas fa-trophy"></i> Logros y Reconocimientos
         </h3>
         <div style="display: grid; gap: 15px;">
             {% for rec in resumen_rec %}
@@ -103,7 +103,7 @@
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-        <div class="sec-proyectos">
+        <div id="sec-proyectos">
             <h3 style="color: #2563eb;"><i class="fas fa-tools"></i> Proyectos</h3>
             {% for proy in resumen_lab %}
             <div class="card" style="margin-bottom: 10px;">
@@ -113,7 +113,7 @@
             {% endfor %}
         </div>
 
-        <div class="sec-academicos">
+        <div id="sec-academicos">
             <h3 style="color: #2563eb;"><i class="fas fa-book"></i> Académico</h3>
             {% for acad in resumen_acad %}
             <div class="card" style="margin-bottom: 10px;">
@@ -123,5 +123,4 @@
             {% endfor %}
         </div>
     </div>
-
 {% endblock %}

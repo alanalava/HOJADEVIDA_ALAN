@@ -10,97 +10,35 @@
     
     <style>
         * { box-sizing: border-box; }
-
         :root {
-            /* Dimensiones Sidebar */
-            --sidebar-width-open: 260px;
+            --sidebar-width-open: 280px; 
             --sidebar-width-closed: 80px;
-            
-            /* Colores Base (Modo Claro) */
-            --primary: #2563eb;     
-            --sidebar-bg: #0f172a;   
-            --bg-main: #f8fafc;      
-            --bg-card: #ffffff;
-            --text-main: #334155;    
-            --text-muted: #64748b;
-            
-            /* ETIQUETAS */
-            --tag-bg: #e2e8f0;
-            --tag-text: #475569;
-            --tag-border: transparent;
+            --primary: #2563eb; --sidebar-bg: #0f172a; --bg-main: #f8fafc; --bg-card: #ffffff;
+            --text-main: #334155; --text-muted: #64748b; --tag-bg: #e2e8f0; --tag-text: #475569; --tag-border: transparent;
         }
-
         body.dark-mode {
-            /* Colores Base (Modo Oscuro) */
-            --bg-main: #0b1120;       
-            --bg-card: #1e293b;       
-            --text-main: #f8fafc;
-            --text-muted: #cbd5e1;
-            
-            /* ETIQUETAS (Modo Oscuro) */
-            --tag-bg: #0f172a; 
-            --tag-text: #94a3b8;
-            --tag-border: #334155; 
+            --bg-main: #0b1120; --bg-card: #1e293b; --text-main: #f8fafc; --text-muted: #cbd5e1;
+            --tag-bg: #0f172a; --tag-text: #94a3b8; --tag-border: #334155; 
         }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
 
-        body {
-            font-family: 'Poppins', sans-serif; 
-            background: var(--bg-main);
-            color: var(--text-main);
-            margin: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        /* --- SIDEBAR --- */
+        /* SIDEBAR */
         aside {
-            position: fixed;
-            top: 0; left: 0;
-            height: 100vh;
-            width: var(--sidebar-width-closed);
-            background: var(--sidebar-bg);
-            color: white;
-            z-index: 1000;
-            display: flex; flex-direction: column;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-            overflow: hidden; 
+            position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-width-closed);
+            background: var(--sidebar-bg); color: white; z-index: 1000; display: flex; flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 10px rgba(0,0,0,0.1); overflow: hidden; 
         }
-
         aside:hover { width: var(--sidebar-width-open); }
-
-        .sidebar-header { 
-            flex: 0 0 auto; padding: 20px 10px; 
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
-        }
-
-        /* MENU SCROLLABLE */
-        .sidebar-menu { 
-            flex: 1 1 auto; 
-            overflow-y: auto; 
-            padding: 0 10px; 
-            min-height: 0; 
-            scrollbar-width: none; 
-        }
+        .sidebar-header { flex: 0 0 auto; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .sidebar-menu { flex: 1 1 auto; overflow-y: auto; padding: 0 10px; scrollbar-width: none; }
         .sidebar-menu::-webkit-scrollbar { display: none; }
-
-        .sidebar-footer {
-            flex: 0 0 auto; padding: 15px 10px;
-            background: var(--sidebar-bg); 
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-evenly; gap: 10px;
-        }
+        .sidebar-footer { flex: 0 0 auto; padding: 15px 10px; background: var(--sidebar-bg); border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-evenly; gap: 10px; }
 
         /* PERFIL */
         .profile-link { display: block; flex-shrink: 0; }
-        .avatar-container { 
-            width: 50px; height: 50px; border-radius: 50%; overflow: hidden; 
-            border: 2px solid white; transition: 0.3s;
-        }
+        .avatar-container { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid white; transition: 0.3s; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
         aside:hover .avatar-container { width: 90px; height: 90px; } 
-
         .user-info { text-align: center; opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; width: 100%;}
         aside:hover .user-info { opacity: 1; max-height: 150px; }
         .user-name { font-weight: 700; font-size: 1.1rem; color: white; display: block; margin-bottom: 5px;}
@@ -108,224 +46,229 @@
 
         /* BOTÓN PDF */
         .btn-pdf {
-            background: var(--primary); color: white !important; 
-            border-radius: 10px; padding: 12px; width: 100%;
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none; transition: 0.2s; white-space: nowrap; font-weight: 500;
+            background: var(--primary); color: white !important; border-radius: 10px; padding: 12px; width: 100%;
+            display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s; white-space: nowrap; font-weight: 500;
             border: none; cursor: pointer; font-size: 1rem; font-family: inherit;
         }
         .btn-pdf:hover { background: #3b82f6; transform: translateY(-2px); }
         .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
-        /* NAV */
-        nav a {
-            display: flex; align-items: center; padding: 12px; color: #94a3b8; text-decoration: none;
-            border-radius: 10px; margin-bottom: 5px; transition: 0.2s; justify-content: center;
+        /* MENU ITEMS & SWITCHES */
+        .menu-item-container { display: flex; align-items: center; margin-bottom: 5px; border-radius: 10px; transition: 0.2s; padding: 5px; }
+        .menu-item-container:hover { background: rgba(255,255,255,0.05); }
+
+        /* SWITCH OCULTO POR DEFECTO */
+        .toggle-switch {
+            position: relative; width: 34px; height: 18px; flex-shrink: 0; margin-right: 10px;
+            display: none; /* Se oculta normalmente */
+            opacity: 0; transition: opacity 0.3s ease;
         }
-        aside:hover nav a { justify-content: flex-start; padding-left: 15px; }
-        nav a:hover, nav a.active { background: rgba(255,255,255,0.1); color: white; }
-        nav a.active { background: var(--primary); }
+        
+        /* CLASE MÁGICA: Cuando el sidebar tiene la clase 'edit-mode', mostramos los switches */
+        aside.edit-mode .toggle-switch { display: inline-block; opacity: 1; }
+
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        .nav-link { flex-grow: 1; display: flex; align-items: center; padding: 8px; color: #94a3b8; text-decoration: none; border-radius: 5px; }
+        .nav-link:hover, .nav-link.active { color: white; }
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
-        /* FOOTER BTNS */
-        .footer-btn {
-            background: rgba(255,255,255,0.05); border: none; color: #94a3b8;
-            width: 45px; height: 45px; border-radius: 10px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 1.2rem;
-        }
+        .footer-btn { background: rgba(255,255,255,0.05); border: none; color: #94a3b8; width: 45px; height: 45px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 1.2rem; }
         .footer-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: scale(1.1); }
+        
+        /* BOTÓN ACTIVO (Para el ojito) */
+        .footer-btn.active { background: var(--primary); color: white; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
-        /* --- MAIN --- */
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
-
-        /* --- CARDS --- */
-        .card {
-            background: var(--bg-card); padding: 2rem; border-radius: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
-            color: var(--text-main);
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-        }
+        .card { background: var(--bg-card); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px; color: var(--text-main); transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-
-        /* TEXTOS EN MODO OSCURO */
-        body.dark-mode .card h1, body.dark-mode .card h2, body.dark-mode .card h3, 
-        body.dark-mode .card p, body.dark-mode .card span, body.dark-mode .card div, 
-        body.dark-mode .card strong { color: #ffffff !important; }
+        body.dark-mode .card h1, body.dark-mode .card h2, body.dark-mode .card h3, body.dark-mode .card p, body.dark-mode .card span, body.dark-mode .card div, body.dark-mode .card strong { color: #ffffff !important; }
+        .tag-category { background-color: var(--tag-bg); color: var(--tag-text) !important; border: 1px solid var(--tag-border); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: inline-block; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .btn-card-action { background-color: var(--primary); color: white !important; padding: 8px 15px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
         
-        /* TAG CATEGORY */
-        .tag-category {
-            background-color: var(--tag-bg);
-            color: var(--tag-text) !important;
-            border: 1px solid var(--tag-border);
-            padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
-            display: inline-block; margin-bottom: 12px; letter-spacing: 0.5px;
-        }
-        
-        /* BOTÓN AZUL */
-        .btn-card-action {
-            background-color: var(--primary); color: white !important;
-            padding: 8px 15px; border-radius: 8px; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px; font-weight: 500;
-            transition: 0.2s; border: none; cursor: pointer;
-        }
-        .btn-card-action:hover { background-color: #1d4ed8; transform: scale(1.05); }
-
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             aside { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; padding: 0; overflow: visible;}
             aside:hover { width: 100%; }
             .sidebar-header, .sidebar-footer { display: none; }
             .sidebar-menu { display: flex; flex-direction: row; overflow-x: auto; width: 100%; padding: 0; justify-content: space-around; }
-            nav { display: flex; width: 100%; justify-content: space-around; }
-            nav a { padding: 10px; border-radius: 50%; }
+            .menu-item-container { flex-direction: column; padding: 0; margin: 0; }
+            .toggle-switch { display: none !important; } 
+            .nav-link { padding: 10px; border-radius: 50%; justify-content: center; }
+            .btn-text, .nav-text { display: none !important; }
             main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
         }
-
-        /* --- ESTILOS DE LOS MODALES --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 2000;
-            display: none; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--bg-card); color: var(--text-main);
-            padding: 30px; border-radius: 15px; width: 90%; max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .modal-title { margin-top: 0; color: var(--primary); margin-bottom: 20px;}
-        .modal-options label { display: block; margin: 10px 0; cursor: pointer; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        .btn-close { background: #ef4444; border:none; color:white; padding: 8px 15px; border-radius:5px; cursor:pointer;}
-        .btn-print { background: var(--primary); border:none; color:white; padding: 8px 15px; border-radius:5px; cursor:pointer;}
     </style>
 </head>
 <body>
-
-    <aside>
-        <div class="sidebar-header">
-            <a href="{% url 'home' %}" class="profile-link">
-                <div class="avatar-container">
-                    {% if perfil.fotoperfil %}
-                        <img src="{{ perfil.fotoperfil.url }}" class="avatar-img">
-                    {% else %}
-                        <div style="background:#333;width:100%;height:100%;"></div>
-                    {% endif %}
-                </div>
-            </a>
-
-            <div class="user-info">
-                <span class="user-name">{{ perfil.nombres }}</span>
-                <span class="typewriter" id="typewriter-text"></span>
-            </div>
-            
-            <button onclick="openModal('pdfModal')" class="btn-pdf">
-                <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar CV</span>
-            </button>
-        </div>
-
-        <div class="sidebar-menu">
-            <nav>
-                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                    <i class="fas fa-user nav-icon"></i> <span class="nav-text">Perfil</span>
+    <form id="sidebarForm" action="{% url 'cv_completo' %}" method="GET" target="_blank">
+        <aside id="main-sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'home' %}" class="profile-link">
+                    <div class="avatar-container">
+                        {% if perfil.fotoperfil %}
+                            <img src="{{ perfil.fotoperfil.url }}" class="avatar-img">
+                        {% else %}
+                            <div style="background:#333;width:100%;height:100%;"></div>
+                        {% endif %}
+                    </div>
                 </a>
-                <a href="{% url 'experiencia' %}" class="{% if 'experiencia' in request.path %}active{% endif %}">
-                    <i class="fas fa-briefcase nav-icon"></i> <span class="nav-text">Experiencia</span>
+
+                <div class="user-info">
+                    <span class="user-name">{{ perfil.nombres }}</span>
+                    <span class="typewriter" id="typewriter-text"></span>
+                </div>
+                
+                <button type="submit" class="btn-pdf">
+                    <i class="fas fa-file-pdf"></i> <span class="btn-text">Descargar CV</span>
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-item-container">
+                    <div style="width: 44px;"></div> 
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="fas fa-user nav-icon"></i> <span class="nav-text">Perfil</span>
+                    </a>
+                </div>
+
+                <div class="menu-item-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="inc_exp" checked onchange="toggleSection('sec-experiencia')">
+                        <span class="slider"></span>
+                    </label>
+                    <a href="{% url 'experiencia' %}" class="nav-link {% if 'experiencia' in request.path %}active{% endif %}">
+                        <i class="fas fa-briefcase nav-icon"></i> <span class="nav-text">Experiencia</span>
+                    </a>
+                </div>
+                
+                <div class="menu-item-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="inc_acad" checked onchange="toggleSection('sec-academicos')">
+                        <span class="slider"></span>
+                    </label>
+                    <a href="{% url 'productos_academicos' %}" class="nav-link {% if 'productos_academicos' in request.path %}active{% endif %}">
+                        <i class="fas fa-book nav-icon"></i> <span class="nav-text">Prod. Académicos</span>
+                    </a>
+                </div>
+
+                <div class="menu-item-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="inc_lab" checked onchange="toggleSection('sec-proyectos')">
+                        <span class="slider"></span>
+                    </label>
+                    <a href="{% url 'productos_laborales' %}" class="nav-link {% if 'productos_laborales' in request.path %}active{% endif %}">
+                        <i class="fas fa-tools nav-icon"></i> <span class="nav-text">Proyectos</span>
+                    </a>
+                </div>
+
+                <div class="menu-item-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="inc_cur" checked onchange="toggleSection('sec-cursos')">
+                        <span class="slider"></span>
+                    </label>
+                    <a href="{% url 'cursos' %}" class="nav-link {% if 'cursos' in request.path %}active{% endif %}">
+                        <i class="fas fa-graduation-cap nav-icon"></i> <span class="nav-text">Cursos y Títulos</span>
+                    </a>
+                </div>
+
+                <div class="menu-item-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="inc_rec" checked onchange="toggleSection('sec-reconocimientos')">
+                        <span class="slider"></span>
+                    </label>
+                    <a href="{% url 'reconocimientos' %}" class="nav-link {% if 'reconocimientos' in request.path %}active{% endif %}">
+                        <i class="fas fa-trophy nav-icon"></i> <span class="nav-text">Logros</span>
+                    </a>
+                </div>
+
+                <div class="menu-item-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="inc_gar" onchange="toggleSection('sec-garage')">
+                        <span class="slider"></span>
+                    </label>
+                    <a href="{% url 'garage' %}" class="nav-link {% if 'garage' in request.path %}active{% endif %}">
+                        <i class="fas fa-store nav-icon"></i> <span class="nav-text">Garage</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="/admin/" target="_blank" class="footer-btn" title="Admin">
+                    <i class="fas fa-cog"></i> 
                 </a>
                 
-                <a href="{% url 'productos_academicos' %}" class="{% if 'productos_academicos' in request.path %}active{% endif %}">
-                    <i class="fas fa-book nav-icon"></i> <span class="nav-text">Prod. Académicos</span>
-                </a>
-                <a href="{% url 'productos_laborales' %}" class="{% if 'productos_laborales' in request.path %}active{% endif %}">
-                    <i class="fas fa-tools nav-icon"></i> <span class="nav-text">Proyectos</span>
-                </a>
-                <a href="{% url 'cursos' %}" class="{% if 'cursos' in request.path %}active{% endif %}">
-                    <i class="fas fa-graduation-cap nav-icon"></i> <span class="nav-text">Cursos y Títulos</span>
-                </a>
-                <a href="{% url 'reconocimientos' %}" class="{% if 'reconocimientos' in request.path %}active{% endif %}">
-                    <i class="fas fa-trophy nav-icon"></i> <span class="nav-text">Logros</span>
-                </a>
-                <a href="{% url 'garage' %}" class="{% if 'garage' in request.path %}active{% endif %}">
-                    <i class="fas fa-store nav-icon"></i> <span class="nav-text">Garage</span>
-                </a>
-            </nav>
-        </div>
+                <button type="button" id="toggle-edit-mode" class="footer-btn" title="Configurar Vista">
+                    <i class="fas fa-eye"></i>
+                </button>
 
-        <div class="sidebar-footer">
-            <a href="/admin/" target="_blank" class="footer-btn" title="Admin">
-                <i class="fas fa-cog"></i> 
-            </a>
-            
-            <button onclick="openModal('viewModal')" class="footer-btn" title="Configurar Vista">
-                <i class="fas fa-eye"></i>
-            </button>
-
-            <button id="theme-toggle" class="footer-btn" title="Tema">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
-    </aside>
+                <button type="button" id="theme-toggle" class="footer-btn" title="Tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </aside>
+    </form>
 
     <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    <div id="pdfModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="modal-title">Seleccionar PDF</h3>
-            <form action="{% url 'cv_completo' %}" method="GET" target="_blank">
-                <div class="modal-options">
-                    <label><input type="checkbox" name="inc_exp" checked> Incluir Experiencia</label>
-                    <label><input type="checkbox" name="inc_cur" checked> Incluir Cursos/Títulos</label>
-                    <label><input type="checkbox" name="inc_rec" checked> Incluir Logros</label>
-                    <label><input type="checkbox" name="inc_acad" checked> Incluir Prod. Académicos</label>
-                    <label><input type="checkbox" name="inc_lab" checked> Incluir Proyectos</label>
-                    <label><input type="checkbox" name="inc_gar"> Incluir Venta Garage</label>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-close" onclick="closeModal('pdfModal')">Cancelar</button>
-                    <button type="submit" class="btn-print" onclick="closeModal('pdfModal')">Generar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="viewModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="modal-title">Mostrar/Ocultar Secciones</h3>
-            <p style="font-size: 0.9rem; margin-bottom: 15px;">Selecciona qué secciones deseas ver en la pantalla:</p>
-            <div class="modal-options">
-                <label><input type="checkbox" checked onchange="toggleSection('sec-experiencia', this)"> Experiencia</label>
-                <label><input type="checkbox" checked onchange="toggleSection('sec-cursos', this)"> Cursos y Títulos</label>
-                <label><input type="checkbox" checked onchange="toggleSection('sec-reconocimientos', this)"> Logros</label>
-                <label><input type="checkbox" checked onchange="toggleSection('sec-academicos', this)"> Prod. Académicos</label>
-                <label><input type="checkbox" checked onchange="toggleSection('sec-proyectos', this)"> Proyectos</label>
-                <label><input type="checkbox" checked onchange="toggleSection('sec-garage', this)"> Venta Garage</label>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-print" onclick="closeModal('viewModal')">Listo</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // LOGICA DE MODALES (ID DINÁMICO)
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        // 1. LOGICA DEL BOTÓN OJITO (CONFIGURACIÓN)
+        const eyeBtn = document.getElementById('toggle-edit-mode');
+        const sidebar = document.getElementById('main-sidebar');
 
-        // LOGICA PARA OCULTAR SECCIONES
-        function toggleSection(className, checkbox) {
-            const elements = document.getElementsByClassName(className);
-            for(let i=0; i < elements.length; i++) {
-                if(checkbox.checked) {
-                    elements[i].style.display = 'block'; 
+        eyeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Alternar clase 'edit-mode' en el sidebar
+            sidebar.classList.toggle('edit-mode');
+            // Alternar estado visual del botón (azul activo)
+            eyeBtn.classList.toggle('active');
+        });
+
+        // 2. LOGICA PARA OCULTAR/MOSTRAR SECCIONES EN HOME.HTML
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            if(section) {
+                // Si el checkbox está checkeado, mostramos. Si no, ocultamos.
+                const chk = document.querySelector(`input[onchange="toggleSection('${id}')"]`);
+                if(chk && chk.checked) {
+                    section.style.display = 'block'; 
                 } else {
-                    elements[i].style.display = 'none';
+                    section.style.display = 'none';
                 }
             }
         }
+
+        // 3. PERSISTENCIA (GUARDAR ESTADO)
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        
+        // Al cargar página
+        document.addEventListener('DOMContentLoaded', () => {
+            checkboxes.forEach(chk => {
+                const saved = localStorage.getItem('chk_' + chk.name);
+                if (saved !== null) {
+                    chk.checked = (saved === 'true');
+                }
+                // Ejecutar la función para ocultar/mostrar inmediatamente al cargar
+                // Extraemos el ID del onchange string: toggleSection('sec-algo')
+                const match = chk.getAttribute('onchange').match(/'([^']+)'/);
+                if(match) toggleSection(match[1]);
+            });
+        });
+
+        // Al cambiar checkbox
+        checkboxes.forEach(chk => {
+            chk.addEventListener('change', () => {
+                localStorage.setItem('chk_' + chk.name, chk.checked);
+            });
+        });
 
         // TEMA OSCURO
         const toggleBtn = document.getElementById('theme-toggle');
@@ -338,7 +281,8 @@
         }
         applyTheme(localStorage.getItem('theme'));
 
-        toggleBtn.addEventListener('click', () => {
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
             applyTheme(newTheme); localStorage.setItem('theme', newTheme);
         });
