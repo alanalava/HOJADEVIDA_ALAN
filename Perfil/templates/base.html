@@ -64,8 +64,7 @@
             display: none; /* Se oculta normalmente */
             opacity: 0; transition: opacity 0.3s ease;
         }
-        
-        /* CLASE MÁGICA: Cuando el sidebar tiene la clase 'edit-mode', mostramos los switches */
+        /* CLASE MÁGICA: Cuando el sidebar tiene 'edit-mode', mostramos los switches */
         aside.edit-mode .toggle-switch { display: inline-block; opacity: 1; }
 
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -74,14 +73,16 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        .nav-link { flex-grow: 1; display: flex; align-items: center; padding: 8px; color: #94a3b8; text-decoration: none; border-radius: 5px; }
+        .nav-link { flex-grow: 1; display: flex; align-items: center; padding: 8px; color: #94a3b8; text-decoration: none; border-radius: 5px; transition: opacity 0.3s; }
         .nav-link:hover, .nav-link.active { color: white; }
+        
+        /* CLASE PARA OCULTAR EL LINK CUANDO EL CHECK ESTÁ OFF */
+        .nav-link.hidden-link { display: none !important; }
+        
         .nav-icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
 
         .footer-btn { background: rgba(255,255,255,0.05); border: none; color: #94a3b8; width: 45px; height: 45px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 1.2rem; }
         .footer-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: scale(1.1); }
-        
-        /* BOTÓN ACTIVO (Para el ojito) */
         .footer-btn.active { background: var(--primary); color: white; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
@@ -139,7 +140,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_exp" checked onchange="toggleSection('sec-experiencia')">
+                        <input type="checkbox" name="inc_exp" checked onchange="toggleMenuLink(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'experiencia' %}" class="nav-link {% if 'experiencia' in request.path %}active{% endif %}">
@@ -149,7 +150,7 @@
                 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_acad" checked onchange="toggleSection('sec-academicos')">
+                        <input type="checkbox" name="inc_acad" checked onchange="toggleMenuLink(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'productos_academicos' %}" class="nav-link {% if 'productos_academicos' in request.path %}active{% endif %}">
@@ -159,7 +160,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_lab" checked onchange="toggleSection('sec-proyectos')">
+                        <input type="checkbox" name="inc_lab" checked onchange="toggleMenuLink(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'productos_laborales' %}" class="nav-link {% if 'productos_laborales' in request.path %}active{% endif %}">
@@ -169,7 +170,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_cur" checked onchange="toggleSection('sec-cursos')">
+                        <input type="checkbox" name="inc_cur" checked onchange="toggleMenuLink(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'cursos' %}" class="nav-link {% if 'cursos' in request.path %}active{% endif %}">
@@ -179,7 +180,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_rec" checked onchange="toggleSection('sec-reconocimientos')">
+                        <input type="checkbox" name="inc_rec" checked onchange="toggleMenuLink(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'reconocimientos' %}" class="nav-link {% if 'reconocimientos' in request.path %}active{% endif %}">
@@ -189,7 +190,7 @@
 
                 <div class="menu-item-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="inc_gar" onchange="toggleSection('sec-garage')">
+                        <input type="checkbox" name="inc_gar" onchange="toggleMenuLink(this)">
                         <span class="slider"></span>
                     </label>
                     <a href="{% url 'garage' %}" class="nav-link {% if 'garage' in request.path %}active{% endif %}">
@@ -203,7 +204,7 @@
                     <i class="fas fa-cog"></i> 
                 </a>
                 
-                <button type="button" id="toggle-edit-mode" class="footer-btn" title="Configurar Vista">
+                <button type="button" id="toggle-edit-mode" class="footer-btn" title="Configurar Menú">
                     <i class="fas fa-eye"></i>
                 </button>
 
@@ -220,50 +221,46 @@
     </main>
 
     <script>
-        // 1. LOGICA DEL BOTÓN OJITO (CONFIGURACIÓN)
+        // 1. ACTIVAR MODO EDICIÓN (OJITO)
         const eyeBtn = document.getElementById('toggle-edit-mode');
         const sidebar = document.getElementById('main-sidebar');
 
         eyeBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Alternar clase 'edit-mode' en el sidebar
             sidebar.classList.toggle('edit-mode');
-            // Alternar estado visual del botón (azul activo)
             eyeBtn.classList.toggle('active');
         });
 
-        // 2. LOGICA PARA OCULTAR/MOSTRAR SECCIONES EN HOME.HTML
-        function toggleSection(id) {
-            const section = document.getElementById(id);
-            if(section) {
-                // Si el checkbox está checkeado, mostramos. Si no, ocultamos.
-                const chk = document.querySelector(`input[onchange="toggleSection('${id}')"]`);
-                if(chk && chk.checked) {
-                    section.style.display = 'block'; 
+        // 2. LOGICA PARA OCULTAR EL ENLACE DEL MENÚ
+        function toggleMenuLink(checkbox) {
+            // Buscamos el hermano 'a' (el enlace) que está al lado del label
+            const container = checkbox.closest('.menu-item-container');
+            const link = container.querySelector('a.nav-link');
+            
+            if(link) {
+                if(checkbox.checked) {
+                    link.classList.remove('hidden-link'); // Mostrar
                 } else {
-                    section.style.display = 'none';
+                    link.classList.add('hidden-link'); // Ocultar
                 }
             }
         }
 
-        // 3. PERSISTENCIA (GUARDAR ESTADO)
+        // 3. PERSISTENCIA Y CARGA INICIAL
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         
-        // Al cargar página
         document.addEventListener('DOMContentLoaded', () => {
             checkboxes.forEach(chk => {
                 const saved = localStorage.getItem('chk_' + chk.name);
                 if (saved !== null) {
                     chk.checked = (saved === 'true');
                 }
-                // Ejecutar la función para ocultar/mostrar inmediatamente al cargar
-                // Extraemos el ID del onchange string: toggleSection('sec-algo')
-                const match = chk.getAttribute('onchange').match(/'([^']+)'/);
-                if(match) toggleSection(match[1]);
+                // Aplicar visibilidad inicial
+                toggleMenuLink(chk);
             });
         });
 
-        // Al cambiar checkbox
+        // Guardar cambios en memoria
         checkboxes.forEach(chk => {
             chk.addEventListener('change', () => {
                 localStorage.setItem('chk_' + chk.name, chk.checked);
