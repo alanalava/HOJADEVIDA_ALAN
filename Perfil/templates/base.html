@@ -9,63 +9,113 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* TUS ESTILOS SE MANTIENEN IGUALES */
         * { box-sizing: border-box; }
+        
         :root {
             --sidebar-width-open: 280px; 
             --sidebar-width-closed: 80px;
-            --primary: #2563eb; --sidebar-bg: #0f172a; --bg-main: #f8fafc; --bg-card: #ffffff;
-            --text-main: #334155; --text-muted: #64748b; --tag-bg: #e2e8f0; --tag-text: #475569; --tag-border: transparent;
+            --primary: #2563eb; 
+            --sidebar-bg: #0f172a; 
+            --bg-main: #f8fafc; 
+            --bg-card: #ffffff;
+            --text-main: #334155; 
+            --text-muted: #64748b; 
+            --tag-bg: #e2e8f0; 
+            --tag-text: #475569; 
+            --tag-border: transparent;
         }
-        body.dark-mode {
-            --bg-main: #0b1120; --bg-card: #1e293b; --text-main: #f8fafc; --text-muted: #cbd5e1;
-            --tag-bg: #0f172a; --tag-text: #94a3b8; --tag-border: #334155; 
-        }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
 
-        /* SIDEBAR */
-        aside {
-            position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-width-closed);
-            background: var(--sidebar-bg); color: white; z-index: 1000; 
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 10px rgba(0,0,0,0.1); overflow: hidden; 
+        body.dark-mode {
+            --bg-main: #0b1120; 
+            --bg-card: #1e293b; 
+            --text-main: #f8fafc; 
+            --text-muted: #cbd5e1;
+            --tag-bg: #0f172a; 
+            --tag-text: #94a3b8; 
+            --tag-border: #334155; 
         }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            transition: background 0.3s ease, color 0.3s ease; 
+        }
+
+        /* --- SIDEBAR CONFIGURACIÓN ESTRICTA --- */
+        aside {
+            position: fixed; 
+            top: 0; left: 0; 
+            height: 100vh; /* Altura total de la pantalla */
+            width: var(--sidebar-width-closed);
+            background: var(--sidebar-bg); 
+            color: white; 
+            z-index: 1000; 
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+            display: flex; /* Flex para controlar hijos */
+            flex-direction: column;
+        }
+        
         aside:hover { width: var(--sidebar-width-open); }
 
-        /* ESTA CLASE ES LA CLAVE PARA EL FOOTER */
+        /* EL FORMULARIO OCUPA TODO EL ALTO Y SE COMPORTA COMO COLUMNA FLEX */
         .sidebar-inner-form { 
-            height: 100%; width: 100%; display: flex; flex-direction: column; 
+            height: 100%; 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
         }
 
-        .sidebar-header { flex: 0 0 auto; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        
-        /* MENU OCUPA TODO EL ESPACIO DISPONIBLE */
+        /* CABECERA: Tamaño fijo */
+        .sidebar-header { 
+            flex: 0 0 auto; 
+            padding: 20px 10px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px; 
+        }
+
+        /* MENÚ: CRECE PARA OCUPAR TODO EL ESPACIO DISPONIBLE (ESTO EMPUJA EL FOOTER ABAJO) */
         .sidebar-menu { 
-            flex: 1 1 auto; /* Esto empuja el footer hacia abajo */
-            overflow-y: auto; padding: 0 10px; scrollbar-width: none; 
+            flex-grow: 1; /* Clave: Ocupa todo el espacio sobrante */
+            overflow-y: auto; 
+            padding: 0 10px; 
+            scrollbar-width: none; 
+            display: flex;
+            flex-direction: column;
         }
         .sidebar-menu::-webkit-scrollbar { display: none; }
 
-        /* FOOTER PEGADO AL FONDO */
+        /* FOOTER: SIEMPRE AL FINAL */
         .sidebar-footer { 
-            flex: 0 0 auto; 
+            flex: 0 0 auto; /* No se encoge ni crece */
             padding: 15px 10px; 
             background: var(--sidebar-bg); 
             border-top: 1px solid rgba(255,255,255,0.1); 
-            display: flex; justify-content: space-evenly; gap: 10px;
-            margin-top: auto; /* DOBLE SEGURIDAD PARA QUE SE QUEDE ABAJO */
+            display: flex; 
+            justify-content: space-evenly; 
+            gap: 10px; 
+            margin-top: auto; /* Seguridad extra para pegarlo al fondo */
         }
 
-        /* PERFIL & TEXTOS */
+        /* PERFIL */
         .profile-link { display: block; flex-shrink: 0; }
         .avatar-container { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid white; transition: 0.3s; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
         aside:hover .avatar-container { width: 90px; height: 90px; } 
+        
         .user-info { text-align: center; opacity: 0; max-height: 0; overflow: hidden; transition: 0.3s; width: 100%;}
         aside:hover .user-info { opacity: 1; max-height: 150px; }
         .user-name { font-weight: 700; font-size: 1.1rem; color: white; display: block; margin-bottom: 5px;}
         .typewriter { font-size: 0.8rem; color: #94a3b8; display: block; min-height: 1.2em; }
 
-        /* BOTONES & MENU ITEMS */
+        /* BOTÓN PDF */
         .btn-pdf {
             background: var(--primary); color: white !important; border-radius: 10px; padding: 12px; width: 100%;
             display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s; white-space: nowrap; font-weight: 500;
@@ -75,10 +125,11 @@
         .btn-text, .nav-text { display: none; margin-left: 10px; }
         aside:hover .btn-text, aside:hover .nav-text { display: inline-block; }
 
+        /* ITEMS DEL MENÚ */
         .menu-item-container { display: flex; align-items: center; margin-bottom: 5px; border-radius: 10px; transition: 0.2s; padding: 5px; }
         .menu-item-container:hover { background: rgba(255,255,255,0.05); }
-        
-        /* LÓGICA DE VISIBILIDAD DE FILAS */
+
+        /* VISIBILIDAD DE FILAS */
         .menu-item-container.hidden-row { display: none !important; }
         aside.edit-mode .menu-item-container.hidden-row { display: flex !important; opacity: 0.4; }
 
@@ -88,7 +139,10 @@
             display: none; opacity: 0; transition: opacity 0.3s ease;
         }
         .toggle-spacer { width: 34px; margin-right: 10px; flex-shrink: 0; display: none; }
-        aside.edit-mode .toggle-switch, aside.edit-mode .toggle-spacer { display: inline-block; opacity: 1; }
+        
+        /* MOSTRAR SWITCHES SOLO EN MODO EDICIÓN */
+        aside.edit-mode .toggle-switch, 
+        aside.edit-mode .toggle-spacer { display: inline-block; opacity: 1; }
 
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; }
@@ -104,16 +158,18 @@
         .footer-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: scale(1.1); }
         .footer-btn.active { background: var(--primary); color: white; box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); }
 
-        /* MAIN & CARDS */
+        /* MAIN LAYOUT */
         main { margin-left: var(--sidebar-width-closed); padding: 2rem; transition: margin-left 0.3s; }
         aside:hover + main { margin-left: var(--sidebar-width-open); }
         
+        /* TARJETAS */
         .card { background: var(--bg-card); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px; color: var(--text-main); transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
         body.dark-mode .card h1, body.dark-mode .card h2, body.dark-mode .card h3, body.dark-mode .card p, body.dark-mode .card span, body.dark-mode .card div, body.dark-mode .card strong { color: #ffffff !important; }
         .tag-category { background-color: var(--tag-bg); color: var(--tag-text) !important; border: 1px solid var(--tag-border); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: inline-block; margin-bottom: 12px; letter-spacing: 0.5px; }
         .btn-card-action { background-color: var(--primary); color: white !important; padding: 8px 15px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
         
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             aside { width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; padding: 0; overflow: visible;}
             aside:hover { width: 100%; }
@@ -126,7 +182,7 @@
             main { margin-left: 0; margin-bottom: 70px; padding: 1rem; }
         }
 
-        /* --- ESTILOS DEL MODAL (CUADRADO) --- */
+        /* MODAL PDF */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 2000;
@@ -148,6 +204,7 @@
     
     <aside id="main-sidebar">
         <div class="sidebar-inner-form">
+            
             <div class="sidebar-header">
                 <a href="{% url 'home' %}" class="profile-link">
                     <div class="avatar-container">
@@ -322,7 +379,7 @@
             applyTheme(newTheme); localStorage.setItem('theme', newTheme);
         });
 
-        // 4. PERSISTENCIA (SOLO PARA LOS DE LA BARRA LATERAL)
+        // PERSISTENCIA (SOLO PARA LOS DE LA BARRA LATERAL)
         const sidebarCheckboxes = document.querySelectorAll('.sidebar-chk');
         
         document.addEventListener('DOMContentLoaded', () => {
